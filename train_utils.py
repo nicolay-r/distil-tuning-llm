@@ -26,7 +26,10 @@ from model_utils import TaskPrefixDataCollator, TaskPrefixTrainer
 
 
 def get_config_dir(args):
-    return f'{args.model_type}/{args.from_pretrained.split("/")[1]}'
+    # breakpoint()
+    path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
+    
+    return path
 
 
 def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics):
@@ -39,8 +42,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     
     # 整理路径
     config_dir = get_config_dir(args)
-    output_dir = f'ckpts/{config_dir}/{run}'  # for model ckpts
-    logging_dir = f'logs/{config_dir}/{run}'  # for training logs
+    output_dir = f'ckpts/{config_dir}'  # for model ckpts
+    logging_dir = f'logs/{config_dir}'  # for training logs
     print("output dir: {}".format(output_dir))
     print("log dir: {}".format(logging_dir))
 
@@ -112,6 +115,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         # breakpoint()
         trainer = TaskPrefixTrainer(**trainer_kwargs)
     elif args.model_type == 'standard':
+        
         trainer_kwargs.pop('alpha') # 从trainer_kwargs字典中删除键'alpha'及其对应的值。
         trainer_kwargs.pop('output_rationale')
         # trainer_kwargs是一个字典，包含了训练器（trainer）的配置参数，例如训练数据、评估数据、学习率、训练轮次（epoch）等。

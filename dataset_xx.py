@@ -149,9 +149,10 @@ class SVAMPDatasetLoader(DatasetLoader):
                  batch_size, train_batch_idxs, test_batch_idxs, valid_batch_idxs=None)
     
     def load_from_json(self):
+        self.dataset_name = "medqa_d2n"
         data_files = {
-            'train': f'{self.data_root}/{self.dataset_name}/{self.dataset_name}_train.json',
-            'test': f'{self.data_root}/{self.dataset_name}/{self.dataset_name}_test.json',
+            'train': f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_train.json',
+            'test': f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_test.json',
         }
         # data_files = {
         #     'train': f'{self.data_root}/{self.dataset_name}/origin/{self.dataset_name}_train.json',
@@ -159,7 +160,7 @@ class SVAMPDatasetLoader(DatasetLoader):
         # }
 
         if self.has_valid:
-            data_files.update({'valid': f'{self.data_root}/{self.dataset_name}/{self.dataset_name}_valid.json',})
+            data_files.update({'valid': f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_valid.json',})
         
         datasets = load_dataset('json', data_files=data_files) # 这行报错，所以改为下面方法
         
@@ -188,10 +189,11 @@ class SVAMPDatasetLoader(DatasetLoader):
 
     
     def load_gt_preds(self, split):
+        self.dataset_name = "medqa_d2n" # 这里刚、加的
         labels = list()
         rationales = list()
         # for idx in getattr(self, f'{split}_batch_idxs'):
-        with open(f'{self.data_root}/{self.dataset_name}/{self.dataset_name}_{split}.json') as f:
+        with open(f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_{split}.json') as f:
             outputs = json.load(f)
         # breakpoint()
 

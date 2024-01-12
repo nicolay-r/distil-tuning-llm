@@ -1,15 +1,15 @@
 import argparse
 from datasets import DatasetDict, concatenate_datasets
 from transformers import AutoTokenizer
-from data_utils import SVAMPDatasetLoader
+from data_utils import MEDQADatasetLoader
 from metrics import compute_text_acc, compute_equation_acc, compute_metrics_text, compute_metrics_equation, compute_metrics_text_aux, compute_metrics_equation_aux
 from train_utils import train_and_evaluate
 
 
 def run(args):
     #### Prepare datasets
-    if args.dataset == 'svamp': #设置哪个数据加载器
-        dataset_loader = SVAMPDatasetLoader()
+    if args.dataset == 'medqa_d2n': #设置哪个数据加载器
+        dataset_loader = MEDQADatasetLoader()
     else:
         raise ValueError
     # 加载数据
@@ -17,54 +17,29 @@ def run(args):
     
     
     # 整理数据集的label和rationale
-   
     train_llm_rationales, train_llm_labels = dataset_loader.load_rationale_data(split='train')
     test_llm_rationales, test_llm_labels = dataset_loader.load_rationale_data(split='test')
     
 
-    if args.llm is not None: # 给数据集添加labels
+    if args.llm is not None: # 给数据集添加labels,
         datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
         datasets['test'] = datasets['test'].add_column('llm_label', test_llm_labels)
         datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
         datasets['test'] = datasets['test'].add_column('llm_rationale', test_llm_rationales)
+    # 这里有必要？
+    # breakpoint()
+
+    
+
         
-
-    # 处理验证集
-    if args.subsample < 1.0: # 切分训练集和验证集？
-        datasets['train'] = datasets['train'].train_test_split(test_size=1.0-args.subsample, seed=args.run)['train']
-
-    if dataset_loader.has_valid: # 如果数据集里有验证集
-        if args.llm is None:
-            pass
-        else: 
-            valid_llm_rationales, valid_llm_labels = dataset_loader.load_rationale_data(split='valid')
-        datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
-        datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
-        # breakpoint()
-    else:  # 如果数据集里没有验证集
-        train_valid_datasets = datasets['train'].train_test_split(test_size=0.1, seed=0)
-        datasets = DatasetDict({
-            'train': train_valid_datasets['train'],
-            'valid': train_valid_datasets['test'],
-            'test': datasets['test'],
-        })
+    valid_llm_rationales, valid_llm_labels = dataset_loader.load_rationale_data(split='valid')
+    datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
+    datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
+    # breakpoint()
 
     # 选择不同的计算评估的方式，如果有teacher模型的预测标签，目前数据里没有，gt: Use GT label for training  llm: Use LLM predicted label for training
     if args.label_type == 'gt': 
         pass
-    elif args.label_type == 'llm' and args.llm is not None:
-        if args.dataset not in ['svamp', 'asdiv']:
-            train_label_acc = compute_text_acc(datasets['train']['llm_label'], datasets['train']['label'])
-            test_label_acc = compute_text_acc(datasets['test']['llm_label'], datasets['test']['label'])
-        else:
-            train_label_acc = compute_equation_acc(datasets['train']['llm_label'], datasets['train']['label'])
-            test_label_acc = compute_equation_acc(datasets['test']['llm_label'], datasets['test']['label'])
-
-        print(f'LLM Train Acc: {train_label_acc:.4f}')
-        print(f'LLM Test Acc: {test_label_acc:.4f}')
-
-        datasets['train'] = datasets['train'].remove_columns('label')
-        datasets['train'] = datasets['train'].add_column('label', datasets['train']['llm_label'])
     else:
         raise ValueError
 
@@ -149,7 +124,7 @@ if __name__ == '__main__':
     parser.add_argument('--bf16', action='store_true')
     parser.add_argument('--no_log', action='store_true')
     parser.add_argument('--output_rationale', action='store_true')
-
+    parser.add_argument('--addi_info', type=str, default="")
     args = parser.parse_args()
 
     run(args)

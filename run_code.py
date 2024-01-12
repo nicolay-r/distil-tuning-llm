@@ -41,11 +41,12 @@ def run(args):
         print(len(datasets['train']))
         datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
         datasets['test'] = datasets['test'].add_column('llm_rationale', test_llm_rationales)
-        print(len(datasets['train']))
+        print(len(datasets['test']))
         # breakpoint()
-    # breakpoint()
+    # 给验证集添加 label
     if args.subsample < 1.0: 
         # 切分train和valid集
+        print("小于")
         datasets['train'] = datasets['train'].train_test_split(test_size=1.0-args.subsample, seed=args.run)['train']
 
     if dataset_loader.has_valid:
@@ -61,14 +62,14 @@ def run(args):
             'valid': train_valid_datasets['test'],
             'test': datasets['test'],
         })
-        
+    
     if args.label_type == 'gt': # groundtruth
-        # print("是gt")
+        print("是gt")
         pass
 
     else:
         raise ValueError
-
+    breakpoint()
     # 不太重要的地方，整理列名
     if args.llm is not None:
         if 'rationale' in datasets['train'].column_names:
@@ -137,14 +138,16 @@ def run(args):
             
             batched=True
         )
-        breakpoint()
+        # breakpoint()
     
 
     if args.model_type == 'standard':
         print("走这里standard")
         if args.dataset not in ['svamp', 'asdiv']:
+            print("text")
             compute_metrics = compute_metrics_text_aux(tokenizer)
         else:
+            print("equation")
             compute_metrics = compute_metrics_equation_aux(tokenizer)
 
     else:
@@ -155,8 +158,9 @@ def run(args):
         else:
             print("没走这里")
             compute_metrics = compute_metrics_equation(tokenizer)
-
-    breakpoint()
+            
+    print(len(datasets['valid']))
+    
     
     train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
 

@@ -31,7 +31,6 @@ class DatasetLoader(object):
                  batch_size, train_batch_idxs, test_batch_idxs, valid_batch_idxs=None):
         self.data_root = DATASET_ROOT
         self.dataset_name = dataset_name
-        self.source_dataset_name = source_dataset_name
         self.dataset_version = dataset_version
         self.has_valid = has_valid
         self.split_map = split_map
@@ -44,14 +43,14 @@ class DatasetLoader(object):
         assert self.split_map is not None    
 
 
-    def load_from_source(self):
-        if self.source_dataset_name is None:
-            self.source_dataset_name = self.dataset_name
-        if self.dataset_version is None:
-            datasets = load_dataset(self.source_dataset_name)
-        else:
-            datasets = load_dataset(self.source_dataset_name, self.dataset_version)
-        return datasets
+    # def load_from_source(self):
+    #     if self.source_dataset_name is None:
+    #         self.source_dataset_name = self.dataset_name
+    #     if self.dataset_version is None:
+    #         datasets = load_dataset(self.source_dataset_name)
+    #     else:
+    #         datasets = load_dataset(self.source_dataset_name, self.dataset_version)
+    #     return datasets
 
 
     def to_json(self, datasets):
@@ -126,10 +125,10 @@ class DatasetLoader(object):
         raise NotImplementedError
 
 #xiaoxiao liu
-class SVAMPDatasetLoader(DatasetLoader):
+class MEDQADatasetLoader(DatasetLoader):
     def __init__(self):
-        dataset_name = 'svamp'
-        source_dataset_name = 'svamp'
+        dataset_name = 'medqa_d2n'
+        source_dataset_name = 'medqa_d2n'
         dataset_version = None
         has_valid = True
         split_map = {
@@ -146,14 +145,14 @@ class SVAMPDatasetLoader(DatasetLoader):
 
     def load_from_json(self):
         data_files = {
-            'train': f'{self.data_root}/{self.dataset_name}/{self.dataset_name}_train.json',
-            'test': f'{self.data_root}/{self.dataset_name}/{self.dataset_name}_test.json',
+            'train': f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_train.json',
+            'test': f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_test.json',
         }
 
         if self.has_valid:
-            data_files.update({'valid': f'{self.data_root}/{self.dataset_name}/{self.dataset_name}_valid.json',})
+            data_files.update({'valid': f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_valid.json',})
         
-        datasets = load_dataset('json', data_files=data_files) # 这行报错，所以改为下面方法
+        datasets = load_dataset('json', data_files=data_files)
         
         datasets = self._post_process(datasets) 
 
@@ -175,25 +174,7 @@ class SVAMPDatasetLoader(DatasetLoader):
         datasets = self._post_process(datasets) 
 
         return datasets
-    
-    # def load_llm_preds(self, split):
-    #     labels = list()
-    #     rationales = list()
-    #     # for idx in getattr(self, f'{split}_batch_idxs'):
-    #     with open(f'{self.data_root}/{self.dataset_name}/{self.dataset_name}_{split}.json') as f:
-    #         outputs = json.load(f)
-    #     # breakpoint()
 
-    #     for output in outputs:
-            
-    #         rationale, label = self._parse_llm_output(output)
-    #         # rationale = output['input']
-    #         # label = output['label']
-
-    #         rationales.append(rationale)
-    #         labels.append(label)
-
-    #     return rationales, labels
     
     def load_rationale_data(self, split):
         labels = list()
@@ -211,14 +192,11 @@ class SVAMPDatasetLoader(DatasetLoader):
     def load_gt_preds(self, split):
         labels = list()
         rationales = list()
-        # for idx in getattr(self, f'{split}_batch_idxs'):
-        with open(f'{self.data_root}/{self.dataset_name}/{self.dataset_name}_{split}.json') as f:
+        
+        with open(f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_{split}.json') as f:
             outputs = json.load(f)
-        # breakpoint()
-
+        
         for output in outputs:
-            
-            
             rationale = ""
             label = output['label']
 

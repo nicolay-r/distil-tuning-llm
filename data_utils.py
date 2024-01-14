@@ -204,7 +204,7 @@ class MEDQADatasetLoader(DatasetLoader):
             rationales.append(rationale)
             labels.append(label)
 
-        return rationales, labels
+        return labels
         
 
     def _post_process(self, datasets):

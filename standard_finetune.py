@@ -30,23 +30,23 @@ def run(args):
         datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
         datasets['test'] = datasets['test'].add_column('llm_label', test_llm_labels)
         print(len(datasets['train']))
-        datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
-        datasets['test'] = datasets['test'].add_column('llm_rationale', test_llm_rationales)
+        # datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
+        # datasets['test'] = datasets['test'].add_column('llm_rationale', test_llm_rationales)
         print(len(datasets['test']))
         # 给验证集添加 label
         datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
-        datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
+        # datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
         print(len(datasets['valid']))
         
     # 不太重要的地方，整理列名
     
-    if 'rationale' in datasets['train'].column_names:
-        print("这里有")
-        datasets = datasets.remove_columns('rationale')
-    print("这里没有")
-    datasets['train'].column_names
+    # if 'rationale' in datasets['train'].column_names:
+    #     print("这里有")
+    #     datasets = datasets.remove_columns('rationale')
+    # print("这里没有")
+    # datasets['train'].column_names
     # breakpoint()
-    datasets = datasets.rename_column('llm_rationale', 'rationale')
+    # datasets = datasets.rename_column('llm_rationale', 'rationale')
     # breakpoint()
     
     #### Prepare datasets Prepare data for training
@@ -84,7 +84,8 @@ def run(args):
         #走了这里
         tokenized_datasets = datasets.map(
             tokenize_function,
-            remove_columns=['input', 'rationale', 'output', 'llm_label'],
+            # remove_columns=['input', 'rationale', 'output', 'llm_label'],
+            remove_columns=['input', 'output', 'llm_label'],
             batched=True
         )
     # breakpoint()

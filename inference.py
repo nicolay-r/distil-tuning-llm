@@ -49,7 +49,7 @@ def eval(args):
     device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
 
-    tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
+    tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained) # max_length=args.max_input_length,
     model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
     checkpoint = torch.load(model_dir, map_location=device) #读取本地训练好的chekpoint
     model.load_state_dict(checkpoint)

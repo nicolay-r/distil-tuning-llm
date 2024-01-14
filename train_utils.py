@@ -27,8 +27,10 @@ from model_utils import TaskPrefixDataCollator, TaskPrefixTrainer
 
 def get_config_dir(args):
     # breakpoint()
-    path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
-    
+    if args.model_type == "standard":
+        path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}'
+    else:
+        path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
     return path
 
 
@@ -122,6 +124,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         trainer = Seq2SeqTrainer(**trainer_kwargs) # Seq2SeqTrainer是Hugging Face Transformers库中的一个类，专门用于序列到序列（sequence-to-sequence）的模型训练，比如T5、BART等。
         # trainer = Seq2SeqTrain/root/r(training_args)  
         '''解释一下：训练的是T5模型，而Seq2SeqTrainer是用于训练过程的工具。'''
+        # breakpoint()
         
     else:
         raise ValueError

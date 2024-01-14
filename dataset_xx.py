@@ -201,10 +201,10 @@ class SVAMPDatasetLoader(DatasetLoader):
             
             
             rationale = ""
-            label = output['label']
+            lab = output['output']
 
             rationales.append(rationale)
-            labels.append(label)
+            labels.append(lab)
 
         return rationales, labels
         

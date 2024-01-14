@@ -16,10 +16,14 @@ def run(args):
     datasets = dataset_loader.load_from_json()
     
     # # 整理数据集的label
+    # if args.llm == 'gt':
+    #     train_llm_rationales, train_llm_labels = dataset_loader.load_gt_preds(split='train')
+    #     test_llm_rationales, test_llm_labels = dataset_loader.load_gt_preds(split='test')
+    #     valid_llm_rationales, valid_llm_labels = dataset_loader.load_gt_preds(split='valid')
     if args.llm == 'gt':
-        train_llm_rationales, train_llm_labels = dataset_loader.load_gt_preds(split='train')
-        test_llm_rationales, test_llm_labels = dataset_loader.load_gt_preds(split='test')
-        valid_llm_rationales, valid_llm_labels = dataset_loader.load_gt_preds(split='valid')
+        train_llm_labels = dataset_loader.load_gt_preds(split='train')
+        test_llm_labels = dataset_loader.load_gt_preds(split='test')
+        valid_llm_labels = dataset_loader.load_gt_preds(split='valid')
         
     if args.llm is not None:
         # breakpoint()
@@ -48,26 +52,24 @@ def run(args):
     #### Prepare datasets Prepare data for training
     tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
 
-    if args.model_type == 'standard':
-        print("standard")
-        def tokenize_function(examples):
-            # 使用 tokenizer 将 examples 中的 'input' 字段的文本进行分词处理。
-            # 设置最大长度为 args.max_input_length，并在超出时截断文本。 
-            model_inputs = tokenizer(
-                examples['input'],
-                max_length=args.max_input_length,
-                truncation=True
-            )
+    
+    def tokenize_function(examples):
+        # 使用 tokenizer 将 examples 中的 'input' 字段的文本进行分词处理。
+        # 设置最大长度为 args.max_input_length，并在超出时截断文本。 
+        model_inputs = tokenizer(
+            examples['input'],
+            max_length=args.max_input_length,
+            truncation=True
+        )
 
-            with tokenizer.as_target_tokenizer():
-                label_output_encodings = tokenizer(examples['rationale'], max_length=1024, truncation=True) #设置最大长度为 256，并在超出时截断文本。
+        with tokenizer.as_target_tokenizer():
+            label_output_encodings = tokenizer(examples['output'], max_length=1024, truncation=True) #设置最大长度为 256，并在超出时截断文本。
 
-            model_inputs['labels'] = label_output_encodings['input_ids']
-            
-            return model_inputs
+        model_inputs['labels'] = label_output_encodings['input_ids']
+        
+        return model_inputs
 
-    else:
-        raise ValueError
+   
     
 
     if args.llm is None:
@@ -82,7 +84,7 @@ def run(args):
         #走了这里
         tokenized_datasets = datasets.map(
             tokenize_function,
-            remove_columns=['input', 'rationale', 'label', 'llm_label'],
+            remove_columns=['input', 'rationale', 'output', 'llm_label'],
             batched=True
         )
     # breakpoint()
@@ -117,7 +119,7 @@ if __name__ == '__main__':
     parser.add_argument('--no_log', action='store_true')
     parser.add_argument('--output_rationale', action='store_true')
     parser.add_argument('--task_type', type=str, default='d2n')
-
+    parser.add_argument('--addi_info', type=str, default="")
     args = parser.parse_args()
 
     run(args)

@@ -62,14 +62,14 @@ def run(args):
             'valid': train_valid_datasets['test'],
             'test': datasets['test'],
         })
-    
+    # breakpoint()
     if args.label_type == 'gt': # groundtruth
         print("是gt")
         pass
 
     else:
         raise ValueError
-    breakpoint()
+    # breakpoint()
     # 不太重要的地方，整理列名
     if args.llm is not None:
         if 'rationale' in datasets['train'].column_names:
@@ -100,6 +100,7 @@ def run(args):
             return model_inputs
 
     elif args.model_type == 'standard':
+        print('standard')
         def tokenize_function(examples):
             # if task_type == "d2n":
             #     max_length = 
@@ -132,9 +133,10 @@ def run(args):
     else:
         print("这里mei有")
         #走了这里
+        # breakpoint()
         tokenized_datasets = datasets.map(
             tokenize_function,
-            remove_columns=['input', 'rationale', 'label', 'llm_label'],
+            remove_columns=['input', 'rationale', 'output', 'llm_label'],
             
             batched=True
         )

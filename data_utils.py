@@ -152,6 +152,7 @@ class MEDQADatasetLoader(DatasetLoader):
         if self.has_valid:
             data_files.update({'valid': f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_valid.json',})
         
+        # breakpoint()
         datasets = load_dataset('json', data_files=data_files)
         
         datasets = self._post_process(datasets) 
@@ -198,7 +199,7 @@ class MEDQADatasetLoader(DatasetLoader):
         
         for output in outputs:
             rationale = ""
-            label = output['label']
+            label = output['output']
 
             rationales.append(rationale)
             labels.append(label)

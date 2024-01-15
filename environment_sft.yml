@@ -1,0 +1,29 @@
+name: distill_sft
+
+channels:
+    - conda-forge
+    - anaconda
+    - pytorch
+
+dependencies:
+  - python=3.9
+  - numpy
+  - scikit-learn
+  - pandas
+  - seaborn
+  - pytorch==1.12.1 
+  - torchvision==0.13.1 
+  - torchaudio==0.12.1 
+  - cudatoolkit=11.3 -c pytorch
+
+  - pip:
+    - git+https://github.com/huggingface/transformers@v4.24.0
+    - datasets
+    - sentencepiece
+    - protobuf==3.20.*
+    - deepspeed
+    - wandb
+    - accelerate==0.22.0
+    - deepspeed==0.10.1
+
+

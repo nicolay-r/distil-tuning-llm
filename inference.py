@@ -27,7 +27,7 @@ def path_process(dataset, model_type, from_pretrained, addi_info, best_step):
     else:
         add_info = f"_{addi_info}"
     EVAL_PATH = f"./results/{dataset}"
-    eval_dir = f"{EVAL_PATH}/eval_{model_type}_{model_name}{add_info}.json"
+    eval_dir = f"{EVAL_PATH}/eval_{model_type}_{model_name}{add_info}_step{best_step}.json"
     model_dir = f"./ckpts/{model_type}/{model_name}{add_info}/checkpoint-{best_step}/pytorch_model.bin"
     test_dir = f'./datasets/{dataset}/{model_type}/{dataset}_test.json'
     

@@ -28,7 +28,7 @@ from model_utils import TaskPrefixDataCollator, TaskPrefixTrainer
 def get_config_dir(args):
     # breakpoint()
     if args.model_type == "standard":
-        path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}'
+        path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
     else:
         path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
     return path
@@ -60,7 +60,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     # clear output dir if already exists
     if os.path.exists(output_dir):
         logging.info('Found existing ckpt directory. Deleted the old directory for the latest run.')
-        shutil.rmtree(output_dir)
+        os.removedirs(output_dir)
     # 路径整理完了
     
     # 设置一些训练中的细节参数
@@ -85,6 +85,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         bf16=args.bf16,                     # 是否使用bfloat16进行训练，这可以提高性能
         generation_max_length=args.gen_max_len,      # 生成的最大长度
         prediction_loss_only=False,         # 是否只预测损失，这里设置为False
+        deepspeed=args.deepspeed
     )
 
     

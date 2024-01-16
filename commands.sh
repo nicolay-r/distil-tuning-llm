@@ -13,6 +13,7 @@ python standard_finetune.py --from_pretrained google/t5-v1_1-large --dataset med
 
 Standard debugging:
 deepspeed standard_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --llm gt --model_type standard --eval_steps 5 --batch_size 2 --grad_steps 2 --addi_info ds --deepspeed configs/ds_config_zero2.json
+deepspeed distill_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --eval_steps 5 --batch_size 2 --grad_steps 2 --alpha 0.6 --addi_info pred_6_4
 
 python standard_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --llm gt --model_type standard --eval_steps 5 --batch_size 2 --grad_steps 2 
 
@@ -32,5 +33,5 @@ Distill Inference:
 python inference.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --addi_info pred_1000 --best_step 1360
 
 Sft inference:
-python inference.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type standard --best_step 1360
+python inference.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type standard --addi_info _ds --best_step 10000
 

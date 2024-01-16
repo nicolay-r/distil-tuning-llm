@@ -125,6 +125,8 @@ if __name__ == '__main__':
     parser.add_argument('--no_log', action='store_true')
     parser.add_argument('--output_rationale', action='store_true')
     parser.add_argument('--addi_info', type=str, default="")
+    parser.add_argument("--deepspeed", type=str, default=None, help="Path to deepspeed config file.")
+
     args = parser.parse_args()
 
     run(args)

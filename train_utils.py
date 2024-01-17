@@ -85,7 +85,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         bf16=args.bf16,                     # 是否使用bfloat16进行训练，这可以提高性能
         generation_max_length=args.gen_max_len,      # 生成的最大长度
         prediction_loss_only=False,         # 是否只预测损失，这里设置为False
-        deepspeed=args.deepspeed
+        deepspeed=args.deepspeed,
+        save_total_limit=1,
     )
 
     

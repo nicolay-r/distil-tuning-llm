@@ -13,7 +13,7 @@ python standard_finetune.py --from_pretrained google/t5-v1_1-large --dataset med
 
 Standard debugging:
 deepspeed standard_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --llm gt --model_type standard --eval_steps 5 --batch_size 2 --grad_steps 2 --addi_info ds --deepspeed configs/ds_config_zero2.json
-deepspeed distill_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --eval_steps 5 --batch_size 2 --grad_steps 2 --alpha 0.6 --addi_info pred_6_4
+deepspeed distill_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --eval_steps 5 --batch_size 2 --grad_steps 2 --alpha 0.7 --addi_info pred_7_3 --deepspeed configs/ds_config_zero2.json
 
 python standard_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --llm gt --model_type standard --eval_steps 5 --batch_size 2 --grad_steps 2 
 

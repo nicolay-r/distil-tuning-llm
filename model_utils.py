@@ -41,7 +41,7 @@ class TaskPrefixDataCollator(DataCollatorForSeq2Seq):
         '''
         pred_features = super().__call__(pred_features, return_tensors)
         expl_features = super().__call__(expl_features, return_tensors)
-        # breakpoint()
+        
         return {
             'pred': pred_features,
             'expl': expl_features,
@@ -59,14 +59,14 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
         # breakpoint()
         # decoded_output = tokenizer.decode(pred_outputs['encoder_last_hidden_state'][0], skip_special_tokens=True)
         # tokenizer.decode(inputs['expl']["labels"], skip_special_tokens=True)
-
+        
         pred_outputs = model(**inputs['pred'])
         expl_outputs = model(**inputs['expl'])
-        # breakpoint()
+        
         # 为了
         loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
         # loss = self.alpha * pred_outputs.loss*1000 + (1. - self.alpha) * expl_outputs.loss
-        
+        # breakpoint()
         return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
 
 

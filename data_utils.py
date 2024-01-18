@@ -188,6 +188,7 @@ class MEDQADatasetLoader(DatasetLoader):
             label = output['output']
             rationales.append(rationale)
             labels.append(label)
+        # breakpoint()
         return rationales, labels
     
     def load_gt_preds(self, split):

@@ -21,6 +21,8 @@ from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer
 from transformers import T5ForConditionalGeneration
 from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
+# from transformers import EarlyStoppingCallback
+
 
 from model_utils import TaskPrefixDataCollator, TaskPrefixTrainer
 
@@ -87,6 +89,9 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         prediction_loss_only=False,         # 是否只预测损失，这里设置为False
         deepspeed=args.deepspeed,
         save_total_limit=1,
+        # load_best_model_at_end=True,          # 训练结束时加载最佳模型
+        # greater_is_better=False,              # 对于损失来说，更小的值是更好的
+        # early_stopping_patience=3,
     )
 
     
@@ -112,6 +117,9 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         'data_collator': data_collator,
         'tokenizer': tokenizer,
         'compute_metrics': compute_metrics,
+        # 'callbacks': [EarlyStoppingCallback(early_stopping_patience=3, early_stopping_threshold=0.0)],
+
+        
     }
 
 

@@ -19,20 +19,16 @@ def run(args):
     # 整理数据集的label和rationale
     train_llm_rationales, train_llm_labels = dataset_loader.load_rationale_data(split='train')
     test_llm_rationales, test_llm_labels = dataset_loader.load_rationale_data(split='test')
-    
-
-    if args.llm is not None: # 给数据集添加labels,
-        datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
-        datasets['test'] = datasets['test'].add_column('llm_label', test_llm_labels)
-        datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
-        datasets['test'] = datasets['test'].add_column('llm_rationale', test_llm_rationales)
-    # 这里有必要？
-    # breakpoint()
-
-    
-
-        
     valid_llm_rationales, valid_llm_labels = dataset_loader.load_rationale_data(split='valid')
+
+    
+
+    # if args.llm is not None: # 给数据集添加labels,
+    datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
+    datasets['test'] = datasets['test'].add_column('llm_label', test_llm_labels)
+    datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
+    datasets['test'] = datasets['test'].add_column('llm_rationale', test_llm_rationales)
+    
     datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
     datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
     # breakpoint()
@@ -59,7 +55,9 @@ def run(args):
     def tokenize_function(examples):
         '''
         tokenizer.decode(model_inputs["input_ids"][0], skip_special_tokens=True) : (input from train set)
-        'predict: Doctor: What brings you back into the clinic today, miss? Patient: I came in for a refill of my blood pressure medicine. Doctor: It looks like Doctor Kumar followed up with you last time regarding your hypertension, osteoarthritis, osteoporosis, hypothyroidism, allergic rhinitis and kidney stones. Have you noticed any changes or do you have any concerns regarding these issues? Patient: No. Doctor: Have you had any fever or chills, cough, congestion, nausea, vomiting, chest pain, chest pressure? Patient: No. Doctor: Great. Also, for our records, how old are you and what race do you identify yourself as? Patient: I am seventy six years old and identify as a white female.'
+        'predict: Doctor: What brings you back into the clinic today, miss? 
+        Patient: I came in for a refill of my blood pressure medicine. 
+        Doctor: It looks like Doctor Kumar followed up with you last time regarding your hypertension, osteoarthritis, osteoporosis, hypothyroidism, allergic rhinitis and kidney stones. Have you noticed any changes or do you have any concerns regarding these issues? Patient: No. Doctor: Have you had any fever or chills, cough, congestion, nausea, vomiting, chest pain, chest pressure? Patient: No. Doctor: Great. Also, for our records, how old are you and what race do you identify yourself as? Patient: I am seventy six years old and identify as a white female.'
         len(model_inputs["input_ids"]) = 1000
 
         '''
@@ -82,7 +80,9 @@ def run(args):
 
 
     # 不懂这是啥意思，目前猜测，是因为tokenize_function里，已经把这些都tokenize了，所以就不再保留原来的text了，只把tokenizer 传进去
+    # breakpoint()
     if args.llm is None:
+        
         tokenized_datasets = datasets.map(
             tokenize_function,
             remove_columns=['input', 'label'],
@@ -94,7 +94,7 @@ def run(args):
             remove_columns=['input', 'rationale', 'label', 'llm_label'],
             batched=True
         )
-   
+    # breakpoint()
     compute_metrics = compute_metrics_equation(tokenizer)
 
 

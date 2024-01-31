@@ -8,10 +8,9 @@ from train_utils import train_and_evaluate
 
 def run(args):
     #### Prepare datasets
-    if args.dataset == 'medqa_d2n': #设置哪个数据加载器
-        dataset_loader = MEDQADatasetLoader()
-    else:
-        raise ValueError
+    
+    dataset_loader = MEDQADatasetLoader(args.dataset)
+
     # 加载数据
     datasets = dataset_loader.load_from_json_rationale()
     
@@ -69,8 +68,8 @@ def run(args):
         # breakpoint()
 
         with tokenizer.as_target_tokenizer():
-            label_output_encodings = tokenizer(examples['label'], max_length=256, truncation=True)
-            rationale_output_encodings = tokenizer(examples['rationale'], max_length=256, truncation=True)
+            label_output_encodings = tokenizer(examples['label'], max_length=1024, truncation=True)
+            rationale_output_encodings = tokenizer(examples['rationale'], max_length=1024, truncation=True)
 
         model_inputs['labels'] = label_output_encodings['input_ids']
         model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
@@ -82,13 +81,14 @@ def run(args):
     # 不懂这是啥意思，目前猜测，是因为tokenize_function里，已经把这些都tokenize了，所以就不再保留原来的text了，只把tokenizer 传进去
     # breakpoint()
     if args.llm is None:
-        
+        print("这里有")
         tokenized_datasets = datasets.map(
             tokenize_function,
-            remove_columns=['input', 'label'],
+            remove_columns=['input', 'output'],
             batched=True
         )
     else:
+        print("这里mei有")
         tokenized_datasets = datasets.map(
             tokenize_function,
             remove_columns=['input', 'rationale', 'label', 'llm_label'],
@@ -126,6 +126,7 @@ if __name__ == '__main__':
     parser.add_argument('--output_rationale', action='store_true')
     parser.add_argument('--addi_info', type=str, default="")
     parser.add_argument("--deepspeed", type=str, default=None, help="Path to deepspeed config file.")
+    parser.add_argument('--weight', type=int, default=1)
 
     args = parser.parse_args()
 

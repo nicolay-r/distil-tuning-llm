@@ -46,13 +46,17 @@ def path_process(dataset, model_type, from_pretrained, addi_info, best_step):
 
 def eval(args):
     eval_dir, model_dir, test_dir = path_process(args.dataset, args.model_type, args.from_pretrained, args.addi_info, args.best_step)
-    device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
     tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained) # max_length=args.max_input_length,
     model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
-    checkpoint = torch.load(model_dir, map_location=device) #读取本地训练好的chekpoint
+    checkpoint = torch.load(model_dir, map_location="cpu") #读取本地训练好的chekpoint
     model.load_state_dict(checkpoint)
+    # 如果有多个 GPU，则使用 DataParallel 来利用它们
+    if torch.cuda.is_available() and torch.cuda.device_count() > 1:
+        model = torch.nn.DataParallel(model)
+    
     model = model.to(device)
     model.eval()
 
@@ -66,11 +70,9 @@ def eval(args):
         for i in range(len(test_data)):
             input_text = "predict: " + test_data[i]["input"]
             label = test_data[i]["output"]
-            labels.append(label) #ground truth
-        
-            
+            labels.append(label) #ground truth            
             input_ids = tokenizer.encode(input_text, return_tensors='pt').to(device) 
-            output = model.generate(input_ids) # get predicted result
+            output = model.module.generate(input_ids) # get predicted result
             decoded_output = tokenizer.decode(output[0], skip_special_tokens=True)
             # print(decoded_output)
             # breakpoint()

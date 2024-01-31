@@ -49,10 +49,11 @@ class TaskPrefixDataCollator(DataCollatorForSeq2Seq):
 
 
 class TaskPrefixTrainer(Seq2SeqTrainer):
-    def __init__(self, alpha, output_rationale, **kwargs):
+    def __init__(self, alpha, output_rationale, weight, **kwargs):
         super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。
         self.alpha = alpha
         self.output_rationale = output_rationale
+        self.weight = weight
 
 
     def compute_loss(self, model, inputs, return_outputs=False):
@@ -64,8 +65,8 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
         expl_outputs = model(**inputs['expl'])
         
         # 为了
-        loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
-        # loss = self.alpha * pred_outputs.loss*1000 + (1. - self.alpha) * expl_outputs.loss
+        # loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
+        loss = self.alpha * pred_outputs.loss*self.weight + (1. - self.alpha) * expl_outputs.loss
         # breakpoint()
         return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
 
@@ -87,6 +88,8 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
         # 一定让它走expl这一行的逻辑
         pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False,
                                                ignore_keys=ignore_keys)
+        expl_outputs = pred_outputs
+        torch.cuda.empty_cache() # 也许可以试一下
         expl_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False,
                                                ignore_keys=ignore_keys)
         # breakpoint()

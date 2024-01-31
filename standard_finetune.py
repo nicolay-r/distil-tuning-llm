@@ -4,17 +4,19 @@ from transformers import AutoTokenizer
 from data_utils import MEDQADatasetLoader
 from metrics import compute_metrics_equation_aux
 from train_utils import train_and_evaluate
+# from sft_adapter import sft_train_and_evaluate
 
 
 def run(args):
+    # breakpoint()
     #### Prepare datasets
-    if args.dataset == 'medqa_d2n': #设置哪个数据加载器
-        dataset_loader = MEDQADatasetLoader()
-    else:
-        raise ValueError
+    # if args.dataset == 'medqa_d2n': #设置哪个数据加载器
+    dataset_loader = MEDQADatasetLoader(args.dataset)
+    # else:
+    #     raise ValueError
     # 加载数据
     datasets = dataset_loader.load_from_json()
-    
+    # breakpoint()
     # # 整理数据集的label
     # if args.llm == 'gt':
     #     train_llm_rationales, train_llm_labels = dataset_loader.load_gt_preds(split='train')
@@ -69,7 +71,7 @@ def run(args):
         
         return model_inputs
 
-   
+    # breakpoint()
     
 
     if args.llm is None:
@@ -92,8 +94,12 @@ def run(args):
 
     compute_metrics = compute_metrics_equation_aux(tokenizer)
     
-    train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
+    # if args.model_type == "sft_adapter":
+    #     sft_train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics, datasets)
+    # else:
+    #     train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
 
+    train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -122,6 +128,7 @@ if __name__ == '__main__':
     parser.add_argument('--task_type', type=str, default='d2n')
     parser.add_argument('--addi_info', type=str, default="")
     parser.add_argument("--deepspeed", type=str, default=None, help="Path to deepspeed config file.")
+    parser.add_argument('--weight', type=int, default=1)
 
     args = parser.parse_args()
 

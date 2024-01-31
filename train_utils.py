@@ -70,7 +70,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         output_dir,                         # 输出目录，模型和训练日志将被保存在这里
         remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列
         evaluation_strategy = 'steps',      # 评估策略，这里设置为“steps”，表示按步数进行评估
-        eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
+        eval_steps=args.eval_steps*10,         # 每隔多少步进行一次评估
         save_strategy='steps',                 # 保存策略，这里设置为“no”，表示不自动保存模型
         save_steps=args.eval_steps,         # 每隔多少步保存一次模型
         logging_dir=logging_dir,            # 日志目录，训练日志将被保存在这里
@@ -110,6 +110,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     trainer_kwargs = {
         'alpha': args.alpha,
         'output_rationale': args.output_rationale,
+        'weight': args.weight,
         'model': model,
         'args': training_args,
         'train_dataset': tokenized_datasets["train"],
@@ -124,12 +125,14 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
 
 
     if args.model_type == 'task_prefix':
+        # print(tokenized_datasets["train"])
         # breakpoint()
         trainer = TaskPrefixTrainer(**trainer_kwargs)
     elif args.model_type == 'standard':
         
         trainer_kwargs.pop('alpha') # 从trainer_kwargs字典中删除键'alpha'及其对应的值。
         trainer_kwargs.pop('output_rationale')
+        trainer_kwargs.pop('weight')
         # trainer_kwargs是一个字典，包含了训练器（trainer）的配置参数，例如训练数据、评估数据、学习率、训练轮次（epoch）等。
         trainer = Seq2SeqTrainer(**trainer_kwargs) # Seq2SeqTrainer是Hugging Face Transformers库中的一个类，专门用于序列到序列（sequence-to-sequence）的模型训练，比如T5、BART等。
         # trainer = Seq2SeqTrain/root/r(training_args)  

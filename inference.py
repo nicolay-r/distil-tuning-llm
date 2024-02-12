@@ -10,6 +10,7 @@ import json
 # from bert_score import score as bert_score
 import evaluate
 from evaluate import load
+import pandas as pd
 
 
 
@@ -45,6 +46,9 @@ def path_process(dataset, model_type, from_pretrained, addi_info, best_step):
 
 
 def eval(args):
+    
+    SECTION_DIVISIONS = ['subjective', 'objective_exam', 'objective_results', 'assessment_and_plan']
+    full_df = pd.DataFrame(columns = SECTION_DIVISIONS)
     eval_dir, model_dir, test_dir = path_process(args.dataset, args.model_type, args.from_pretrained, args.addi_info, args.best_step)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -81,7 +85,12 @@ def eval(args):
             result_dict["prediction"] = decoded_output
             result_dict["ground_truth"] = label
             json.dump(result_dict, outfile)
-
+        full_df['reference'] = labels
+        full_df['prediction'] = predictions
+    print(full_df.head(5))
+    print(full_df.columns)
+    csv_path = './full_df.csv'
+    full_df.to_csv(csv_path)
 
     # # 计算ROUGE-1
 

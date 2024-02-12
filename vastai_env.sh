@@ -14,4 +14,10 @@ export LD_LIBRARY_PATH=/home/$USER/.conda/envs/$ENVNAME/lib:/usr/local/cuda-11.6
 
 
 conda create --name distill python=3.10 -y
-pip install transformers datasets sentencepiece protobuf wandb accelerate deepspeed
+conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=12.1 -c pytorch -c nvidia
+
+deepspeed==0.12.3或者0.12.0
+pip install chardet
+
+
+pip install transformers datasets sentencepiece protobuf wandb accelerate deepspeed chardet

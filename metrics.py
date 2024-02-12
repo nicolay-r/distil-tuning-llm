@@ -98,7 +98,8 @@ def compute_metrics_equation(tokenizer):
 def compute_metrics_equation_aux(tokenizer):
     def compute_metrics(eval_pred):
         predictions, labels = eval_pred
-        decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
+        preds = np.where(predictions != -100, predictions, tokenizer.pad_token_id)
+        decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
 
         labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
         decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)

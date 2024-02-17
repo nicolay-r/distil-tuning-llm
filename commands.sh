@@ -43,22 +43,23 @@ python eval_sum_medqa23.py --task taskA --fn_eval_data "./full_df.csv"
 
 
 
-CUDA_VISIBLE_DEVICES=0 python run_summarization.py 
-    --model_name_or_path google/t5-v1_1-small 
-    --do_train  True 
-    --do_eval  True
-    --do_predict  True
-    --train_file standard/medqa_d2n_train.json 
-    --validation_file standard/medqa_d2n_valid.json 
-    --test_file standard/medqa_d2n_test.json
-    --text_column input 
-    --summary_column output 
-    --source_prefix "summarize: " 
-    --output_dir ./tmp/tst-summarization 
-    --overwrite_output_dir True 
-    --per_device_train_batch_size=4 
-    --per_device_eval_batch_size=4 
-    --predict_with_generate  True 
-    --train_adapter True 
-    --adapter_config prefix_tuning 
-    --overwrite_output_dir  True
+CUDA_VISIBLE_DEVICES=0 
+python run_summarization.py \
+    --model_name_or_path google/t5-v1_1-small \
+    --do_train  False \
+    --do_eval  False \
+    --do_predict  True \
+    --train_file standard/medqa_d2n_train.json \
+    --validation_file standard/medqa_d2n_valid.json \ 
+    --test_file standard/medqa_d2n_test.json \
+    --text_column input \ 
+    --summary_column output \ 
+    --source_prefix "summarize: " \ 
+    --output_dir ./tmp/tst-summarization \ 
+    --overwrite_output_dir True \ 
+    --per_device_train_batch_size=4 \ 
+    --per_device_eval_batch_size=4 \ 
+    --predict_with_generate  True \ 
+    --train_adapter True \ 
+    --adapter_config prefix_tuning \ 
+    --overwrite_output_dir  True 

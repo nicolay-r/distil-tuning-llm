@@ -39,9 +39,11 @@ def eval_equation(equation):
 def compute_metrics_text(tokenizer):
     def compute_metrics(eval_pred):
         predictions, labels = eval_pred
-        decoded_preds = tokenizer.batch_decode(predictions[0], skip_special_tokens=True)
+        prediction_0 = predictions[0]
+        prediction_0 = np.where(prediction_0 != -100, prediction_0, tokenizer.pad_token_id)
+        decoded_preds = tokenizer.batch_decode(prediction_0, skip_special_tokens=True)
         # 使用 np.where 来处理标签数据。当标签不等于 -100 时，保留原标签；否则，替换为 pad_token_id。
-        labels = np.where(labels[0] != -100, labels[0], tokenizer.pad_token_id)
+        labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
         decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
         acc = np.mean(np.array(decoded_preds) == np.array(decoded_labels))
@@ -71,12 +73,14 @@ def compute_metrics_equation(tokenizer):
     
     def compute_metrics(eval_pred):
         predictions, labels = eval_pred
-        preds = np.where(predictions[0] != -100,predictions[0],tokenizer.pad_token_id)
+        # preds = np.where(predictions[0] != -100,predictions[0],tokenizer.pad_token_id)
+        preds = np.where(predictions != -100,predictions,tokenizer.pad_token_id)
+
         decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
         
         # breakpoint()
 
-        labels = np.where(labels[0] != -100, labels[0], tokenizer.pad_token_id)
+        labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
         # preds = np.where(preds != -100,preds,tokenizer.pad_token_id)
         decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
 

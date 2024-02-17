@@ -89,6 +89,30 @@ def filter_and_aggregate(obj, indices):
     return agg_obj
 
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+def send_email(subject, message, to_email):
+    from_email = 'rosaliu.567@gmail.com'
+    password = 'jdrb ueoq ixik tuoa'
+    # jdrb ueoq ixik tuoa
+
+    
+    msg = MIMEMultipart()
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    
+    body = MIMEText(message, 'plain')
+    msg.attach(body)
+    
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(from_email, password)
+    text = msg.as_string()
+    server.sendmail(from_email, to_email, text)
+    server.quit()
 if __name__ == "__main__" :
     parser = argparse.ArgumentParser(
         prog='evaluate_summarization',
@@ -152,7 +176,7 @@ if __name__ == "__main__" :
 
     # create lists for references/predictions so we only need to calculate the scores once per instance
     references = full_df['reference'].tolist()
-    predictions = full_df['prediction'].tolist()
+    predictions = full_df['pred_wang'].tolist()
     num_test = len(full_df)
 
     # =========== ADD SECTION DIVISIONS IF THIS IS THE FULL ENCOUNTER TASK ==========
@@ -254,3 +278,10 @@ if __name__ == "__main__" :
         for k, v in obj.items():
             print(f'\t{k} -> {round(v, 3)}')
         print('\n')
+    
+    
+    
+    to_email = "rosaliu.567@gmail.com"
+    # to_email = "rosaliu.567@gmail.com"
+    send_email('分数出炉啦！', '您的模型评估已完成。', to_email)
+       

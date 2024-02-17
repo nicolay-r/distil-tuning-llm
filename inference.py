@@ -30,7 +30,7 @@ def path_process(dataset, model_type, from_pretrained, addi_info, best_step):
     EVAL_PATH = f"./results/{dataset}"
     eval_dir = f"{EVAL_PATH}/eval_{model_type}_{model_name}{add_info}_step{best_step}.json"
     model_dir = f"./ckpts/{model_type}/{model_name}{add_info}/checkpoint-{best_step}/pytorch_model.bin"
-    test_dir = f'./datasets/{dataset}/{model_type}/{dataset}_test.json'
+    test_dir = f'./datasets/{dataset}/{model_type}/{dataset}_valid.json'
     
     # 检查result路径是否存在，不存在要创建
     if not os.path.exists(EVAL_PATH):
@@ -55,8 +55,8 @@ def eval(args):
 
     tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained) # max_length=args.max_input_length,
     model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
-    checkpoint = torch.load(model_dir, map_location="cpu") #读取本地训练好的chekpoint
-    model.load_state_dict(checkpoint)
+    # checkpoint = torch.load(model_dir, map_location="cpu") #读取本地训练好的chekpoint
+    # model.load_state_dict(checkpoint)
     # 如果有多个 GPU，则使用 DataParallel 来利用它们
     if torch.cuda.is_available() and torch.cuda.device_count() > 1:
         model = torch.nn.DataParallel(model)
@@ -68,23 +68,29 @@ def eval(args):
     # json_name = read_eval_file(args.dataset, args.model_type, args.from_pretrained, args.addi_info)
     with open(eval_dir, "a") as outfile:
         result_dict = {}
+        dialogues = []
         predictions = []
         labels = []
         # 预测
         for i in range(len(test_data)):
-            input_text = "predict: " + test_data[i]["input"]
+            dialogue = test_data[i]["input"]
+            input_text = "predict: " + dialogue
+            dialogues.append(dialogue)
+            
             label = test_data[i]["output"]
             labels.append(label) #ground truth            
             input_ids = tokenizer.encode(input_text, return_tensors='pt').to(device) 
-            output = model.module.generate(input_ids) # get predicted result
+            # output = model.module.generate(input_ids) # get predicted result
+            output = model.generate(input_ids) # get predicted result
             decoded_output = tokenizer.decode(output[0], skip_special_tokens=True)
             # print(decoded_output)
             # breakpoint()
             predictions.append(decoded_output)
             result_dict["input"] = input_text
-            result_dict["prediction"] = decoded_output
+            result_dict["prediction_old"] = decoded_output
             result_dict["ground_truth"] = label
             json.dump(result_dict, outfile)
+        full_df['dialogue'] = dialogues
         full_df['reference'] = labels
         full_df['prediction'] = predictions
     print(full_df.head(5))

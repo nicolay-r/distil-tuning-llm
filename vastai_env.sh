@@ -25,13 +25,13 @@ pip install transformers datasets sentencepiece protobuf wandb accelerate deepsp
 
 Evaluation steps:
 1. 
-cd ./distill-d2n
-python inference.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type task_prefix --addi_info xx --best_step 10000
-copy full_df.csv to ./MEDQA 
-2.
-cd ./MEDQA 
+cd zero_to_fp32.py目录下
+python zero_to_fp32.py . pytorch_model.bin
+
+2. 
+cd ./inference
 sh decode_taskA_run1.sh
 copy generated_predictions_df.csv to ./distill-d2n
 3.
 cd distill-d2n
-python eval_sum_medqa23.py --task taskA --fn_eval_data "./generated_predictions_df.csv"
+python eval_sum_medqa23.py --task taskA --fn_eval_data "./evaluation/generated_predictions_df.csv"

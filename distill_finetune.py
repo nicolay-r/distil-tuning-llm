@@ -58,10 +58,10 @@ def run(args):
     # breakpoint()
 
     # 选择不同的计算评估的方式，如果有teacher模型的预测标签，目前数据里没有，gt: Use GT label for training  llm: Use LLM predicted label for training
-    if args.label_type == 'gt': 
-        pass
-    else:
-        raise ValueError
+    # if args.label_type == 'gt': 
+    #     pass
+    # else:
+    #     raise ValueError
 
     if args.llm is not None: # 重命名rationale
         if 'rationale' in datasets['train'].column_names:
@@ -85,9 +85,10 @@ def run(args):
         len(model_inputs["input_ids"]) = 1000
 
         '''
-        model_inputs = tokenizer(['predict: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
+        
+        model_inputs = tokenizer(['predict: ' + text.split('''*****KNOWLEDGE*****''')[0] for text in examples['input']], max_length=args.max_input_length, truncation=True)
         # breakpoint()
-        expl_model_inputs = tokenizer(['explain: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
+        expl_model_inputs = tokenizer(['explain: ' +  text.split('''*****KNOWLEDGE*****''')[1] for text in examples['input']], max_length=args.max_input_length, truncation=True)
         model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
         model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
         # breakpoint()
@@ -133,7 +134,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, required=True)
     parser.add_argument('--subsample', type=float, default=1.0)
     parser.add_argument('--alpha', type=float, default=0.5)
-    parser.add_argument('--max_steps', type=int, default=10000)
+    parser.add_argument('--max_steps', type=int, default=1000)
     parser.add_argument('--eval_steps', type=int, default=250)
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--optimizer_name', type=str, default='AdamW')
@@ -156,13 +157,13 @@ if __name__ == '__main__':
     parser.add_argument('--weight', type=int, default=1)
 
     args = parser.parse_args()
-
-    try:  
-        run(args)
-        # to_email = "rosaliu.567@gmail.com"
-        send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
-    except Exception as e:
-        print(e)
-        # to_email = "rosaliu.567@gmail.com"
-        send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
+    run(args)
+    # try:  
+    #     run(args)
+    #     # to_email = "rosaliu.567@gmail.com"
+    #     send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
+    # except Exception as e:
+    #     print(e)
+    #     # to_email = "rosaliu.567@gmail.com"
+    #     send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
        

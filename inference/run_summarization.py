@@ -545,8 +545,8 @@ def main():
     # /root/MEDIQA-Chat-2023/ckpt/task-a-flan-t5-large-run-1_wang_run1/checkpoint-10000/pytorch_model.bin
     # /root/MEDIQA-Chat-2023/ckpt/flan-t5-large_xx/checkpoint-10000/pytorch_model.bin
     # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_xl_valid_size1/checkpoint-1000/pytorch_model.bin
-    
-    model_dir = f"../ckpts/task_prefix/flan-t5-large_xl_valid_size1/checkpoint-1000/pytorch_model.bin"
+    # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_cot_large/checkpoint-1000/pytorch_model.bin
+    model_dir = f"../ckpts/task_prefix/flan-t5-large_cot_large/checkpoint-1000/pytorch_model.bin"
     checkpoint = torch.load(model_dir, map_location="cpu") #读取本地训练好的chekpoint
     model.load_state_dict(checkpoint)
     

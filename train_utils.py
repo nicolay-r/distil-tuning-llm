@@ -21,6 +21,7 @@ from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer
 from transformers import T5ForConditionalGeneration
 from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
+from data_utils import MEDQADatasetLoader
 # from transformers import EarlyStoppingCallback
 
 
@@ -70,7 +71,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         output_dir,                         # 输出目录，模型和训练日志将被保存在这里
         remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列
         evaluation_strategy = 'steps',      # 评估策略，这里设置为“steps”，表示按步数进行评估
-        eval_steps=args.eval_steps*10,         # 每隔多少步进行一次评估
+        eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
         save_strategy='steps',                 # 保存策略，这里设置为“no”，表示不自动保存模型
         save_steps=args.eval_steps,         # 每隔多少步保存一次模型
         logging_dir=logging_dir,            # 日志目录，训练日志将被保存在这里
@@ -106,7 +107,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         raise ValueError
     
 
-    
+    # breakpoint()
     trainer_kwargs = {
         'alpha': args.alpha,
         'output_rationale': args.output_rationale,

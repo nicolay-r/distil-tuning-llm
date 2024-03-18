@@ -86,9 +86,9 @@ def run(args):
 
         '''
         
-        model_inputs = tokenizer(['predict: ' + text.split('''*****KNOWLEDGE*****''')[0] for text in examples['input']], max_length=args.max_input_length, truncation=True)
+        model_inputs = tokenizer(['predict: ' + text for text in examples['input_1']], max_length=args.max_input_length, truncation=True)
         # breakpoint()
-        expl_model_inputs = tokenizer(['explain: ' +  text.split('''*****KNOWLEDGE*****''')[1] for text in examples['input']], max_length=args.max_input_length, truncation=True)
+        expl_model_inputs = tokenizer(['explain: ' +  text for text in examples['input_2']], max_length=args.max_input_length, truncation=True)
         model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
         model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
         # breakpoint()
@@ -106,18 +106,19 @@ def run(args):
 
     # 不懂这是啥意思，目前猜测，是因为tokenize_function里，已经把这些都tokenize了，所以就不再保留原来的text了，只把tokenizer 传进去
     # breakpoint()
+    
     if args.llm is None:
         print("这里有")
         tokenized_datasets = datasets.map(
             tokenize_function,
-            remove_columns=['input', 'output'],
+            remove_columns=['input_1','input_2','output'],
             batched=True
         )
     else:
         print("这里mei有")
         tokenized_datasets = datasets.map(
             tokenize_function,
-            remove_columns=['input', 'rationale', 'label', 'llm_label'],
+            remove_columns=['input_1','input_2','rationale', 'label', 'llm_label'],
             batched=True
         )
     # breakpoint()
@@ -128,8 +129,8 @@ def run(args):
 
 
 if __name__ == '__main__':
-    to_email = "rosaliu.567@gmail.com"
-    send_email('模型训练开始', '您的模型已经开始训练。', to_email)
+    # to_email = "rosaliu.567@gmail.com"
+    # send_email('模型训练开始', '您的模型已经开始训练。', to_email)
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, required=True)
     parser.add_argument('--subsample', type=float, default=1.0)
@@ -157,13 +158,13 @@ if __name__ == '__main__':
     parser.add_argument('--weight', type=int, default=1)
 
     args = parser.parse_args()
-    # run(args)
-    try:  
-        run(args)
-        # to_email = "rosaliu.567@gmail.com"
-        send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
-    except Exception as e:
-        print(e)
-        # to_email = "rosaliu.567@gmail.com"
-        send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
+    run(args)
+    # try:  
+    #     run(args)
+    #     # to_email = "rosaliu.567@gmail.com"
+    #     send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
+    # except Exception as e:
+    #     print(e)
+    #     # to_email = "rosaliu.567@gmail.com"
+    #     send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
        

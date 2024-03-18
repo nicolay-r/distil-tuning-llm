@@ -1,7 +1,7 @@
 import sys
 import json
 import argparse
-
+import torch
 import evaluate
 import pandas as pd
 import numpy as np
@@ -20,6 +20,7 @@ TASKB_PREFIX = 'D2N'
 
 TASKC_RANGE = [128,167]
 TASKC_PREFIX = 'D2N'
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 def add_section_divisions(row, dialogue_column ):
@@ -132,13 +133,13 @@ if __name__ == "__main__" :
             ['rouge1', 'rouge2', 'rougeL', 'rougeLsum']
         ),
         'bert_scorer': (
-            evaluate.load('bertscore', device='cpu'),
-            {'model_type': 'microsoft/deberta-xlarge-mnli', 'device':'cpu'},
+            evaluate.load('bertscore', device=device),
+            {'model_type': 'microsoft/deberta-xlarge-mnli', 'device':device},
             ['precision', 'recall', 'f1'],
             ['bertscore_precision', 'bertscore_recall', 'bertscore_f1']
         ),
         'bluert': (
-            evaluate.load('bleurt', config_name='BLEURT-20'),
+            evaluate.load('bleurt', config_name='BLEURT-20', device=device),
             {},
             ['scores'],
             ['bleurt']

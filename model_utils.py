@@ -19,11 +19,13 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from torch import nn
 from transformers import DataCollatorForSeq2Seq
 from transformers import Seq2SeqTrainer
+from data_utils import MEDQADatasetLoader
 
 from transformers import AutoTokenizer
 model_name = "t5-v1_1-base"
 from_pretrained = "google/{}".format(model_name)
 tokenizer = AutoTokenizer.from_pretrained(from_pretrained)
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 """T5 Multi-Task by Task Prefix
@@ -49,26 +51,68 @@ class TaskPrefixDataCollator(DataCollatorForSeq2Seq):
 
 
 class TaskPrefixTrainer(Seq2SeqTrainer):
-    def __init__(self, alpha, output_rationale, weight, **kwargs):
+    def __init__(self, alpha, output_rationale, weight, data_collator=None,**kwargs):
         super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。
         self.alpha = alpha
         self.output_rationale = output_rationale
         self.weight = weight
+        self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
 
 
-    def compute_loss(self, model, inputs, return_outputs=False):
-        # breakpoint()
-        # decoded_output = tokenizer.decode(pred_outputs['encoder_last_hidden_state'][0], skip_special_tokens=True)
-        # tokenizer.decode(inputs['expl']["labels"], skip_special_tokens=True)
+    # def compute_loss(self, model, inputs, return_outputs=False):
+    #     # breakpoint()
         
-        pred_outputs = model(**inputs['pred'])
-        expl_outputs = model(**inputs['expl'])
+    #     pred_outputs = model(**inputs['pred'])
+    #     expl_outputs = model(**inputs['expl'])
+        
+        
+    #     loss = self.alpha * pred_outputs.loss*self.weight + (1. - self.alpha) * expl_outputs.loss
+    #     # breakpoint()
+        # return_outputs = True
+    #     return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
+    
+    def compute_loss(self, model, inputs, return_outputs=False):
+        '''better set batch_size = 1'''
+        # breakpoint()
+        # expl_model_inputs = tokenizer.batch_encode_plus([f'{kw_input[0]}{kw_output}{kw_input[1]}'],  padding=True, return_tensors='pt',max_length=1024)
+        # decoded_output = tokenizer.decode(model.generate(**inputs['pred'])[0], skip_special_tokens=True)
+        # tokenizer.decode(inputs['expl']["labels"], skip_special_tokens=True)
+        # pred_outputs = model(**expl_model_inputs)
+        kw_output = model.generate(**inputs['pred'],max_length = 1024)[0]
+        # breakpoint()
+        input_2 = tokenizer.decode(inputs['expl']['input_ids'][0], skip_special_tokens=True)
+        kw_input = input_2.split('''*****KNOWLEDGE*****''')
+       
+        # max_length = len(inputs['expl']["input_ids"][0])
+
+        kw_input_ids = tokenizer.batch_encode_plus([f'{kw_input[0]}{kw_output}{kw_input[1]}'],padding=True, return_tensors='pt',truncation=True,max_length= len(inputs['expl']["input_ids"][0])).to(device)
+        # x = tokenizer.batch_encode_plus([f'{kw_input[0]}{kw_output}{kw_input[1]}'], max_length=1024, padding=True, return_tensors='pt')
+        
+        kw_dict = {
+            'input_ids':kw_input_ids["input_ids"],
+            'attention_mask': inputs['expl']['attention_mask'],
+            'labels': inputs['expl']['labels'],
+            'decoder_input_ids': inputs['expl']['decoder_input_ids'],
+        }
+        # inp = {k: v.to(device) for k, v in kw_dict.items()}
+        
+        # breakpoint()
+        # res = {k: v.to(device) for k, v in kw_dict.items()}
+        '''
+        len(inputs['pred']['input_ids'][0])
+        '''
+        # {k, v in kw_dict.items()}
+        output = model(**kw_dict)
+        loss = output.loss
+        # expl_outputs = model(**kw_dict)
         
         # 为了
         # loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
-        loss = self.alpha * pred_outputs.loss*self.weight + (1. - self.alpha) * expl_outputs.loss
+        # loss = self.alpha * pred_outputs.loss*self.weight + (1. - self.alpha) * expl_outputs.loss
         # breakpoint()
-        return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
+        
+        return loss
+
 
 
     def prediction_step(

@@ -4,7 +4,7 @@ from transformers import AutoTokenizer
 from data_utils import MEDQADatasetLoader
 from metrics import compute_text_acc, compute_equation_acc, compute_metrics_text, compute_metrics_equation, compute_metrics_text_aux, compute_metrics_equation_aux
 from train_utils import train_and_evaluate
-
+ 
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -34,7 +34,7 @@ def send_email(subject, message, to_email):
 def run(args):
     #### Prepare datasets
     
-    dataset_loader = MEDQADatasetLoader(args.dataset)
+    dataset_loader = MEDQADatasetLoader(args.dataset, args.model_type)
 
     # 加载数据
     datasets = dataset_loader.load_from_json_rationale()
@@ -42,7 +42,7 @@ def run(args):
     
     # 整理数据集的label和rationale
     train_llm_rationales, train_llm_labels = dataset_loader.load_rationale_data(split='train')
-    test_llm_rationales, test_llm_labels = dataset_loader.load_rationale_data(split='test')
+    test_llm_rationales, test_llm_labels = dataset_loader.load_rationale_data(split='test' )
     valid_llm_rationales, valid_llm_labels = dataset_loader.load_rationale_data(split='valid')
 
     
@@ -107,20 +107,12 @@ def run(args):
     # 不懂这是啥意思，目前猜测，是因为tokenize_function里，已经把这些都tokenize了，所以就不再保留原来的text了，只把tokenizer 传进去
     # breakpoint()
     
-    if args.llm is None:
-        print("这里有")
-        tokenized_datasets = datasets.map(
-            tokenize_function,
-            remove_columns=['input_1','input_2','output'],
-            batched=True
-        )
-    else:
-        print("这里mei有")
-        tokenized_datasets = datasets.map(
-            tokenize_function,
-            remove_columns=['input_1','input_2','rationale', 'label', 'llm_label'],
-            batched=True
-        )
+    
+    tokenized_datasets = datasets.map(
+        tokenize_function,
+        remove_columns=['input_1','input_2','rationale', 'label', 'llm_label'],
+        batched=True
+    )
     # breakpoint()
     compute_metrics = compute_metrics_equation(tokenizer)
 
@@ -135,7 +127,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, required=True)
     parser.add_argument('--subsample', type=float, default=1.0)
     parser.add_argument('--alpha', type=float, default=0.5)
-    parser.add_argument('--max_steps', type=int, default=1000)
+    parser.add_argument('--max_steps', type=int, default=100)
     parser.add_argument('--eval_steps', type=int, default=250)
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--optimizer_name', type=str, default='AdamW')

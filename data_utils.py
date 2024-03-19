@@ -126,7 +126,7 @@ DATASET_ROOT = 'datasets'
 
 #xiaoxiao liu
 class MEDQADatasetLoader(object):
-    def __init__(self, dataname):
+    def __init__(self, dataname, model_type):
         self.dataset_name = dataname
         self.data_root = DATASET_ROOT
         self.dataset_version = None
@@ -138,6 +138,7 @@ class MEDQADatasetLoader(object):
         self.batch_size = 500
         self.train_batch_idxs = range(2)
         self.test_batch_idxs = range(1)
+        self.model_type = model_type
 
 
         # super().__init__(dataset_name, dataset_version, has_valid, split_map,
@@ -145,12 +146,12 @@ class MEDQADatasetLoader(object):
 
     def load_from_json(self):
         data_files = {
-            'train': f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_train.json',
-            'test': f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_test.json',
+            'train': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
+            'test': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_test.json',
         }
 
         if self.has_valid:
-            data_files.update({'valid': f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_valid.json',})
+            data_files.update({'valid': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_valid.json',})
         
         # breakpoint()
         datasets = load_dataset('json', data_files=data_files)
@@ -162,12 +163,12 @@ class MEDQADatasetLoader(object):
     
     def load_from_json_rationale(self):
         data_files = {
-            'train': f'{self.data_root}/{self.dataset_name}/task_prefix/{self.dataset_name}_train.json',
-            'test': f'{self.data_root}/{self.dataset_name}/task_prefix/{self.dataset_name}_test.json',
+            'train': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
+            'test': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_test.json',
         }
 
         if self.has_valid:
-            data_files.update({'valid': f'{self.data_root}/{self.dataset_name}/task_prefix/{self.dataset_name}_valid.json',})
+            data_files.update({'valid': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_valid.json',})
         
         # breakpoint()
         datasets = load_dataset('json', data_files=data_files) # 这行报错，所以改为下面方法
@@ -180,7 +181,7 @@ class MEDQADatasetLoader(object):
     def load_rationale_data(self, split):
         labels = list()
         rationales = list()
-        with open(f'{self.data_root}/{self.dataset_name}/task_prefix/{self.dataset_name}_{split}.json') as f:
+        with open(f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_{split}.json') as f:
             outputs = json.load(f)
             
         for output in outputs:
@@ -195,7 +196,7 @@ class MEDQADatasetLoader(object):
         labels = list()
         rationales = list()
         
-        with open(f'{self.data_root}/{self.dataset_name}/standard/{self.dataset_name}_{split}.json') as f:
+        with open(f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_{split}.json') as f:
             outputs = json.load(f)
         
         for output in outputs:

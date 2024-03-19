@@ -10,10 +10,10 @@ PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:500 deepspeed standard_finetune.py --f
 Distill finetuning:
 CUDA_VISIBLE_DEVICES=0 python distill_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --eval_steps 200 --batch_size 4 --grad_steps 2 --addi_info pred_10
 deepspeed distill_finetune.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type task_prefix --eval_steps 100 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info cot_lg_rat --deepspeed configs/ds_config_zero2.json
-deepspeed coT_step2.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type task_prefix --eval_steps 100 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info cot_lg_rat --deepspeed configs/ds_config_zero2.json
+deepspeed coT_step2.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type CoT --max_steps 10000 --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info CoT_xl --deepspeed configs/ds_config_zero2.json
 
 deepspeed distill_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type task_prefix --eval_steps 50 --batch_size 2 --grad_steps 1 --weight 1000 --addi_info cot_sml --deepspeed configs/ds_config_zero2.json
-deepspeed coT_step2.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type task_prefix --eval_steps 50 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info cot_sml --deepspeed configs/ds_config_zero2.json
+deepspeed coT_step2.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type CoT --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info cot_sml --deepspeed configs/ds_config_zero2.json
 
 
 python distill_finetune.py --from_pretrained google/t5-v1_1-base --dataset medqa_d2n --model_type task_prefix --eval_steps 5 --batch_size 1 --grad_steps 2 --addi_info pred_1000
@@ -65,3 +65,21 @@ python run_summarization.py \
     --train_adapter True \ 
     --adapter_config prefix_tuning \ 
     --overwrite_output_dir  True 
+
+def compute_loss(self, model, inputs, return_outputs=False):
+    # breakpoint()
+    
+    pred_outputs = model(**inputs['pred'])
+    expl_outputs = model(**inputs['expl'])
+    cos = nn.CosineSimilarity(dim=1, eps=1e-6)
+    p_mean = torch.mean(pred_outputs.encoder_last_hidden_state, dim=1)
+    e_mean = torch.mean(expl_outputs.encoder_last_hidden_state, dim=1)
+    # breakpoint()
+    loss2 = 1 -cos(p_mean, e_mean)
+    loss= loss2[0]*10000
+    #loss = self.alpha * pred_outputs.loss*self.weight + (1. - self.alpha) * expl_outputs.loss
+    #print(loss2.shape, loss.shape)
+    #breakpoint()
+    return_outputs = True
+    return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
+    # return loss

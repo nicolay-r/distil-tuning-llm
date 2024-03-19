@@ -25,15 +25,16 @@ from data_utils import MEDQADatasetLoader
 # from transformers import EarlyStoppingCallback
 
 
-from model_utils import TaskPrefixDataCollator, TaskPrefixTrainer
+from model_utils import TaskPrefixDataCollator, TaskPrefixTrainer, CoTDataCollator, CoTTrainer
 
 
 def get_config_dir(args):
     # breakpoint()
-    if args.model_type == "standard":
-        path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
-    else:
-        path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
+    # if args.model_type == "standard":
+    #     path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
+    # else:
+    #     path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
+    path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
     return path
 
 
@@ -100,6 +101,9 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     if args.model_type == 'task_prefix':
         print("model_type: {}".format(args.model_type))
         data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
+    elif args.model_type == 'CoT':
+        print("model_type: {}".format(args.model_type))
+        data_collator = CoTDataCollator(tokenizer=tokenizer, model=model)
     elif args.model_type == 'standard':
         print("model_type: {}".format(args.model_type))
         data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
@@ -119,16 +123,16 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         'data_collator': data_collator,
         'tokenizer': tokenizer,
         'compute_metrics': compute_metrics,
-        # 'callbacks': [EarlyStoppingCallback(early_stopping_patience=3, early_stopping_threshold=0.0)],
 
         
     }
 
 
     if args.model_type == 'task_prefix':
-        # print(tokenized_datasets["train"])
-        # breakpoint()
+       
         trainer = TaskPrefixTrainer(**trainer_kwargs)
+    elif args.model_type == 'CoT':
+        trainer = CoTTrainer(**trainer_kwargs)
     elif args.model_type == 'standard':
         
         trainer_kwargs.pop('alpha') # 从trainer_kwargs字典中删除键'alpha'及其对应的值。

@@ -2,18 +2,20 @@
 Standard debugging: 
 python standard_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --llm gt --model_type standard --eval_steps 50 --batch_size 8 --grad_steps 2 --addi_info ds 
 
-deepspeed standard_finetune.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --llm gt --model_type standard --eval_steps 50 --batch_size 1 --grad_steps 1 --addi_info d2n --deepspeed configs/ds_config_zero2.json
+deepspeed standard_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --llm gt --model_type standard --eval_steps 50 --batch_size 1 --grad_steps 1 --addi_info standard --deepspeed configs/ds_config_zero2.json
 CUDA_VISIBLE_DEVICES=0 deepspeed distill_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --eval_steps 50 --batch_size 4 --grad_steps 2 --weight 50 --addi_info pred_50 --deepspeed configs/ds_config_zero2.json
 PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:500 deepspeed standard_finetune.py --from_pretrained google/t5-v1_1-xl --dataset medqa_d2n --llm gt --model_type standard --eval_steps 50 --batch_size 1 --grad_steps 1 --addi_info xl --deepspeed configs/ds_config_zero2.json
 
 
 Distill finetuning:
 CUDA_VISIBLE_DEVICES=0 python distill_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --eval_steps 200 --batch_size 4 --grad_steps 2 --addi_info pred_10
-deepspeed distill_finetune.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type task_prefix --eval_steps 100 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info cot_lg_rat --deepspeed configs/ds_config_zero2.json
+deepspeed distill_finetune.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type task_prefix --max_steps 10000 --eval_steps 5 --batch_size 2 --grad_steps 1 --alpha 0.8 --addi_info dstl --deepspeed configs/ds_config_zero2.json
+deepspeed distill_finetune.py --from_pretrained google/flan-t5-xxl --dataset medqa_d2n --model_type task_prefix --max_steps 10000 --eval_steps 5 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info dstl_xxl --deepspeed configs/ds_config_zero2.json
+
 deepspeed coT_step2.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type CoT --max_steps 10000 --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info CoT_xl --deepspeed configs/ds_config_zero2.json
 
-deepspeed distill_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type task_prefix --eval_steps 50 --batch_size 2 --grad_steps 1 --weight 1000 --addi_info cot_sml --deepspeed configs/ds_config_zero2.json
-deepspeed coT_step2.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type CoT --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info cot_sml --deepspeed configs/ds_config_zero2.json
+deepspeed distill_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type task_prefix --max_steps 1000 --eval_steps 5 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info distill_sml --deepspeed configs/ds_config_zero2.json
+deepspeed coT_step2.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type CoT --max_steps 1500 --eval_steps 5 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info cot_sml --deepspeed configs/ds_config_zero2.json
 
 
 python distill_finetune.py --from_pretrained google/t5-v1_1-base --dataset medqa_d2n --model_type task_prefix --eval_steps 5 --batch_size 1 --grad_steps 2 --addi_info pred_1000

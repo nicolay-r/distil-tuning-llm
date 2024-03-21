@@ -34,7 +34,7 @@ def send_email(subject, message, to_email):
 def run(args):
     #### Prepare datasets
     
-    dataset_loader = MEDQADatasetLoader(args.dataset)
+    dataset_loader = MEDQADatasetLoader(args.dataset, args.model_type)
 
     # 加载数据
     datasets = dataset_loader.load_from_json_rationale()
@@ -85,10 +85,9 @@ def run(args):
         len(model_inputs["input_ids"]) = 1000
 
         '''
-        
-        model_inputs = tokenizer(['predict: ' + text.split('''*****KNOWLEDGE*****''')[0] for text in examples['input']], max_length=args.max_input_length, truncation=True)
+        model_inputs = tokenizer(['predict: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
         # breakpoint()
-        expl_model_inputs = tokenizer(['explain: ' +  text.split('''*****KNOWLEDGE*****''')[1] for text in examples['input']], max_length=args.max_input_length, truncation=True)
+        expl_model_inputs = tokenizer(['keywords: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
         model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
         model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
         # breakpoint()
@@ -138,7 +137,7 @@ if __name__ == '__main__':
     parser.add_argument('--eval_steps', type=int, default=250)
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--optimizer_name', type=str, default='AdamW')
-    parser.add_argument('--lr', type=float, default=5e-5)
+    parser.add_argument('--lr', type=float, default=5e-05)
     parser.add_argument('--run', type=int, default=0)
     parser.add_argument('--from_pretrained', type=str, default='google/t5-v1_1-base')
     parser.add_argument('--label_type', type=str, default='gt')

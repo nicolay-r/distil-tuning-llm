@@ -66,9 +66,9 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
         expl_outputs = model(**inputs['expl'])
         
         
-        loss = self.alpha * pred_outputs.loss*self.weight + (1. - self.alpha) * expl_outputs.loss
+        loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
         # breakpoint()
-        return_outputs = True
+        # return_outputs = True
         return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
     
 
@@ -103,7 +103,9 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
         # pred_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False, ignore_keys=ignore_keys)
         # expl_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False, ignore_keys=ignore_keys)
 
-        loss = self.alpha * pred_outputs[0]  + (1 - self.alpha) * expl_outputs[0]
+        # loss = self.alpha * pred_outputs[0] * self.weight  + (1 - self.alpha) * expl_outputs[0]
+        loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
+        # breakpoint()
         return (
             loss,
             [pred_outputs[1], expl_outputs[1]],

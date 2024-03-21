@@ -79,7 +79,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         logging_strategy=logging_strategy,  # 日志记录策略，目前是step
         logging_steps=args.eval_steps,      # 每隔多少步记录一次日志
         max_steps=args.max_steps,           # 最大步数，训练将在达到这个步数后停止
-        learning_rate=args.lr,              # 学习率
+        # learning_rate=args.lr,              # 学习率
+        # warmup_steps=500,
         gradient_accumulation_steps=args.grad_steps,  # 梯度累积步数，用于实现更大的有效批大小
         per_device_train_batch_size=args.batch_size,  # 每个设备上的训练批大小
         per_device_eval_batch_size=args.batch_size,   # 每个设备上的评估批大小
@@ -91,9 +92,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         prediction_loss_only=False,         # 是否只预测损失，这里设置为False
         deepspeed=args.deepspeed,
         save_total_limit=1,
-        # load_best_model_at_end=True,          # 训练结束时加载最佳模型
-        # greater_is_better=False,              # 对于损失来说，更小的值是更好的
-        # early_stopping_patience=3,
     )
 
     

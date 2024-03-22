@@ -20,7 +20,7 @@ from torch import nn
 from transformers import DataCollatorForSeq2Seq
 from transformers import Seq2SeqTrainer
 from data_utils import MEDQADatasetLoader
-
+import wandb
 from transformers import AutoTokenizer
 model_name = "t5-v1_1-base"
 from_pretrained = "google/{}".format(model_name)
@@ -69,6 +69,7 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
         loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
         # breakpoint()
         # return_outputs = True
+        wandb.log({'train/loss': loss, 'train/loss_pred': pred_outputs.loss, 'train/loss_expl': expl_outputs.loss}, step=self.state.global_step)
         return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
     
 

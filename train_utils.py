@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+import time
+import wandb
 import os
 import shutil
 import logging
@@ -37,6 +38,8 @@ def get_config_dir(args):
     path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
     return path
 
+def set_wandb(trainer_kwargs):
+    wandb.init(group="lmflow", project="new-sota-model", name=f"fine-tuning-{time.time()}", config=trainer_kwargs)
 
 def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics):
     set_seed(run)
@@ -70,6 +73,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     # 设置一些训练中的细节参数
     training_args = Seq2SeqTrainingArguments(
         output_dir,                         # 输出目录，模型和训练日志将被保存在这里
+        report_to = "none",
         remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列
         evaluation_strategy = 'steps',      # 评估策略，这里设置为“steps”，表示按步数进行评估
         eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
@@ -109,7 +113,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         raise ValueError
     
 
-    # breakpoint()
     trainer_kwargs = {
         'alpha': args.alpha,
         'output_rationale': args.output_rationale,
@@ -120,9 +123,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         'eval_dataset': {'test': tokenized_datasets["valid"],},
         'data_collator': data_collator,
         'tokenizer': tokenizer,
-        'compute_metrics': compute_metrics,
-
-        
+        'compute_metrics': compute_metrics,        
     }
 
 
@@ -145,5 +146,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     else:
         raise ValueError
     
-
+    set_wandb(trainer_kwargs)
+    wandb.watch(model, log="all", log_freq=10)
     trainer.train()

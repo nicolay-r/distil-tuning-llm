@@ -21,11 +21,12 @@ TASKB_PREFIX = 'D2N'
 TASKC_RANGE = [128,167]
 TASKC_PREFIX = 'D2N'
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = "cpu"
 
 
 def add_section_divisions(row, dialogue_column ):
     row['src_len'] = len(row[ dialogue_column ].split())
-    for evaltype in ['output', 'pred_wang']:
+    for evaltype in ['output', 'prediction']:
         text = row[evaltype]
         text_with_endlines = text.replace( '__lf1__', '\n' )
         detected_divisions = section_tagger.divide_note_by_metasections(text_with_endlines)
@@ -120,7 +121,7 @@ if __name__ == "__main__" :
 
     # create lists for references/predictions so we only need to calculate the scores once per instance
     references = full_df['output'].tolist()
-    predictions = full_df['pred_wang'].tolist()
+    predictions = full_df['prediction'].tolist()
     num_test = len(full_df)
 
     ######## Load Metrics from HuggingFace ########

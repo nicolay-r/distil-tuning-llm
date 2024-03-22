@@ -57,11 +57,6 @@ def run(args):
     datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
     # breakpoint()
 
-    # 选择不同的计算评估的方式，如果有teacher模型的预测标签，目前数据里没有，gt: Use GT label for training  llm: Use LLM predicted label for training
-    # if args.label_type == 'gt': 
-    #     pass
-    # else:
-    #     raise ValueError
 
     if args.llm is not None: # 重命名rationale
         if 'rationale' in datasets['train'].column_names:
@@ -102,8 +97,6 @@ def run(args):
         # breakpoint()
         return model_inputs
 
-
-    # 不懂这是啥意思，目前猜测，是因为tokenize_function里，已经把这些都tokenize了，所以就不再保留原来的text了，只把tokenizer 传进去
     # breakpoint()
     if args.llm is None:
         print("这里有")

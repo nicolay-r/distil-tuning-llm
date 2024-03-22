@@ -1,9 +1,12 @@
 #!/bin/bash
 # Submits our Flan-T5 large based approach for task A
 
-TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test.json"  # Provided to the script by the submission system
+TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
 
 OUTPUT_DIR="./output"
+
+CKPT_DIR="../ckpts/task_prefix/flan-t5-large_dstl/checkpoint-10000/pytorch_model.bin"
+
 RUN="2"
 
 # Notes:
@@ -16,6 +19,7 @@ RUN="2"
 # - Use the run=1 argument to ensure that the output file is named correctly
 python3 ./run_summarization.py "./conf/base.yml" "./conf/taskA.yml" output_dir="$OUTPUT_DIR" \
     model_name_or_path="google/flan-t5-large" \
+    checkpoint_dir="$CKPT_DIR" \
     summary_column="dialogue" \
     train_file=null \
     validation_file=null \
@@ -29,8 +33,7 @@ python3 ./run_summarization.py "./conf/base.yml" "./conf/taskA.yml" output_dir="
     evaluation_strategy="'no'" \
     load_best_model_at_end=false \
     bertscore_model_type=null \
-    bleurt_checkpoint=null 
-    # run="$RUN"
-
-# Validate submission
-# python3 ./scripts/submission_checker.py "$OUTPUT_DIR/taskA_wanglab_run$RUN.csv"
+    bleurt_checkpoint=null \
+    
+    
+   

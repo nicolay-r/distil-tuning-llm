@@ -34,4 +34,4 @@ sh decode_taskA_run1.sh
 copy generated_predictions_df.csv to ./distill-d2n
 3.
 cd distill-d2n
-python eval_sum_medqa23.py --task taskA --fn_eval_data "./inference/generated_predictions_df.csv"
+python eval_sum_medqa23.py --task taskA --fn_eval_data "./inference/output/generated_predictions_df.csv"

@@ -1,8 +1,8 @@
 # ModelArguments
 
 # DataTrainingArguments
-text_column: "input"
-summary_column: "ouput"
+# text_column: "input"
+# summary_column: "ouput"
 # /root/distill-d2n/datasets/medqa_d2n/task_prefix/medqa_d2n_test.json
 # train_file: "../datasets/medqa_d2n/task_prefix/medqa_d2n_test.json"
 # validation_file: "../datasets/medqa_d2n/task_prefix/medqa_d2n_test.json"
@@ -18,7 +18,7 @@ generation_max_length: 512
 # supports, whichever is smaller) so we get an accurate evaluation.
 val_max_target_length: 512
 # source_prefix: "Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. You should first predict the most relevant clinical note section header and then summarize the dialogue. Dialogue:"
-source_prefix: "Summarize the following patient-doctor dialogue."
+source_prefix: "Prediction"
 task: "A"
 
 # Seq2SeqTrainingArguments

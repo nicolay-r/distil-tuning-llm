@@ -1,21 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
-# Copyright 2021 The HuggingFace Team. All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-"""
-Fine-tuning the library models for sequence to sequence.
-"""
+
 # You can also adapt this script on your own sequence to sequence task. Pointers for this are left as comments.
 
 import json
@@ -64,37 +49,11 @@ require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/summ
 
 logger = logging.getLogger(__name__)
 
-# try:
-#     nltk.data.find("tokenizers/punkt")
-# except (LookupError, OSError):
-#     if is_offline_mode():
-#         raise LookupError(
-#             "Offline mode: run this script without TRANSFORMERS_OFFLINE first to download nltk data files"
-#         )
-#     with FileLock(".lock") as lock:
-#         nltk.download("punkt", quiet=True)
-
 # A list of all multilingual tokenizer which require lang attribute.
 MULTILINGUAL_TOKENIZERS = [MBartTokenizer, MBartTokenizerFast, MBart50Tokenizer, MBart50TokenizerFast]
 
 # Constants for the MEDIQA-Chat @ ACL-ClinicalNLP challenge task
-# GENHX = "GENHX"
 # A list of valid task names for the MEDIQA-Chat @ ACL-ClinicalNLP
-TASK_A = "A"
-# TASK_B = "B"
-# TASK_C = "C"
-# TASKS = [TASK_A, TASK_B, TASK_C]
-# # These are all related to the output files
-# ID_COL = "ID"
-# ENCOUNTER_ID_COL = "encounter_id"
-# TEST_ID = "TestID"
-# SYSTEM_OUTPUT_1 = "SystemOutput1"
-# SYSTEM_OUTPUT_2 = "SystemOutput2"
-# SYSTEM_OUTPUT = "SystemOutput"
-# TEAM_NAME = "wanglab"
-
-
-
 
 @dataclass
 class ModelArguments:
@@ -111,7 +70,7 @@ class ModelArguments:
     tokenizer_name: Optional[str] = field(
         default=None, metadata={"help": "Pretrained tokenizer name or path if not the same as model_name"}
     )
-    cache_dir: Optional[str] = field(
+    checkpoint_dir: str = field(
         default=None,
         metadata={"help": "Where to store the pretrained models downloaded from huggingface.co"},
     )
@@ -151,12 +110,12 @@ class DataTrainingArguments:
 
     lang: Optional[str] = field(default=None, metadata={"help": "Language id for summarization."})
 
-    dataset_name: Optional[str] = field(
-        default=None, metadata={"help": "The name of the dataset to use (via the datasets library)."}
-    )
-    dataset_config_name: Optional[str] = field(
-        default=None, metadata={"help": "The configuration name of the dataset to use (via the datasets library)."}
-    )
+    # dataset_name: Optional[str] = field(
+    #     default=None, metadata={"help": "The name of the dataset to use (via the datasets library)."}
+    # )
+    # dataset_config_name: Optional[str] = field(
+    #     default=None, metadata={"help": "The configuration name of the dataset to use (via the datasets library)."}
+    # )
     text_column: Optional[str] = field(
         default=None,
         metadata={"help": "The name of the column in the datasets containing the full texts (for summarization)."},
@@ -275,16 +234,7 @@ class DataTrainingArguments:
     )
     source_suffix: Optional[str] = field(default="", metadata={"help": "A suffix to add after every source text."})
 
-    forced_bos_token: Optional[str] = field(
-        default=None,
-        metadata={
-            "help": (
-                "The token to force as the first generated token after the decoder_start_token_id."
-                "Useful for multilingual models like mBART where the first generated token"
-                "needs to be the target language token (Usually it is the target language token)"
-            )
-        },
-    )
+
     task: str = field(
         default="A", metadata={"help": "Which challenge task to train or evaluate on. Should be one of A, B, or C."}
     )
@@ -314,8 +264,8 @@ class DataTrainingArguments:
 
     def __post_init__(self):
         if (
-            self.dataset_name is None
-            and self.train_file is None
+            # self.dataset_name is None
+            self.train_file is None
             and self.validation_file is None
             and self.test_file is None
         ):
@@ -389,12 +339,7 @@ def main():
     print("*********第一部分 开始**********")
     conf = parse_omega_conf()
     model_args, data_args, training_args = parser.parse_dict(conf)
-    # print("这是model_args：",model_args)
-    # print(model_args)
-    # print("这是data_args：",data_args)
-    # print(data_args)
-    print("这是training_args：",training_args)
-    # print(training_args)
+
     output_dir = Path(training_args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "omega_conf.json").write_text(json.dumps(conf, indent=2))
@@ -461,57 +406,20 @@ def main():
     # Set seed before initializing model.
     set_seed(training_args.seed)
 
-    # Get the datasets: you can either provide your own CSV/JSON training and evaluation files (see below)
-    # or just provide the name of one of the public datasets available on the hub at https://huggingface.co/datasets/
-    # (the dataset will be downloaded automatically from the datasets Hub).
-    #
-    # For CSV/JSON files this script will use the first column for the full texts and the second column for the
-    # summaries (unless you specify column names for this with the `text_column` and `summary_column` arguments).
-    #
-    # In distributed training, the load_dataset function guarantee that only one local process can concurrently
-    # download the dataset.
-    if data_args.dataset_name is not None:
-        print("有")
-        # Downloading and loading a dataset from the hub.
-        raw_datasets = load_dataset(
-            data_args.dataset_name,
-            data_args.dataset_config_name,
-            cache_dir=model_args.cache_dir,
-            use_auth_token=True if model_args.use_auth_token else None,
-        )
-    else:
-        print("没有")
-        data_files = {}
-        if data_args.train_file is not None:
-            print("有A")
-            data_files["train"] = data_args.train_file
-            extension = data_args.train_file.split(".")[-1]
-        if data_args.validation_file is not None:
-            print("有B")
-            data_files["validation"] = data_args.validation_file
-            extension = data_args.validation_file.split(".")[-1]
-        if data_args.test_file is not None:
-            print("有C")
-            data_files["test"] = data_args.test_file
-            extension = data_args.test_file.split(".")[-1]
-        # raw_datasets = load_dataset(
-        #     extension,
-        #     data_files=data_files,
-        #     cache_dir=model_args.cache_dir,
-        #     use_auth_token=True if model_args.use_auth_token else None,
-        # )
-        # /root/distill-d2n/datasets/medqa_d2n/task_prefix/medqa_d2n_test.json
-        data_args.test_file
-        # PAT = "../datasets/medqa_d2n/task_prefix/medqa_d2n_test.json"
-        data_files["test"] = data_args.test_file
-        extension = 'json'
-        raw_datasets = load_dataset(
-            extension,
-            data_files=data_files,
-            cache_dir=model_args.cache_dir,
-            use_auth_token=True if model_args.use_auth_token else None,
-        )
-    # breakpoint()
+
+    data_files = {}
+
+    data_files["test"] = data_args.test_file
+    extension = data_args.test_file.split(".")[-1]
+
+    data_files["test"] = data_args.test_file
+    extension = 'json'
+    raw_datasets = load_dataset(
+        extension,
+        data_files=data_files,
+        use_auth_token=True if model_args.use_auth_token else None,
+    )
+    
     # See more about loading any type of standard or custom dataset (from files, python dict, pandas DataFrame, etc) at
     # https://huggingface.co/docs/datasets/loading_datasets.html.
 
@@ -522,13 +430,11 @@ def main():
     # download model & vocab.
     config = AutoConfig.from_pretrained(
         model_args.config_name if model_args.config_name else model_args.model_name_or_path,
-        cache_dir=model_args.cache_dir,
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
     )
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
-        cache_dir=model_args.cache_dir,
         use_fast=model_args.use_fast_tokenizer,
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
@@ -537,16 +443,11 @@ def main():
         model_args.model_name_or_path,
         from_tf=bool(".ckpt" in model_args.model_name_or_path),
         config=config,
-        cache_dir=model_args.cache_dir,
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
     )
-    # breakpoint()
-    # /root/MEDIQA-Chat-2023/ckpt/task-a-flan-t5-large-run-1_wang_run1/checkpoint-10000/pytorch_model.bin
-    # /root/MEDIQA-Chat-2023/ckpt/flan-t5-large_xx/checkpoint-10000/pytorch_model.bin
-    # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_xl_valid_size1/checkpoint-1000/pytorch_model.bin
-    # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_cot_large/checkpoint-1000/pytorch_model.bin
-    model_dir = f"../ckpts/task_prefix/flan-t5-large_cot_large/checkpoint-1000/pytorch_model.bin"
+    
+    model_dir = model_args.checkpoint_dir
     checkpoint = torch.load(model_dir, map_location="cpu") #读取本地训练好的chekpoint
     model.load_state_dict(checkpoint)
     
@@ -589,9 +490,9 @@ def main():
 
     prefix = data_args.source_prefix if data_args.source_prefix is not None else ""
     suffix = data_args.source_suffix if data_args.source_suffix is not None else ""
+    suffix = "SUMMARY: "
 
-    # if "test" not in raw_datasets:
-    #         raise ValueError("--do_predict requires a test dataset")
+    
     column_names = raw_datasets["test"].column_names
 
     text_column = "input"
@@ -611,18 +512,19 @@ def main():
     def preprocess_function(examples):
         # remove pairs where at least one record is None
 
-        inputs, targets = [], []
+        inputs_org, targets, inputs = [], [], []
         for i in range(len(examples[text_column])):
             if examples[text_column][i] and examples[summary_column][i]:
-                inputs.append(examples[text_column][i])
-
-        inputs = [f"{prefix} {inp} {suffix}".strip() for inp in inputs]
+                inputs_org.append(examples[text_column][i])
+  
+            
+        inputs = [f"{prefix} {inp} {suffix}".strip() for inp in inputs_org]
         targets = examples["output"]
+        # breakpoint()
 
         # Do some basic cleanup on the source and target texts
         inputs = [sanitize_text(inp) for inp in inputs]
         targets = [sanitize_text(tgt) for tgt in targets]
-        # [sanitize_text(tgt) for tgt in targets]
 
         model_inputs = tokenizer(inputs, max_length=data_args.max_source_length, padding=padding, truncation=True)
 
@@ -632,35 +534,20 @@ def main():
         # Tokenize targets with the `text_target` keyword argument
         labels = tokenizer(text_target=targets, max_length=max_target_length, padding=padding, truncation=True)
 
-        # If we are padding here, replace all tokenizer.pad_token_id in the labels by -100 when we want to ignore
-        # padding in the loss.
-        if padding == "max_length" and data_args.ignore_pad_token_for_loss:
-            print("没有走这里")
-            labels["input_ids"] = [
-                [(l if l != tokenizer.pad_token_id else -100) for l in label] for label in labels["input_ids"]
-            ]
-
         model_inputs["labels"] = labels["input_ids"]
-        # breakpoint()
         return model_inputs
 
     if training_args.do_predict:
         max_target_length = data_args.val_max_target_length
         predict_dataset = raw_datasets["test"]
-        if data_args.max_predict_samples is not None:
-            print("走了A")
-            max_predict_samples = min(len(predict_dataset), data_args.max_predict_samples)
-            predict_dataset = predict_dataset.select(range(max_predict_samples))
-        with training_args.main_process_first(desc="prediction dataset map pre-processing"):
-            print("走了B")
-            predict_dataset = predict_dataset.map(
-                preprocess_function,
-                batched=True,
-                num_proc=data_args.preprocessing_num_workers,
-                remove_columns=column_names,
-                load_from_cache_file=not data_args.overwrite_cache,
-                desc="Running tokenizer on prediction dataset",
-            )
+        predict_dataset = predict_dataset.map(
+            preprocess_function,
+            batched=True,
+            num_proc=data_args.preprocessing_num_workers,
+            remove_columns=column_names,
+            load_from_cache_file=not data_args.overwrite_cache,
+            desc="Running tokenizer on prediction dataset",
+        )
     # breakpoint()
 
     # Data collator
@@ -673,7 +560,6 @@ def main():
         pad_to_multiple_of=8 if training_args.fp16 else None,
     )
 
-   
 
     # Initialize our Trainer
     trainer = Seq2SeqTrainer(
@@ -681,7 +567,6 @@ def main():
         args=training_args,
         tokenizer=tokenizer,
         data_collator=data_collator,
-        # compute_metrics=compute_metrics if training_args.predict_with_generate else None,
     )
 
     max_length = (
@@ -689,8 +574,10 @@ def main():
         if training_args.generation_max_length is not None
         else data_args.val_max_target_length
     )
+    
     num_beams = data_args.num_beams if data_args.num_beams is not None else training_args.generation_num_beams
-
+    
+    
 
     if training_args.do_predict:
         logger.info("*** Predict ***")
@@ -733,9 +620,9 @@ def main():
                 full_df = pd.DataFrame(raw_datasets['test'], columns=raw_datasets['test'].features)
                 
                 # breakpoint()
-                full_df['pred_wang'] = pred_result
+                full_df['prediction'] = pred_result
                 full_df.to_csv
-                csv_path = './generated_predictions_df.csv'
+                csv_path = f'{training_args.output_dir}/generated_predictions_df.csv'
                 full_df.to_csv(csv_path)
                 # breakpoint()
                 output_prediction_file = os.path.join(training_args.output_dir, "generated_predictions.txt")
@@ -770,14 +657,14 @@ def send_email(subject, message, to_email):
     server.quit()
     
 if __name__ == "__main__":
-    # main()
-    to_email = "rosaliu.567@gmail.com"
-    try:  
-        main()
-        # to_email = "rosaliu.567@gmail.com"
-        send_email('模型评估完成', '您的模型评估已完成。', to_email)
-    except Exception as e:
-        print(e)
-        # to_email = "rosaliu.567@gmail.com"
-        send_email('模型评估出错', f'您的模型评估时遇到问题: {e}', to_email)  
+    main()
+    # to_email = "rosaliu.567@gmail.com"
+    # try:  
+    #     main()
+    #     # to_email = "rosaliu.567@gmail.com"
+    #     send_email('模型评估完成', '您的模型评估已完成。', to_email)
+    # except Exception as e:
+    #     print(e)
+    #     # to_email = "rosaliu.567@gmail.com"
+    #     send_email('模型评估出错', f'您的模型评估时遇到问题: {e}', to_email)  
        

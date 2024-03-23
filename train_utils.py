@@ -15,7 +15,6 @@
 import time
 import wandb
 import os
-import shutil
 import logging
 
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer
@@ -30,16 +29,13 @@ from model_utils import TaskPrefixDataCollator, TaskPrefixTrainer, CoTDataCollat
 
 
 def get_config_dir(args):
-    # breakpoint()
-    # if args.model_type == "standard":
-    #     path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
-    # else:
-    #     path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
+    
     path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
     return path
 
 def set_wandb(trainer_kwargs):
     wandb.init(group="lmflow", project="new-sota-model", name=f"fine-tuning-{time.time()}", config=trainer_kwargs)
+
 
 def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics):
     set_seed(run)
@@ -74,6 +70,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     training_args = Seq2SeqTrainingArguments(
         output_dir,                         # 输出目录，模型和训练日志将被保存在这里
         report_to = "none",
+        # run_name="distill",
         remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列
         evaluation_strategy = 'steps',      # 评估策略，这里设置为“steps”，表示按步数进行评估
         eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
@@ -81,10 +78,10 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         save_steps=args.eval_steps,         # 每隔多少步保存一次模型
         logging_dir=logging_dir,            # 日志目录，训练日志将被保存在这里
         logging_strategy=logging_strategy,  # 日志记录策略，目前是step
-        logging_steps=args.eval_steps,      # 每隔多少步记录一次日志
+        logging_steps=1,      # 每隔多少步记录一次日志
         max_steps=args.max_steps,           # 最大步数，训练将在达到这个步数后停止
-        # learning_rate=args.lr,              # 学习率
-        # warmup_steps=500,
+        learning_rate=args.lr,              # 学习率
+        warmup_steps=1000,
         gradient_accumulation_steps=args.grad_steps,  # 梯度累积步数，用于实现更大的有效批大小
         per_device_train_batch_size=args.batch_size,  # 每个设备上的训练批大小
         per_device_eval_batch_size=args.batch_size,   # 每个设备上的评估批大小
@@ -137,9 +134,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         trainer_kwargs.pop('alpha') # 从trainer_kwargs字典中删除键'alpha'及其对应的值。
         trainer_kwargs.pop('output_rationale')
         trainer_kwargs.pop('weight')
-        # trainer_kwargs是一个字典，包含了训练器（trainer）的配置参数，例如训练数据、评估数据、学习率、训练轮次（epoch）等。
         trainer = Seq2SeqTrainer(**trainer_kwargs) # Seq2SeqTrainer是Hugging Face Transformers库中的一个类，专门用于序列到序列（sequence-to-sequence）的模型训练，比如T5、BART等。
-        # trainer = Seq2SeqTrain/root/r(training_args)  
         '''解释一下：训练的是T5模型，而Seq2SeqTrainer是用于训练过程的工具。'''
         # breakpoint()
         
@@ -147,5 +142,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         raise ValueError
     
     set_wandb(trainer_kwargs)
-    wandb.watch(model, log="all", log_freq=10)
+
+    wandb.watch(model, log = 'gradients')
     trainer.train()
+    wandb.finish()

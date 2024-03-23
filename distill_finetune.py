@@ -4,7 +4,12 @@ from transformers import AutoTokenizer
 from data_utils import MEDQADatasetLoader
 from metrics import compute_text_acc, compute_equation_acc, compute_metrics_text, compute_metrics_equation, compute_metrics_text_aux, compute_metrics_equation_aux
 from train_utils import train_and_evaluate
+import wandb
+from wandb import AlertLevel
 
+
+    
+    
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -120,8 +125,9 @@ def run(args):
 
 
 if __name__ == '__main__':
-    # to_email = "rosaliu.567@gmail.com"
-    # send_email('模型训练开始', '您的模型已经开始训练。', to_email)
+    to_email = "rosaliu.567@gmail.com"
+    send_email('模型训练开始', '您的模型已经开始训练。', to_email)
+    
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, required=True)
     parser.add_argument('--subsample', type=float, default=1.0)
@@ -149,13 +155,36 @@ if __name__ == '__main__':
     parser.add_argument('--weight', type=int, default=1)
 
     args = parser.parse_args()
-    run(args)
+    # run(args)
+    
     # try:  
     #     run(args)
     #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
+    #     # send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
+    #     wandb.alert(
+    #     title="模型训练完成",
+    #     text=f"您的模型已经成功训练完成",
+    #     level=AlertLevel.WARN,
+    #     wait_duration=3,
+    # )
     # except Exception as e:
     #     print(e)
     #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
+    #     # send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)
+    #     wandb.alert(
+    #     title="模型训练出错",
+    #     text=f'您的模型训练时遇到问题: {e}',
+    #     level=AlertLevel.WARN,
+    #     wait_duration=3,
+    # )
+
+    
+    try:  
+        run(args)
+        # to_email = "rosaliu.567@gmail.com"
+        send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
+    except Exception as e:
+        print(e)
+        # to_email = "rosaliu.567@gmail.com"
+        send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
        

@@ -133,7 +133,8 @@ class MEDQADatasetLoader(object):
         self.has_valid = True
         self.split_map = {
             'train': 'train',
-            'test': 'test',
+            'valid': 'valid'
+            # 'test': 'test',
         }
         self.batch_size = 500
         self.train_batch_idxs = range(2)
@@ -147,7 +148,7 @@ class MEDQADatasetLoader(object):
     def load_from_json(self):
         data_files = {
             'train': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
-            'test': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_test.json',
+            # 'test': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_test.json',
         }
 
         if self.has_valid:
@@ -164,7 +165,7 @@ class MEDQADatasetLoader(object):
     def load_from_json_rationale(self):
         data_files = {
             'train': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
-            'test': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_test.json',
+            # 'test': f'{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_test.json',
         }
 
         if self.has_valid:

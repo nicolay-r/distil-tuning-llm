@@ -47,16 +47,16 @@ def run(args):
     
     # 整理数据集的label和rationale
     train_llm_rationales, train_llm_labels = dataset_loader.load_rationale_data(split='train')
-    test_llm_rationales, test_llm_labels = dataset_loader.load_rationale_data(split='test')
+    # test_llm_rationales, test_llm_labels = dataset_loader.load_rationale_data(split='test')
     valid_llm_rationales, valid_llm_labels = dataset_loader.load_rationale_data(split='valid')
 
     
 
     # if args.llm is not None: # 给数据集添加labels,
     datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
-    datasets['test'] = datasets['test'].add_column('llm_label', test_llm_labels)
+    # datasets['test'] = datasets['test'].add_column('llm_label', test_llm_labels)
     datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
-    datasets['test'] = datasets['test'].add_column('llm_rationale', test_llm_rationales)
+    # datasets['test'] = datasets['test'].add_column('llm_rationale', test_llm_rationales)
     
     datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
     datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     parser.add_argument('--eval_steps', type=int, default=250)
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--optimizer_name', type=str, default='AdamW')
-    parser.add_argument('--lr', type=float, default=5e-05)
+    parser.add_argument('--lr', type=float, default=1e-05)
     parser.add_argument('--run', type=int, default=0)
     parser.add_argument('--from_pretrained', type=str, default='google/t5-v1_1-base')
     parser.add_argument('--label_type', type=str, default='gt')

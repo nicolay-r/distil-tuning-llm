@@ -70,7 +70,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     training_args = Seq2SeqTrainingArguments(
         output_dir,                         # 输出目录，模型和训练日志将被保存在这里
         report_to = "none",
-        # run_name="distill",
         remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列
         evaluation_strategy = 'steps',      # 评估策略，这里设置为“steps”，表示按步数进行评估
         eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
@@ -93,6 +92,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         prediction_loss_only=False,         # 是否只预测损失，这里设置为False
         deepspeed=args.deepspeed,
         save_total_limit=1,
+        load_best_model_at_end=True,
     )
 
     

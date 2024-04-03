@@ -10,7 +10,7 @@ from sectiontagger import SectionTagger
 section_tagger = SectionTagger()
 
 
-SECTION_DIVISIONS = ['subjective', 'objective_exam', 'objective_results', 'assessment_and_plan']
+# SECTION_DIVISIONS = ['subjective', 'objective_exam', 'objective_results', 'assessment_and_plan']
 
 TASKA_RANGE = [0,199]
 TASKA_PREFIX = ''
@@ -24,42 +24,42 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # device = "cpu"
 
 
-def add_section_divisions(row, dialogue_column ):
-    row['src_len'] = len(row[ dialogue_column ].split())
-    for evaltype in ['output', 'prediction']:
-        text = row[evaltype]
-        text_with_endlines = text.replace( '__lf1__', '\n' )
-        detected_divisions = section_tagger.divide_note_by_metasections(text_with_endlines)
-        for detected_division in detected_divisions:
-            label, _, _, start, _, end = detected_division
-            row[ '%s_%s' % (evaltype, label)] = text_with_endlines[start:end].replace('\n', '__lf1__')
+# def add_section_divisions(row, dialogue_column ):
+#     row['src_len'] = len(row[ dialogue_column ].split())
+#     for evaltype in ['output', 'prediction']:
+#         text = row[evaltype]
+#         text_with_endlines = text.replace( '__lf1__', '\n' )
+#         detected_divisions = section_tagger.divide_note_by_metasections(text_with_endlines)
+#         for detected_division in detected_divisions:
+#             label, _, _, start, _, end = detected_division
+#             row[ '%s_%s' % (evaltype, label)] = text_with_endlines[start:end].replace('\n', '__lf1__')
 
-    return row
-
-
-def select_values_by_indices(lst, indices) :
-    return [lst[ind] for ind in indices]
+#     return row
 
 
-def read_text(fn):
-    with open(fn, 'r') as f:
-        texts = f.readlines()
-    return texts
+# def select_values_by_indices(lst, indices) :
+#     return [lst[ind] for ind in indices]
 
 
-def _validate(args, df_predictions, task_prefix, task_range):
-    id_range = df_predictions.apply(lambda row: int( str(row[args.id_column]).replace(task_prefix, '')), axis=1)
-    min_id = min(id_range)
-    max_id = max(id_range)
-    if min_id < task_range[0] or min_id > task_range[1]:
-        print('Your encounter ID range does not match the test encounters')
-        sys.exit(1)
-    if max_id < task_range[0] or max_id > task_range[1]:
-        print('Your encounter ID range does not match the test encounters')
-        sys.exit(1)
-    if not args.debug and len(df_predictions) != task_range[1] - task_range[0] + 1:
-        print('The number of test encounters does not match expected for this task!')
-        sys.exit(1)
+# def read_text(fn):
+#     with open(fn, 'r') as f:
+#         texts = f.readlines()
+#     return texts
+
+
+# def _validate(args, df_predictions, task_prefix, task_range):
+#     id_range = df_predictions.apply(lambda row: int( str(row[args.id_column]).replace(task_prefix, '')), axis=1)
+#     min_id = min(id_range)
+#     max_id = max(id_range)
+#     if min_id < task_range[0] or min_id > task_range[1]:
+#         print('Your encounter ID range does not match the test encounters')
+#         sys.exit(1)
+#     if max_id < task_range[0] or max_id > task_range[1]:
+#         print('Your encounter ID range does not match the test encounters')
+#         sys.exit(1)
+#     if not args.debug and len(df_predictions) != task_range[1] - task_range[0] + 1:
+#         print('The number of test encounters does not match expected for this task!')
+#         sys.exit(1)
 
 
 
@@ -76,10 +76,11 @@ from email.mime.multipart import MIMEMultipart
 
 def send_email(subject, message, to_email):
     from_email = 'rosaliu.567@gmail.com'
-    password = 'jdrb ueoq ixik tuoa'
-    # jdrb ueoq ixik tuoa
-
+    with open("./k.txt", 'r') as k:
+        psw = k.read()
     
+    password = psw
+    k.close()
     msg = MIMEMultipart()
     msg['From'] = from_email
     msg['To'] = to_email
@@ -99,12 +100,7 @@ if __name__ == "__main__" :
         prog='evaluate_summarization',
         description='This runs basic evaluation for both snippet (taskA) and full note summarization (taskB).'
     )
-    # parser.add_argument('--fn_gold', required=True, help='filename of gold references requires id and note column.')
-    # parser.add_argument('--fn_sys', required=True, help='filename of system references requires id and note column.')
-    # parser.add_argument(
-    #     '--metadata_file', dest='fn_metadata', action='store', default=None,
-    #     help='filename of metadata requires id and dataset column.'
-    # )
+
     parser.add_argument('--fn_eval_data', required=True, help='filename of gold references requires id and note column.')
 
     parser.add_argument(
@@ -169,10 +165,6 @@ if __name__ == "__main__" :
     outputs = {k: filter_and_aggregate(all_scores, idxs) for (k, idxs) in cohorts}
 
     # ###### OUTPUT TO JSON FILE ########
-    # fn_out = f'{args.experiment}_results.json'
-    # print(f'Saving results to {fn_out}')
-    # with open(fn_out, 'w') as fd:
-    #     json.dump(outputs, fd, indent=4)
 
     for cohort, obj in outputs.items():
         print(cohort)

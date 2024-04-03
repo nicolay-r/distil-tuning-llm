@@ -93,12 +93,15 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         deepspeed=args.deepspeed,
         save_total_limit=1,
         load_best_model_at_end=True,
+        metric_for_best_model="test_accuracy",
+        greater_is_better=True
     )
-
     
 
     if args.model_type == 'task_prefix':
         print("model_type: {}".format(args.model_type))
+        # rouge_metric = datasets.load_metric("rouge")
+
         data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
     elif args.model_type == 'CoT':
         print("model_type: {}".format(args.model_type))
@@ -110,6 +113,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         raise ValueError
     
 
+    
+    
     trainer_kwargs = {
         'alpha': args.alpha,
         'output_rationale': args.output_rationale,

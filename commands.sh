@@ -7,16 +7,18 @@ CUDA_VISIBLE_DEVICES=0 deepspeed distill_finetune.py --from_pretrained google/t5
 PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:500 deepspeed standard_finetune.py --from_pretrained google/t5-v1_1-xl --dataset medqa_d2n --llm gt --model_type standard --eval_steps 50 --batch_size 1 --grad_steps 1 --addi_info xl --deepspeed configs/ds_config_zero2.json
 
 
-Distill finetuning:
+Distill finetuning:{'accuracy': 0.0, 'eval_test_loss': 2.6771438121795654}
 CUDA_VISIBLE_DEVICES=0 python distill_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --eval_steps 200 --batch_size 4 --grad_steps 2 --addi_info pred_10
-deepspeed distill_finetune.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type task_prefix --max_steps 10000 --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info dstl_xl --deepspeed configs/ds_config_zero2.json
+
+deepspeed distill_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type task_prefix --max_steps 500 --eval_steps 2 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info distill_sml --deepspeed configs/ds_config_zero2.json
+
+deepspeed distill_finetune.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type task_prefix --max_steps 10000 --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.8 --addi_info dstl_xl_28_rouge --deepspeed configs/ds_config_zero2.json
 
 deepspeed distill_finetune.py --from_pretrained google/flan-t5-xl --dataset medqa_d2n --model_type task_prefix --max_steps 10000 --eval_steps 5 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info dstl_xl --deepspeed configs/ds_config_zero2.json
 
 deepspeed coT_step2.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type CoT --max_steps 10000 --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info CoT_xl --deepspeed configs/ds_config_zero2.json
 
 WANDB_PROJECT=huggingface-demo TASK_NAME=MRPC deepspeed distill_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type task_prefix --max_steps 10 --eval_steps 5 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info distill_sml --deepspeed configs/ds_config_zero2.json
-deepspeed distill_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type task_prefix --max_steps 50 --eval_steps 10 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info distill_sml --deepspeed configs/ds_config_zero2.json
 
 coT_step2.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type CoT --max_steps 1500 --eval_steps 5 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info cot_sml --deepspeed configs/ds_config_zero2.json
 
@@ -30,9 +32,6 @@ Sft inference:
 python inference.py --from_pretrained google/t5-v1_1-large --dataset medqa_d2n --model_type standard --addi_info _d2n --best_step 10000
 
 deepspeed --include localhost:1 standard_finetune.py --from_pretrained google/flan-t5-xxl --dataset medqa_n2d --llm gt --model_type standard --eval_steps 5 --batch_size 1 --grad_steps 4 --addi_info ds --deepspeed configs/ds_config_zero2.json
-
-
-
 
 
 python evaluate_summarization.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type standard --addi_info _ds --best_step 10000

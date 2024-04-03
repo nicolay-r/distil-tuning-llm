@@ -13,7 +13,6 @@ torch == 2.0
 evaluate
 
 # Metrics
-rouge-score
 bert-score
 git+https://github.com/google-research/bleurt.git
 

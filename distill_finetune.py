@@ -15,10 +15,12 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def send_email(subject, message, to_email):
+    with open("./k.txt",'r') as k:
+        psw = k.read()
+    k.close()
+    
     from_email = 'rosaliu.567@gmail.com'
-    password = 'jdrb ueoq ixik tuoa'
-    # jdrb ueoq ixik tuoa
-
+    password = psw
     
     msg = MIMEMultipart()
     msg['From'] = from_email
@@ -60,7 +62,6 @@ def run(args):
     
     datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
     datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
-    # breakpoint()
 
 
     if args.llm is not None: # 重命名rationale
@@ -69,7 +70,6 @@ def run(args):
         datasets = datasets.rename_column('llm_rationale', 'rationale')
         if 'output' in datasets['train'].column_names:
             datasets = datasets.rename_column('output', 'label')
-        # breakpoint()
         
 
     #### Prepare datasets Prepare data for training
@@ -86,11 +86,9 @@ def run(args):
 
         '''
         model_inputs = tokenizer(['predict: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
-        # breakpoint()
         expl_model_inputs = tokenizer(['keywords: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
         model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
         model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
-        # breakpoint()
 
         with tokenizer.as_target_tokenizer():
             label_output_encodings = tokenizer(examples['label'], max_length=1024, truncation=True)
@@ -99,10 +97,8 @@ def run(args):
         model_inputs['labels'] = label_output_encodings['input_ids']
         model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
 
-        # breakpoint()
         return model_inputs
 
-    # breakpoint()
     if args.llm is None:
         print("这里有")
         tokenized_datasets = datasets.map(
@@ -117,7 +113,6 @@ def run(args):
             remove_columns=['input', 'rationale', 'label', 'llm_label'],
             batched=True
         )
-    # breakpoint()
     compute_metrics = compute_metrics_equation(tokenizer)
 
 
@@ -156,28 +151,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     # run(args)
-    
-    # try:  
-    #     run(args)
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     # send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
-    #     wandb.alert(
-    #     title="模型训练完成",
-    #     text=f"您的模型已经成功训练完成",
-    #     level=AlertLevel.WARN,
-    #     wait_duration=3,
-    # )
-    # except Exception as e:
-    #     print(e)
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     # send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)
-    #     wandb.alert(
-    #     title="模型训练出错",
-    #     text=f'您的模型训练时遇到问题: {e}',
-    #     level=AlertLevel.WARN,
-    #     wait_duration=3,
-    # )
-
     
     try:  
         run(args)

@@ -1,11 +1,11 @@
 #!/bin/bash
 # Submits our Flan-T5 large based approach for task A
 
-TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test1.json"  # Provided to the script by the submission system
+TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
 
 OUTPUT_DIR="./output"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
-CKPT_DIR="../ckpts/task_prefix/flan-t5-large_dstl_xl_28_last/checkpoint-10000/pytorch_model.bin"
+CKPT_DIR="../ckpts/task_prefix/flan-t5-large_dstl_xl_28_rouge/checkpoint-9000/pytorch_model.bin"
 
 
 # Notes:

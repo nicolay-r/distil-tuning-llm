@@ -24,8 +24,8 @@ from transformers.trainer_utils import set_seed
 from data_utils import MEDQADatasetLoader
 # from transformers import EarlyStoppingCallback
 
-
-from model_utils import TaskPrefixDataCollator, TaskPrefixTrainer, CoTDataCollator, CoTTrainer
+# from models import MultiLossT5
+from model_utils import TaskPrefixDataCollator, TaskPrefixTrainer, CoTDataCollator, CoTTrainer, AdapterDataCollator, AdptTrainer
 
 
 def get_config_dir(args):
@@ -101,11 +101,13 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     if args.model_type == 'task_prefix':
         print("model_type: {}".format(args.model_type))
         # rouge_metric = datasets.load_metric("rouge")
-
         data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
     elif args.model_type == 'CoT':
         print("model_type: {}".format(args.model_type))
         data_collator = CoTDataCollator(tokenizer=tokenizer, model=model)
+    elif args.model_type == 'adapter':
+        print("model_type: {}".format(args.model_type))
+        data_collator = AdapterDataCollator(tokenizer=tokenizer, model=model)
     elif args.model_type == 'standard':
         print("model_type: {}".format(args.model_type))
         data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
@@ -134,6 +136,10 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         trainer = TaskPrefixTrainer(**trainer_kwargs)
     elif args.model_type == 'CoT':
         trainer = CoTTrainer(**trainer_kwargs)
+        
+    elif args.model_type == 'adapter':
+        trainer = AdptTrainer(**trainer_kwargs)
+        
     elif args.model_type == 'standard':
         
         trainer_kwargs.pop('alpha') # 从trainer_kwargs字典中删除键'alpha'及其对应的值。

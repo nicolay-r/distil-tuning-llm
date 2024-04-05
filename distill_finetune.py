@@ -121,7 +121,7 @@ def run(args):
 
 if __name__ == '__main__':
     to_email = "rosaliu.567@gmail.com"
-    send_email('模型训练开始', '您的模型已经开始训练。', to_email)
+    # send_email('模型训练开始', '您的模型已经开始训练。', to_email)
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, required=True)

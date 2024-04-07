@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from adapters import Seq2SeqAdapterTrainer
 import pandas as pd
 import torch
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -215,7 +215,7 @@ class AdapterDataCollator(DataCollatorForSeq2Seq):
             'expl': expl_features,
         }
         
-class AdptTrainer(Seq2SeqTrainer):
+class AdptTrainer(Seq2SeqAdapterTrainer):
     def __init__(self, alpha, output_rationale, weight, data_collator=None,**kwargs):
         super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。
         self.alpha = alpha

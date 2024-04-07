@@ -16,7 +16,9 @@ import time
 import wandb
 import os
 import logging
-
+from adapters import AutoAdapterModel
+from adapters import *
+# from adapters import Seq2SeqAdapterTrainer
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer
 from transformers import T5ForConditionalGeneration
 from transformers import DataCollatorForSeq2Seq
@@ -39,8 +41,16 @@ def set_wandb(trainer_kwargs):
 
 def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics):
     set_seed(run)
-
-    model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
+    
+    if args.model_type == 'adapter':
+        model = AutoAdapterModel.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
+        model.add_adapter("xiaoxiao_adapter_a")
+        model.train_adapter("xiaoxiao_adapter_a")
+        # model = MultiLossT5.from_pretrained(args.from_pretrained)
+    else:
+        model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
+    
+    
 
     if args.parallelize:
         model.parallelize() # 用于将 T5 模型的层分布到多个 GPU 上，以便并行处理。

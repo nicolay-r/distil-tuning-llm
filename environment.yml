@@ -1,4 +1,4 @@
-name: distillsds
+name: distill_ds
 channels:
   - pytorch
   - nvidia

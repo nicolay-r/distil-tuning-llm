@@ -9,9 +9,13 @@ PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:500 deepspeed standard_finetune.py --f
 Distill finetuning:
 CUDA_VISIBLE_DEVICES=0 python distill_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --eval_steps 200 --batch_size 4 --grad_steps 2 --addi_info pred_10
 
-deepspeed distill_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type task_prefix --max_steps 500 --eval_steps 2 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info distill_sml --deepspeed configs/ds_config_zero2.json
 
-deepspeed distill_finetune.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type task_prefix --max_steps 10000 --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.8 --addi_info dstl_xl_28_rouge --deepspeed configs/ds_config_zero2.json
+CUDA_VISIBLE_DEVICES=0 deepspeed distill_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type task_prefix --max_steps 500 --eval_steps 2 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info distill_sml --deepspeed configs/ds_config_zero2.json
+
+deepspeed distill_finetune.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type task_prefix --max_steps 10000 --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.8 --addi_info dstl_xl_cos --deepspeed configs/ds_config_zero2.json
+
+CUDA_VISIBLE_DEVICES=0 deepspeed distill_finetune.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type task_prefix --max_steps 1000 --eval_steps 5 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.8 --addi_info dstl_xl_28_rouge --deepspeed configs/ds_config_zero2.json
+
 
 deepspeed distill_finetune.py --from_pretrained google/flan-t5-xl --dataset medqa_d2n --model_type task_prefix --max_steps 10000 --eval_steps 5 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info dstl_xl --deepspeed configs/ds_config_zero2.json
 

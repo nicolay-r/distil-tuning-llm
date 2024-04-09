@@ -30,6 +30,7 @@ dependencies:
     - omegaconf
     - InstructorEmbedding
     - openai
+    - adapters
     # - langchain
     - tiktoken
     # - thefuzz[speedup]

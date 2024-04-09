@@ -79,10 +79,10 @@ def compute_metrics_equation(tokenizer):
         predictions, labels = eval_pred
         # # breakpoint()
         # preds = np.where(predictions[0] != -100,predictions[0],tokenizer.pad_token_id)
-        ps = np.where(predictions[0] != -100,predictions[0],tokenizer.pad_token_id)
+        ps = np.where(predictions != -100,predictions,tokenizer.pad_token_id)
         decoded_preds = tokenizer.batch_decode(ps, skip_special_tokens=True)
         
-        ls = np.where(labels[0] != -100, labels[0], tokenizer.pad_token_id)
+        ls = np.where(labels != -100, labels, tokenizer.pad_token_id)
         # preds = np.where(preds != -100,preds,tokenizer.pad_token_id)
         decoded_labels = tokenizer.batch_decode(ls, skip_special_tokens=True)
         # breakpoint()
@@ -128,24 +128,75 @@ def compute_metrics_equation(tokenizer):
 
 
 def compute_metrics_equation_aux(tokenizer):
+    # def compute_metrics(eval_pred):
+    #     predictions, labels = eval_pred
+    #     preds = np.where(predictions != -100, predictions, tokenizer.pad_token_id)
+    #     decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
+
+    #     lbs = np.where(labels != -100, labels, tokenizer.pad_token_id)
+    #     decoded_labels = tokenizer.batch_decode(lbs, skip_special_tokens=True)
+
+    #     preds = list()
+    #     for pred in decoded_preds:    
+    #         preds.append(eval_equation(pred))
+
+    #     labels = list()
+    #     for label in decoded_labels:    
+    #         labels.append(eval_equation(label))
+
+    #     acc = np.mean(np.array(preds) == np.array(labels))
+
+    #     return {'accuracy': acc}
+    
     def compute_metrics(eval_pred):
         predictions, labels = eval_pred
-        preds = np.where(predictions != -100, predictions, tokenizer.pad_token_id)
-        decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
+        # breakpoint()
+        # preds = np.where(predictions[0] != -100,predictions[0],tokenizer.pad_token_id)
+        ps = np.where(predictions != -100,predictions,tokenizer.pad_token_id)
+        decoded_preds = tokenizer.batch_decode(ps, skip_special_tokens=True)
+        
+        ls = np.where(labels != -100, labels, tokenizer.pad_token_id)
+        # preds = np.where(preds != -100,preds,tokenizer.pad_token_id)
+        decoded_labels = tokenizer.batch_decode(ls, skip_special_tokens=True)
+        # breakpoint()
+        # preds = list()
+        # for pred in decoded_preds:    
+        #     preds.append(eval_equation(pred))
 
-        labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
-        decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
-
-        preds = list()
-        for pred in decoded_preds:    
-            preds.append(eval_equation(pred))
-
-        labels = list()
-        for label in decoded_labels:    
-            labels.append(eval_equation(label))
-
-        acc = np.mean(np.array(preds) == np.array(labels))
-
+        # lbs = list()
+        # for label in decoded_labels:    
+        #     lbs.append(eval_equation(label))
+        # breakpoint()
+        # acc = np.mean(np.array(preds) == np.array(labels))
+        scorers = {
+            'rouge': (
+                evaluate.load('rouge'),
+                {'use_aggregator': False},
+                ['rouge1', 'rouge2', 'rougeL', 'rougeLsum'],
+                ['rouge1', 'rouge2', 'rougeL', 'rougeLsum']
+            ),
+            # 'bert_scorer': (
+            #     evaluate.load('bertscore', device=device),
+            #     {'model_type': 'microsoft/deberta-xlarge-mnli', 'device':device},
+            #     ['precision', 'recall', 'f1'],
+            #     ['bertscore_precision', 'bertscore_recall', 'bertscore_f1']
+            # ),
+            # 'bluert': (
+            #     evaluate.load('bleurt', config_name='BLEURT-20', device=device),
+            #     {},
+            #     ['scores'],
+            #     ['bleurt']
+            # ),
+        }
+        all_scores = {}
+        for name, (scorer, kwargs, keys, save_keys) in scorers.items():
+            scores = scorer.compute(references=decoded_labels, predictions=decoded_preds, **kwargs)
+            for score_key, save_key in zip(keys, save_keys):
+                all_scores[save_key] = scores[score_key]
+        # breakpoint()
+        acc = np.mean(all_scores['rouge1'])
         return {'accuracy': acc}
+    
+    return compute_metrics
     
     return compute_metrics

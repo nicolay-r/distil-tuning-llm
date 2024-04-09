@@ -2,26 +2,49 @@ import argparse
 from datasets import DatasetDict, concatenate_datasets
 from transformers import AutoTokenizer
 from data_utils import MEDQADatasetLoader
-from metrics import compute_metrics_equation_aux
+from metrics import compute_metrics_equation_aux, compute_metrics_equation
 from train_utils import train_and_evaluate
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 # from sft_adapter import sft_train_and_evaluate
+
+def send_email(subject, message, to_email):
+    with open("./k.txt",'r') as k:
+        psw = k.read()
+    k.close()
+    
+    from_email = 'rosaliu.567@gmail.com'
+    password = psw
+    
+    msg = MIMEMultipart()
+    msg['From'] = from_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    
+    body = MIMEText(message, 'plain')
+    msg.attach(body)
+    
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login(from_email, password)
+    text = msg.as_string()
+    server.sendmail(from_email, to_email, text)
+    server.quit()
 
 
 def run(args):
     # breakpoint()
     #### Prepare datasets
     # if args.dataset == 'medqa_d2n': #设置哪个数据加载器
-    dataset_loader = MEDQADatasetLoader(args.dataset)
+    dataset_loader = MEDQADatasetLoader(args.dataset, args.model_type)
     # else:
     #     raise ValueError
     # 加载数据
     datasets = dataset_loader.load_from_json()
     # breakpoint()
     # # 整理数据集的label
-    # if args.llm == 'gt':
-    #     train_llm_rationales, train_llm_labels = dataset_loader.load_gt_preds(split='train')
-    #     test_llm_rationales, test_llm_labels = dataset_loader.load_gt_preds(split='test')
-    #     valid_llm_rationales, valid_llm_labels = dataset_loader.load_gt_preds(split='valid')
+
     if args.llm == 'gt':
         train_llm_labels = dataset_loader.load_gt_preds(split='train')
         test_llm_labels = dataset_loader.load_gt_preds(split='test')
@@ -40,17 +63,7 @@ def run(args):
         # datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
         print(len(datasets['valid']))
         
-    # 不太重要的地方，整理列名
-    
-    # if 'rationale' in datasets['train'].column_names:
-    #     print("这里有")
-    #     datasets = datasets.remove_columns('rationale')
-    # print("这里没有")
-    # datasets['train'].column_names
-    # breakpoint()
-    # datasets = datasets.rename_column('llm_rationale', 'rationale')
-    # breakpoint()
-    
+
     #### Prepare datasets Prepare data for training
     tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
 
@@ -71,33 +84,18 @@ def run(args):
         
         return model_inputs
 
-    # breakpoint()
     
 
-    if args.llm is None:
-        print("这里有")
-        tokenized_datasets = datasets.map(
-            tokenize_function,
-            remove_columns=['input', 'label'],
-            batched=True
-        )
-    else:
-        print("这里mei有")
-        #走了这里
-        tokenized_datasets = datasets.map(
-            tokenize_function,
-            # remove_columns=['input', 'rationale', 'output', 'llm_label'],
-            remove_columns=['input', 'output', 'llm_label'],
-            batched=True
-        )
-    # breakpoint()
+    
+    tokenized_datasets = datasets.map(
+        tokenize_function,
+        remove_columns=['input', 'output'],
+        batched=True
+    )
+    
 
     compute_metrics = compute_metrics_equation_aux(tokenizer)
-    
-    # if args.model_type == "sft_adapter":
-    #     sft_train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics, datasets)
-    # else:
-    #     train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
+    # compute_metrics = compute_metrics_equation(tokenizer)
 
     train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
 
@@ -110,7 +108,7 @@ if __name__ == '__main__':
     parser.add_argument('--eval_steps', type=int, default=250)
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--optimizer_name', type=str, default='AdamW')
-    parser.add_argument('--lr', type=float, default=5e-5)
+    parser.add_argument('--lr', type=float, default=1e-05)
     parser.add_argument('--run', type=int, default=0)
     parser.add_argument('--from_pretrained', type=str, default='google/t5-v1_1-base')
     parser.add_argument('--label_type', type=str, default='gt')
@@ -132,4 +130,16 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    run(args)
+    # run(args)
+    
+    to_email = "rosaliu.567@gmail.com"
+    send_email('模型训练开始', '您的模型已经开始训练。', to_email)
+    try:  
+        run(args)
+        # to_email = "rosaliu.567@gmail.com"
+        send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
+    except Exception as e:
+        print(e)
+        # to_email = "rosaliu.567@gmail.com"
+        send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
+       

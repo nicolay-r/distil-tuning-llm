@@ -1,13 +1,12 @@
 
 Standard debugging: 
 python standard_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --llm gt --model_type standard --eval_steps 50 --batch_size 8 --grad_steps 2 --addi_info ds 
+deepspeed standard_finetune.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type standard --max_steps 10000 --eval_steps 500 --batch_size 2 --grad_steps 1 --weight 1 --alpha 0 --addi_info distill_standard --deepspeed configs/ds_config_zero2.json
 
-deepspeed standard_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --llm gt --model_type standard --eval_steps 50 --batch_size 1 --grad_steps 1 --addi_info standard --deepspeed configs/ds_config_zero2.json
-CUDA_VISIBLE_DEVICES=0 deepspeed distill_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --eval_steps 50 --batch_size 4 --grad_steps 2 --weight 50 --addi_info pred_50 --deepspeed configs/ds_config_zero2.json
 PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:500 deepspeed standard_finetune.py --from_pretrained google/t5-v1_1-xl --dataset medqa_d2n --llm gt --model_type standard --eval_steps 50 --batch_size 1 --grad_steps 1 --addi_info xl --deepspeed configs/ds_config_zero2.json
 
 
-Distill finetuning:{'accuracy': 0.0, 'eval_test_loss': 2.6771438121795654}
+Distill finetuning:
 CUDA_VISIBLE_DEVICES=0 python distill_finetune.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --eval_steps 200 --batch_size 4 --grad_steps 2 --addi_info pred_10
 
 deepspeed distill_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type task_prefix --max_steps 500 --eval_steps 2 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info distill_sml --deepspeed configs/ds_config_zero2.json
@@ -21,17 +20,6 @@ deepspeed adpt_finetune.py --from_pretrained google/flan-t5-small --dataset medq
 deepspeed coT_step2.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type CoT --max_steps 10000 --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info CoT_xl --deepspeed configs/ds_config_zero2.json
 
 WANDB_PROJECT=huggingface-demo TASK_NAME=MRPC deepspeed distill_finetune.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type task_prefix --max_steps 10 --eval_steps 5 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info distill_sml --deepspeed configs/ds_config_zero2.json
-
-coT_step2.py --from_pretrained google/flan-t5-small --dataset medqa_d2n --model_type CoT --max_steps 1500 --eval_steps 5 --batch_size 1 --grad_steps 1 --weight 1000 --addi_info cot_sml --deepspeed configs/ds_config_zero2.json
-
-
-python distill_finetune.py --from_pretrained google/t5-v1_1-base --dataset medqa_d2n --model_type task_prefix --eval_steps 5 --batch_size 1 --grad_steps 2 --addi_info pred_1000
-
-Distill Inference:
-python inference.py --from_pretrained google/t5-v1_1-small --dataset medqa_d2n --model_type task_prefix --addi_info pred_10 --best_step 10000
-
-Sft inference:
-python inference.py --from_pretrained google/t5-v1_1-large --dataset medqa_d2n --model_type standard --addi_info _d2n --best_step 10000
 
 deepspeed --include localhost:1 standard_finetune.py --from_pretrained google/flan-t5-xxl --dataset medqa_n2d --llm gt --model_type standard --eval_steps 5 --batch_size 1 --grad_steps 4 --addi_info ds --deepspeed configs/ds_config_zero2.json
 
@@ -79,7 +67,6 @@ def compute_loss(self, model, inputs, return_outputs=False):
     cos = nn.CosineSimilarity(dim=1, eps=1e-6)
     p_mean = torch.mean(pred_outputs.encoder_last_hidden_state, dim=1)
     e_mean = torch.mean(expl_outputs.encoder_last_hidden_state, dim=1)
-    # breakpoint()
     loss2 = 1 -cos(p_mean, e_mean)
     loss= loss2[0]*10000
     #loss = self.alpha * pred_outputs.loss*self.weight + (1. - self.alpha) * expl_outputs.loss

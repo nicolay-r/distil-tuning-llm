@@ -5,8 +5,8 @@ TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to 
 
 OUTPUT_DIR="./output"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
-CKPT_DIR="../ckpts/task_prefix/flan-t5-large_dstl_xl_28_rouge/checkpoint-9000/pytorch_model.bin"
-
+CKPT_DIR="../ckpts/adapter/flan-t5-small_distill_adpt/checkpoint-2/"
+# /root/distill-d2n/ckpts/adapter/flan-t5-small_distill_adpt/checkpoint-2/pytorch_model.bin
 
 # Notes:
 # - The model will be downloaded from the HuggingFace model hub
@@ -34,6 +34,7 @@ python3 ./run_summarization.py "./conf/base.yml" "./conf/taskA.yml" output_dir="
     load_best_model_at_end=false \
     bertscore_model_type=null \
     bleurt_checkpoint=null \
+    model_type=adapter \
     
     
    

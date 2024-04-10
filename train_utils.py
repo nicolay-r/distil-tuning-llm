@@ -42,11 +42,25 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     set_seed(run)
     
     if args.model_type == 'adapter':
-        from adapters import AutoAdapterModel
-        model = AutoAdapterModel.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
-        model.add_adapter("xiaoxiao_adapter_a")
-        model.train_adapter("xiaoxiao_adapter_a")
-        # model = MultiLossT5.from_pretrained(args.from_pretrained)
+        # from adapters import AutoAdapterModel
+        from transformers import AutoModelForSeq2SeqLM
+        # from peft import get_peft_config, get_peft_model, get_peft_model_state_dict, PromptTuningConfig, TaskType
+        from peft import get_peft_model, PromptTuningInit, PromptTuningConfig, TaskType
+        
+        
+        peft_config = PromptTuningConfig(
+            task_type=TaskType.SEQ_2_SEQ_LM,
+            prompt_tuning_init=PromptTuningInit.TEXT,
+            num_virtual_tokens=20,
+            prompt_tuning_init_text="\n",
+            inference_mode=False,
+            tokenizer_name_or_path=args.from_pretrained,
+        )
+        model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
+        model = get_peft_model(model, peft_config)
+        model.print_trainable_parameters()
+        # breakpoint()
+
     else:
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
     
@@ -165,5 +179,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     set_wandb(trainer_kwargs)
 
     wandb.watch(model, log = 'gradients')
+
     trainer.train()
     wandb.finish()
+    
+    # train_adapter()

@@ -234,7 +234,7 @@ class AdapterDataCollator(DataCollatorForSeq2Seq):
             'expl': expl_features,
         }
         
-class AdptTrainer(Seq2SeqAdapterTrainer):
+class AdptTrainer(Seq2SeqTrainer):
     def __init__(self, alpha, output_rationale, weight, data_collator=None,**kwargs):
         super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。
         self.alpha = alpha

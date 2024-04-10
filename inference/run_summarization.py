@@ -74,6 +74,10 @@ class ModelArguments:
         default=None,
         metadata={"help": "Where to store the pretrained models downloaded from huggingface.co"},
     )
+    model_type: str = field(
+        default=None,
+        metadata={"help": "adapter or task_prefix"},
+    )
     use_fast_tokenizer: bool = field(
         default=True,
         metadata={"help": "Whether to use one of the fast tokenizer (backed by the tokenizers library) or not."},
@@ -439,17 +443,23 @@ def main():
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
     )
-    model = AutoModelForSeq2SeqLM.from_pretrained(
-        model_args.model_name_or_path,
-        from_tf=bool(".ckpt" in model_args.model_name_or_path),
-        config=config,
-        revision=model_args.model_revision,
-        use_auth_token=True if model_args.use_auth_token else None,
-    )
-    
-    model_dir = model_args.checkpoint_dir
-    checkpoint = torch.load(model_dir, map_location="cpu") #读取本地训练好的chekpoint
-    model.load_state_dict(checkpoint)
+    if model_args.model_type == 'adapter':
+        from peft import PeftModel, PeftConfig
+        model_dir = model_args.checkpoint_dir
+        config = PeftConfig.from_pretrained(model_dir)
+        model = AutoModelForSeq2SeqLM.from_pretrained(config.base_model_name_or_path)
+        model = PeftModel.from_pretrained(model, model_dir)
+    else:
+        model = AutoModelForSeq2SeqLM.from_pretrained(
+            model_args.model_name_or_path,
+            from_tf=bool(".ckpt" in model_args.model_name_or_path),
+            config=config,
+            revision=model_args.model_revision,
+            use_auth_token=True if model_args.use_auth_token else None,
+        )
+        model_dir = model_args.checkpoint_dir
+        checkpoint = torch.load(f"{model_dir}pytorch_model.bin", map_location="cpu") #读取本地训练好的chekpoint
+        model.load_state_dict(checkpoint)
     
    
 

@@ -33,7 +33,7 @@
   "output_dir": "./output",
   "model_name_or_path": "google/flan-t5-large",
   "summary_column": "dialogue",
-  "checkpoint_dir": "../ckpts/task_prefix/flan-t5-large_dstl_xl_28_rouge/checkpoint-9000/pytorch_model.bin",
+  "checkpoint_dir": "../ckpts/adapter/flan-t5-small_distill_adpt/checkpoint-2/",
   "train_file": null,
   "validation_file": null,
   "test_file": "../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json",
@@ -41,5 +41,6 @@
   "do_train": false,
   "do_eval": false,
   "bertscore_model_type": null,
-  "bleurt_checkpoint": null
+  "bleurt_checkpoint": null,
+  "model_type": "adapter"
 }

@@ -19,7 +19,7 @@ CUDA_VISIBLE_DEVICES=0 deepspeed distill_finetune.py --from_pretrained google/fl
 
 deepspeed distill_finetune.py --from_pretrained google/flan-t5-xl --dataset medqa_d2n --model_type task_prefix --max_steps 10000 --eval_steps 5 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info dstl_xl --deepspeed configs/ds_config_zero2.json
 
-deepspeed adpt_finetune.py --from_pretrained google/flan-t5-xxl --dataset medqa_d2n --model_type adapter --max_steps 500 --eval_steps 2 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.8 --addi_info distill_adpt --deepspeed configs/ds_config_zero2.json
+deepspeed adpt_finetune.py --from_pretrained google/flan-t5-xl --dataset medqa_d2n --model_type adapter --max_steps 10000 --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.8 --addi_info distill_adpt --deepspeed configs/ds_config_zero2.json
 
 deepspeed coT_step2.py --from_pretrained google/flan-t5-large --dataset medqa_d2n --model_type CoT --max_steps 10000 --eval_steps 500 --batch_size 1 --grad_steps 1 --weight 1 --alpha 0.5 --addi_info CoT_xl --deepspeed configs/ds_config_zero2.json
 

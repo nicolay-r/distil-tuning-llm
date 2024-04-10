@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import time
+from datetime import datetime
+
 import wandb
 import os
 import logging
@@ -35,7 +37,12 @@ def get_config_dir(args):
     return path
 
 def set_wandb(trainer_kwargs):
-    wandb.init(group="lmflow", project="new-sota-model", name=f"fine-tuning-{time.time()}", config=trainer_kwargs)
+    # 获取当前时间的时间戳
+    timestamp = time.time()
+
+    # 将时间戳转换为datetime对象
+    dt_object = datetime.fromtimestamp(timestamp)
+    wandb.init(group="lmflow", project="new-sota-model", name=f"fine-tuning-{dt_object}", config=trainer_kwargs)
 
 
 def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics):
@@ -64,8 +71,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     else:
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
     
-    
-
     if args.parallelize:
         model.parallelize() # 用于将 T5 模型的层分布到多个 GPU 上，以便并行处理。
     

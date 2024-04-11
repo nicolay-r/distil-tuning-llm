@@ -444,11 +444,31 @@ def main():
         use_auth_token=True if model_args.use_auth_token else None,
     )
     if model_args.model_type == 'adapter':
+        # from peft import PeftModel, PeftConfig
+        # model_dir = model_args.checkpoint_dir
+        # config = PeftConfig.from_pretrained(model_dir)
+        # model = AutoModelForSeq2SeqLM.from_pretrained(config.base_model_name_or_path)
+        # model = PeftModel.from_pretrained(model, model_dir)
         from peft import PeftModel, PeftConfig
-        model_dir = model_args.checkpoint_dir
-        config = PeftConfig.from_pretrained(model_dir)
-        model = AutoModelForSeq2SeqLM.from_pretrained(config.base_model_name_or_path)
-        model = PeftModel.from_pretrained(model, model_dir)
+
+        # peft_model_id = f"{model_name_or_path}_{peft_config.peft_type}_{peft_config.task_type}"
+
+        config = PeftConfig.from_pretrained(model_args.checkpoint_dir)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_args.model_name_or_path)
+        model = PeftModel.from_pretrained(model, model_args.checkpoint_dir)
+
+
+        # model = AutoModelForSeq2SeqLM.from_pretrained(model_args.model_name_or_path,
+        #     from_tf=bool(".ckpt" in model_args.model_name_or_path),
+        #     config=config,
+        #     revision=model_args.model_revision,
+        #     use_auth_token=True if model_args.use_auth_token else None,
+        # )
+        # model = get_peft_model(model, peft_config)
+        # model_dir = model_args.checkpoint_dir
+        # checkpoint = torch.load(f"{model_dir}pytorch_model.bin", map_location="cpu") #读取本地训练好的chekpoint
+        # model.load_state_dict(checkpoint)
+        # model.print_trainable_parameters()
     else:
         model = AutoModelForSeq2SeqLM.from_pretrained(
             model_args.model_name_or_path,

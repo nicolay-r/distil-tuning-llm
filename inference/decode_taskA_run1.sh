@@ -5,7 +5,7 @@ TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to 
 
 OUTPUT_DIR="./output"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
-CKPT_DIR="../ckpts/adapter/flan-t5-small_distill_adpt/checkpoint-2/"
+CKPT_DIR="../ckpts/adapter/flan-t5-xl_distill_adpt_xl/checkpoint-7000/"
 # /root/distill-d2n/ckpts/adapter/flan-t5-small_distill_adpt/checkpoint-2/pytorch_model.bin
 
 # Notes:
@@ -18,7 +18,7 @@ CKPT_DIR="../ckpts/adapter/flan-t5-small_distill_adpt/checkpoint-2/"
 # - Use the run=1 argument to ensure that the output file is named correctly
 # 
 python3 ./run_summarization.py "./conf/base.yml" "./conf/taskA.yml" output_dir="$OUTPUT_DIR" \
-    model_name_or_path="google/flan-t5-large" \
+    model_name_or_path="google/flan-t5-xl" \
     summary_column="dialogue" \
     checkpoint_dir="$CKPT_DIR" \
     train_file=null \

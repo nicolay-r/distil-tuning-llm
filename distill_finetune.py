@@ -9,7 +9,6 @@ from wandb import AlertLevel
 
 
     
-    
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -18,10 +17,8 @@ def send_email(subject, message, to_email):
     with open("./k.txt",'r') as k:
         psw = k.read()
     k.close()
-    
     from_email = 'rosaliu.567@gmail.com'
     password = psw
-    
     msg = MIMEMultipart()
     msg['From'] = from_email
     msg['To'] = to_email

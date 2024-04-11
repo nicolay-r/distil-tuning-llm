@@ -52,17 +52,27 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         # from adapters import AutoAdapterModel
         from transformers import AutoModelForSeq2SeqLM
         # from peft import get_peft_config, get_peft_model, get_peft_model_state_dict, PromptTuningConfig, TaskType
-        from peft import get_peft_model, PromptTuningInit, PromptTuningConfig, TaskType
+        from peft import get_peft_model, PromptTuningInit, PromptTuningConfig, TaskType, PeftConfig
+        from peft import get_peft_config, get_peft_model, get_peft_model_state_dict, LoraConfig, TaskType
+
         
+        '''
+        fan_in_fan_out (bool)：是否将层的存储形式替换成 (fan_in, fan_out) 的样子，默认为False；
+        bias (str)：是否添加偏置。参数选择为：[“none”,“all”,“lora_only”]。如果为"all"或"lora_only"，则相应的偏差将在训练期间更新；
+        modules_to_save (List[str])：要在训练过程中保存的模块列表，默认为None 表示不保存；
+        '''
+
+        peft_config = LoraConfig(
+            task_type=TaskType.SEQ_2_SEQ_LM, 
+            inference_mode=False, 
+            # target_modules (Union[List[str],str])：添加lora的目标模块名称；
+            r=8, # 低秩矩阵的维度，通常是1、2、4、8、16、32、64；
+            lora_alpha=8, # 缩放参数，控制低秩矩阵的适应程度——越小的值对模型参数进行压缩的越强烈，可能会影响模型性能；越大的值，则减轻了对模型参数的压缩，可能保留了更多的模型性能。不同的模型可能有不同的默认值和具体用法；
+            lora_dropout=0.1 #防止过拟合的dropout；
+            )
+
+
         
-        peft_config = PromptTuningConfig(
-            task_type=TaskType.SEQ_2_SEQ_LM,
-            prompt_tuning_init=PromptTuningInit.TEXT,
-            num_virtual_tokens=20,
-            prompt_tuning_init_text="\n",
-            inference_mode=False,
-            tokenizer_name_or_path=args.from_pretrained,
-        )
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
@@ -95,14 +105,14 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         os.removedirs(output_dir)
     # 路径整理完了
     
-    # 设置一些训练中的细节参数
+    # 设置一些训练中的细节参数 -- step --
     training_args = Seq2SeqTrainingArguments(
         output_dir,                         # 输出目录，模型和训练日志将被保存在这里
         report_to = "none",
         remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列
         evaluation_strategy = 'steps',      # 评估策略，这里设置为“steps”，表示按步数进行评估
         eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
-        save_strategy='steps',                 # 保存策略，这里设置为“no”，表示不自动保存模型
+        save_strategy='steps',                 # 保存策略
         save_steps=args.eval_steps,         # 每隔多少步保存一次模型
         logging_dir=logging_dir,            # 日志目录，训练日志将被保存在这里
         logging_strategy=logging_strategy,  # 日志记录策略，目前是step
@@ -112,7 +122,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         warmup_steps=1000,
         gradient_accumulation_steps=args.grad_steps,  # 梯度累积步数，用于实现更大的有效批大小
         per_device_train_batch_size=args.batch_size,  # 每个设备上的训练批大小
-        per_device_eval_batch_size=args.batch_size,   # 每个设备上的评估批大小
+        per_device_eval_batch_size=2,   # 每个设备上的评估批大小
         predict_with_generate=True,         # 是否使用生成模式进行预测
         seed=run,                           # 随机种子，用于确保结果可复现
         local_rank=args.local_rank,         # 本地排名，用于分布式训练
@@ -125,6 +135,37 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         metric_for_best_model="test_accuracy",
         greater_is_better=True
     )
+    # -- epoch --
+    # training_args = Seq2SeqTrainingArguments(
+    #     output_dir,                         # 输出目录，模型和训练日志将被保存在这里
+    #     report_to = "none",
+    #     remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列
+    #     evaluation_strategy = 'epoch',      # 评估策略，这里设置为“steps”，表示按步数进行评估
+    #     num_train_epochs=0.01,
+    #     # eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
+    #     save_strategy='epoch',                 # 保存策略
+    #     save_steps=args.eval_steps,         # 每隔多少步保存一次模型
+    #     logging_dir=logging_dir,            # 日志目录，训练日志将被保存在这里
+    #     logging_strategy="epoch",  # 日志记录策略，目前是step
+    #     logging_steps=1,      # 每隔多少步记录一次日志
+    #     # max_steps=args.max_steps,           # 最大步数，训练将在达到这个步数后停止
+    #     learning_rate=args.lr,              # 学习率
+    #     warmup_steps=1000,
+    #     gradient_accumulation_steps=args.grad_steps,  # 梯度累积步数，用于实现更大的有效批大小
+    #     per_device_train_batch_size=args.batch_size,  # 每个设备上的训练批大小
+    #     per_device_eval_batch_size=args.batch_size,   # 每个设备上的评估批大小
+    #     predict_with_generate=True,         # 是否使用生成模式进行预测
+    #     seed=run,                           # 随机种子，用于确保结果可复现
+    #     local_rank=args.local_rank,         # 本地排名，用于分布式训练
+    #     bf16=args.bf16,                     # 是否使用bfloat16进行训练，这可以提高性能
+    #     generation_max_length=args.gen_max_len,      # 生成的最大长度
+    #     prediction_loss_only=False,         # 是否只预测损失，这里设置为False
+    #     deepspeed=args.deepspeed,
+    #     save_total_limit=1,
+    #     load_best_model_at_end=True,
+    #     metric_for_best_model="test_accuracy",
+    #     greater_is_better=True
+    # )
     
 
     if args.model_type == 'task_prefix':

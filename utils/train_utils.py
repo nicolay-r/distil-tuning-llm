@@ -26,7 +26,7 @@ from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
 from utils.data_utils import MEDQADatasetLoader
 
-from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefix_COS, CoTDataCollator, CoTTrainer, AdapterDataCollator, AdptTrainer
+from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskPrefix_COS, CoTTrainer, AdptTrainer,TaskPrefixTrainerWithHead
 
 
 def get_config_dir(args):
@@ -190,10 +190,12 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         'compute_metrics': compute_metrics,        
     }
 
-
+    # breakpoint()
     if args.model_type == 'task_prefix':
         if args.cos_sim:
             trainer = TaskPrefix_COS(**trainer_kwargs)
+        elif args.with_head:
+            trainer = TaskPrefixTrainerWithHead(**trainer_kwargs)
         else:
             trainer = TaskPrefixTrainer(**trainer_kwargs)
     elif args.model_type == 'CoT':

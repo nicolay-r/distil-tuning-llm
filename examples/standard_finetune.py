@@ -1,16 +1,17 @@
+import sys
+sys.path.append("..")  # 添加上层目录到路径中，使得 utils 模块可以被找到
 import argparse
 from datasets import DatasetDict, concatenate_datasets
 from transformers import AutoTokenizer
-from data_utils import MEDQADatasetLoader
-from metrics import compute_metrics_equation_aux, compute_metrics_equation
-from train_utils import train_and_evaluate
+from utils.data_utils import MEDQADatasetLoader
+from utils.metrics import compute_metrics_equation_aux, compute_metrics_equation
+from utils.train_utils import train_and_evaluate
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-# from sft_adapter import sft_train_and_evaluate
 
 def send_email(subject, message, to_email):
-    with open("./k.txt",'r') as k:
+    with open("../app_keys/k.txt",'r') as k:
         psw = k.read()
     k.close()
     
@@ -36,33 +37,12 @@ def send_email(subject, message, to_email):
 def run(args):
     # breakpoint()
     #### Prepare datasets
-    # if args.dataset == 'medqa_d2n': #设置哪个数据加载器
     dataset_loader = MEDQADatasetLoader(args.dataset, args.model_type)
-    # else:
-    #     raise ValueError
+    
     # 加载数据
     datasets = dataset_loader.load_from_json()
     # breakpoint()
     # # 整理数据集的label
-
-    if args.llm == 'gt':
-        train_llm_labels = dataset_loader.load_gt_preds(split='train')
-        test_llm_labels = dataset_loader.load_gt_preds(split='test')
-        valid_llm_labels = dataset_loader.load_gt_preds(split='valid')
-        
-    if args.llm is not None:
-        # breakpoint()
-        datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
-        datasets['test'] = datasets['test'].add_column('llm_label', test_llm_labels)
-        print(len(datasets['train']))
-        # datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
-        # datasets['test'] = datasets['test'].add_column('llm_rationale', test_llm_rationales)
-        print(len(datasets['test']))
-        # 给验证集添加 label
-        datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
-        # datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
-        print(len(datasets['valid']))
-        
 
     #### Prepare datasets Prepare data for training
     tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
@@ -78,7 +58,7 @@ def run(args):
         )
 
         with tokenizer.as_target_tokenizer():
-            label_output_encodings = tokenizer(examples['output'], max_length=1024, truncation=True) #设置最大长度为 256，并在超出时截断文本。
+            label_output_encodings = tokenizer(examples['output'], max_length=1024, truncation=True) #设置最大长度为1024，并在超出时截断文本。
 
         model_inputs['labels'] = label_output_encodings['input_ids']
         
@@ -106,7 +86,8 @@ if __name__ == '__main__':
     parser.add_argument('--alpha', type=float, default=0.5)
     parser.add_argument('--max_steps', type=int, default=10000)
     parser.add_argument('--eval_steps', type=int, default=250)
-    parser.add_argument('--batch_size', type=int, default=64)
+    parser.add_argument('--batch_size_train', type=int, default=64)
+    parser.add_argument('--batch_size_eval', type=int, default=64)
     parser.add_argument('--optimizer_name', type=str, default='AdamW')
     parser.add_argument('--lr', type=float, default=1e-05)
     parser.add_argument('--run', type=int, default=0)
@@ -130,16 +111,16 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # run(args)
+    run(args)
     
-    to_email = "rosaliu.567@gmail.com"
-    send_email('模型训练开始', '您的模型已经开始训练。', to_email)
-    try:  
-        run(args)
-        # to_email = "rosaliu.567@gmail.com"
-        send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
-    except Exception as e:
-        print(e)
-        # to_email = "rosaliu.567@gmail.com"
-        send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
+    # to_email = "rosaliu.567@gmail.com"
+    # send_email('模型训练开始', '您的模型已经开始训练。', to_email)
+    # try:  
+    #     run(args)
+    #     # to_email = "rosaliu.567@gmail.com"
+    #     send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
+    # except Exception as e:
+    #     print(e)
+    #     # to_email = "rosaliu.567@gmail.com"
+    #     send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
        

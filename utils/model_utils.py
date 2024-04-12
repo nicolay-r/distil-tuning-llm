@@ -19,13 +19,13 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from torch import nn
 from transformers import DataCollatorForSeq2Seq
 from transformers import Seq2SeqTrainer
-from data_utils import MEDQADatasetLoader
+from utils.data_utils import MEDQADatasetLoader
 import wandb
 from transformers import AutoTokenizer
-model_name = "t5-v1_1-base"
-from_pretrained = "google/{}".format(model_name)
-tokenizer = AutoTokenizer.from_pretrained(from_pretrained)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# model_name = "t5-v1_1-base"
+# from_pretrained = "google/{}".format(model_name)
+# tokenizer = AutoTokenizer.from_pretrained(from_pretrained)
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 """T5 Multi-Task by Task Prefix

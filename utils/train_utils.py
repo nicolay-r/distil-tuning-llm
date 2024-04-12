@@ -24,11 +24,9 @@ from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer
 from transformers import T5ForConditionalGeneration
 from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
-from data_utils import MEDQADatasetLoader
-# from transformers import EarlyStoppingCallback
+from utils.data_utils import MEDQADatasetLoader
 
-# from models import MultiLossT5
-from model_utils import TaskPrefixDataCollator, TaskPrefixTrainer, CoTDataCollator, CoTTrainer, AdapterDataCollator, AdptTrainer
+from utils.model_utils import TaskPrefixDataCollator, TaskPrefixTrainer, CoTDataCollator, CoTTrainer, AdapterDataCollator, AdptTrainer
 
 
 def get_config_dir(args):
@@ -66,9 +64,9 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
             task_type=TaskType.SEQ_2_SEQ_LM, 
             inference_mode=False, 
             # target_modules (Union[List[str],str])：添加lora的目标模块名称；
-            r=8, # 低秩矩阵的维度，通常是1、2、4、8、16、32、64；
-            lora_alpha=8, # 缩放参数，控制低秩矩阵的适应程度——越小的值对模型参数进行压缩的越强烈，可能会影响模型性能；越大的值，则减轻了对模型参数的压缩，可能保留了更多的模型性能。不同的模型可能有不同的默认值和具体用法；
-            lora_dropout=0.01 #防止过拟合的dropout；
+            r=args.rank, # 低秩矩阵的维度，通常是1、2、4、8、16、32、64；
+            lora_alpha=args.lora_alpha, # 缩放参数，控制低秩矩阵的适应程度——越小的值对模型参数进行压缩的越强烈，可能会影响模型性能；越大的值，则减轻了对模型参数的压缩，可能保留了更多的模型性能。不同的模型可能有不同的默认值和具体用法；
+            lora_dropout=args.lora_dropout #防止过拟合的dropout；
             )
         
         # r=4: trainable params: 2,359,296 || all params: 2,852,116,480 || trainable%: 0.08272088522836206
@@ -76,39 +74,23 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         # r=2: trainable params: 1,179,648 || all params: 2,850,936,832 || trainable%: 0.04137755655471499
         # r=1: trainable params: 589,824 || all params: 2,850,347,008 || trainable%: 0.0206930594185394
 
-
-
-
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
-        # breakpoint()
+
 
     else:
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
     # breakpoint()
     if args.parallelize:
-        # print("有")
-        # print(args.parallelize)
-        # print(args.bf16)
         model.parallelize() # 用于将 T5 模型的层分布到多个 GPU 上，以便并行处理。
     
     # 整理路径
     config_dir = get_config_dir(args)
-    output_dir = f'ckpts/{config_dir}'  # for model ckpts
-    logging_dir = f'logs/{config_dir}'  # for training logs
+    output_dir = f'../ckpts/{config_dir}'  # for model ckpts
+    # logging_dir = f'logs/{config_dir}'  # for training logs
     print("output dir: {}".format(output_dir))
-    print("log dir: {}".format(logging_dir))
-
-    if args.no_log:
-        # print("有")
-        logging_strategy = 'no'
-        logging_dir = None
-    else:
-        # 走的这里
-        logging_strategy = 'steps'
    
-    # clear output dir if already exists
     if os.path.exists(output_dir):
         logging.info('Found existing ckpt directory. Deleted the old directory for the latest run.')
         os.removedirs(output_dir)
@@ -123,15 +105,13 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
         save_strategy='steps',                 # 保存策略
         save_steps=args.eval_steps,         # 每隔多少步保存一次模型
-        logging_dir=logging_dir,            # 日志目录，训练日志将被保存在这里
-        logging_strategy=logging_strategy,  # 日志记录策略，目前是step
         logging_steps=1,      # 每隔多少步记录一次日志
         max_steps=args.max_steps,           # 最大步数，训练将在达到这个步数后停止
         learning_rate=args.lr,              # 学习率
         warmup_steps=1000,
         gradient_accumulation_steps=args.grad_steps,  # 梯度累积步数，用于实现更大的有效批大小
-        per_device_train_batch_size=args.batch_size,  # 每个设备上的训练批大小
-        per_device_eval_batch_size=args.batch_size * 2,   # 每个设备上的评估批大小
+        per_device_train_batch_size=args.batch_size_train,  # 每个设备上的训练批大小
+        per_device_eval_batch_size=args.batch_size_eval,   # 每个设备上的评估批大小
         predict_with_generate=True,         # 是否使用生成模式进行预测
         seed=run,                           # 随机种子，用于确保结果可复现
         local_rank=args.local_rank,         # 本地排名，用于分布式训练

@@ -1,12 +1,14 @@
+import sys
+sys.path.append("..")  # 添加上层目录到路径中，使得 utils 模块可以被找到
+from utils.data_utils import MEDQADatasetLoader
 import argparse
 from datasets import DatasetDict, concatenate_datasets
 from transformers import AutoTokenizer
-from data_utils import MEDQADatasetLoader
-from metrics import compute_text_acc, compute_equation_acc, compute_metrics_text, compute_metrics_equation, compute_metrics_text_aux, compute_metrics_equation_aux
-from train_utils import train_and_evaluate
+# from ..utils.data_utils import MEDQADatasetLoader
+from utils.metrics import compute_text_acc, compute_equation_acc, compute_metrics_text, compute_metrics_equation, compute_metrics_text_aux, compute_metrics_equation_aux
+from utils.train_utils import train_and_evaluate
 import wandb
 from wandb import AlertLevel
-
 
     
 import smtplib
@@ -14,7 +16,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def send_email(subject, message, to_email):
-    with open("./k.txt",'r') as k:
+    with open("../app_keys/k.txt",'r') as k:
         psw = k.read()
     k.close()
     from_email = 'rosaliu.567@gmail.com'
@@ -61,12 +63,12 @@ def run(args):
     datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
 
 
-    if args.llm is not None: # 重命名rationale
-        if 'rationale' in datasets['train'].column_names:
-            datasets = datasets.remove_columns('rationale')
-        datasets = datasets.rename_column('llm_rationale', 'rationale')
-        if 'output' in datasets['train'].column_names:
-            datasets = datasets.rename_column('output', 'label')
+    # if args.llm is not None: # 重命名rationale
+    if 'rationale' in datasets['train'].column_names:
+        datasets = datasets.remove_columns('rationale')
+    datasets = datasets.rename_column('llm_rationale', 'rationale')
+    if 'output' in datasets['train'].column_names:
+        datasets = datasets.rename_column('output', 'label')
         
 
     #### Prepare datasets Prepare data for training
@@ -96,20 +98,12 @@ def run(args):
 
         return model_inputs
 
-    if args.llm is None:
-        print("这里有")
-        tokenized_datasets = datasets.map(
-            tokenize_function,
-            remove_columns=['input', 'output'],
-            batched=True
-        )
-    else:
-        print("这里mei有")
-        tokenized_datasets = datasets.map(
-            tokenize_function,
-            remove_columns=['input', 'rationale', 'label', 'llm_label'],
-            batched=True
-        )
+
+    tokenized_datasets = datasets.map(
+        tokenize_function,
+        remove_columns=['input', 'rationale', 'label', 'llm_label'],
+        batched=True
+    )
     compute_metrics = compute_metrics_equation(tokenizer)
 
 
@@ -125,13 +119,13 @@ if __name__ == '__main__':
     parser.add_argument('--alpha', type=float, default=0.5)
     parser.add_argument('--max_steps', type=int, default=1000)
     parser.add_argument('--eval_steps', type=int, default=250)
-    parser.add_argument('--batch_size', type=int, default=64)
+    parser.add_argument('--batch_size_train', type=int, default=64)
+    parser.add_argument('--batch_size_eval', type=int, default=64)
     parser.add_argument('--optimizer_name', type=str, default='AdamW')
     parser.add_argument('--lr', type=float, default=1e-05)
     parser.add_argument('--run', type=int, default=0)
     parser.add_argument('--from_pretrained', type=str, default='google/t5-v1_1-base')
     parser.add_argument('--label_type', type=str, default='gt')
-    parser.add_argument('--llm', type=str, default='palm')
     parser.add_argument('--max_input_length', type=int, default=1024)
     parser.add_argument('--grad_steps', type=int, default=1)
     parser.add_argument('--local_rank', type=int, default=-1)
@@ -144,20 +138,24 @@ if __name__ == '__main__':
     parser.add_argument('--addi_info', type=str, default="")
     parser.add_argument("--deepspeed", type=str, default=None, help="Path to deepspeed config file.")
     parser.add_argument('--weight', type=int, default=1)
+    
+    parser.add_argument('--rank', type=int, default=8)
+    parser.add_argument('--lora_alpha', type=int, default=8)
+    parser.add_argument('--lora_dropout', type=float, default=0.1)
 
     args = parser.parse_args()
     
     
-    # run(args)
+    run(args)
     
-    to_email = "rosaliu.567@gmail.com"
-    send_email('模型训练开始', '您的模型已经开始训练。', to_email)
-    try:  
-        run(args)
-        # to_email = "rosaliu.567@gmail.com"
-        send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
-    except Exception as e:
-        print(e)
-        # to_email = "rosaliu.567@gmail.com"
-        send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
+    # to_email = "rosaliu.567@gmail.com"
+    # send_email('模型训练开始', '您的模型已经开始训练。', to_email)
+    # try:  
+    #     run(args)
+    #     # to_email = "rosaliu.567@gmail.com"
+    #     send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
+    # except Exception as e:
+    #     print(e)
+    #     # to_email = "rosaliu.567@gmail.com"
+    #     send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
        

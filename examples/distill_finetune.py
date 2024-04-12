@@ -139,6 +139,8 @@ if __name__ == '__main__':
     parser.add_argument('--addi_info', type=str, default="")
     parser.add_argument("--deepspeed", type=str, default=None, help="Path to deepspeed config file.")
     parser.add_argument('--weight', type=int, default=1)
+    parser.add_argument('--cos_sim', action='store_true')
+    
 
     args = parser.parse_args()
     

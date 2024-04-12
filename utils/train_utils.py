@@ -157,22 +157,23 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     # )
     
 
-    if args.model_type == 'task_prefix':
-        print("model_type: {}".format(args.model_type))
-        # rouge_metric = datasets.load_metric("rouge")
-        data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
-    elif args.model_type == 'CoT':
-        print("model_type: {}".format(args.model_type))
-        data_collator = CoTDataCollator(tokenizer=tokenizer, model=model)
-    elif args.model_type == 'adapter':
-        print("model_type: {}".format(args.model_type))
-        data_collator = AdapterDataCollator(tokenizer=tokenizer, model=model)
-    elif args.model_type == 'standard':
+    # if args.model_type == 'task_prefix':
+    #     print("model_type: {}".format(args.model_type))
+    #     # rouge_metric = datasets.load_metric("rouge")
+    #     data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
+    # elif args.model_type == 'CoT':
+    #     print("model_type: {}".format(args.model_type))
+    #     data_collator = CoTDataCollator(tokenizer=tokenizer, model=model)
+    # elif args.model_type == 'adapter':
+    #     print("model_type: {}".format(args.model_type))
+    #     data_collator = AdapterDataCollator(tokenizer=tokenizer, model=model)
+    if args.model_type == 'standard':
         print("model_type: {}".format(args.model_type))
         data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
     else:
-        raise ValueError
-    
+        print("model_type: {}".format(args.model_type))
+        # rouge_metric = datasets.load_metric("rouge")
+        data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
 
     
     

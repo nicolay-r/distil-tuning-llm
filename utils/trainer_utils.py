@@ -58,7 +58,6 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
     
     def compute_loss(self, model, inputs, return_outputs=False):
-        
         pred_outputs = model(**inputs['pred'])
         expl_outputs = model(**inputs['expl'])
         '''
@@ -225,26 +224,6 @@ class TaskPrefix_COS(Seq2SeqTrainer):
         )
 
 
-class CoTDataCollator(DataCollatorForSeq2Seq):
-    def __call__(self, features, return_tensors=None):
-        features_df = pd.DataFrame(features)
-        pred_features = features_df.loc[:, ~features_df.columns.isin(['aux_labels', 'expl_input_ids', 'expl_attention_mask'])].to_dict('records')
-        expl_features = features_df.loc[:, ~features_df.columns.isin(['labels', 'input_ids', 'attention_mask'])].rename(
-            columns={'aux_labels': 'labels', 'expl_input_ids': 'input_ids', 'expl_attention_mask': 'attention_mask'}).to_dict('records')
-        # aux_labels: rationale_output_encodings['input_ids']
-        # breakpoint()
-        '''
-        tokenizer.decode(expl_features['labels'][1], skip_special_tokens=True)
-        '''
-        pred_features = super().__call__(pred_features, return_tensors)
-        expl_features = super().__call__(expl_features, return_tensors)
-        
-        return {
-            'pred': pred_features,
-            'expl': expl_features,
-        }
-
-
 class CoTTrainer(Seq2SeqTrainer):
     def __init__(self, alpha, output_rationale, weight, data_collator=None,**kwargs):
         super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。
@@ -294,23 +273,6 @@ class CoTTrainer(Seq2SeqTrainer):
         return (loss, None, None)
 
 
-class AdapterDataCollator(DataCollatorForSeq2Seq):
-    def __call__(self, features, return_tensors=None):
-        features_df = pd.DataFrame(features)
-        pred_features = features_df.loc[:, ~features_df.columns.isin(['aux_labels', 'expl_input_ids', 'expl_attention_mask'])].to_dict('records')
-        expl_features = features_df.loc[:, ~features_df.columns.isin(['labels', 'input_ids', 'attention_mask'])].rename(
-            columns={'aux_labels': 'labels', 'expl_input_ids': 'input_ids', 'expl_attention_mask': 'attention_mask'}).to_dict('records')
-        # breakpoint()
-        '''
-        tokenizer.decode(expl_features['labels'][1], skip_special_tokens=True)
-        '''
-        pred_features = super().__call__(pred_features, return_tensors)
-        expl_features = super().__call__(expl_features, return_tensors)
-        
-        return {
-            'pred': pred_features,
-            'expl': expl_features,
-        }
         
 class AdptTrainer(Seq2SeqTrainer):
     def __init__(self, alpha, output_rationale, weight, data_collator=None,**kwargs):
@@ -320,17 +282,6 @@ class AdptTrainer(Seq2SeqTrainer):
         self.weight = weight
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
 
-    def training_step(self, model, inputs):
-        # 调用原始的 training_step
-        loss = super().training_step(model, inputs)
-        
-        # 获取当前学习率
-        current_lr = self.optimizer.param_groups[0]["lr"]
-        
-        # 使用 W&B 记录学习率
-        wandb.log({"learning_rate": current_lr}, step=self.state.global_step)
-        
-        return loss
     
     def compute_loss(self, model, inputs, return_outputs=False):
         # breakpoint()
@@ -345,6 +296,8 @@ class AdptTrainer(Seq2SeqTrainer):
         pred_labels = inputs['pred']['labels']  # Assuming true labels are here
         pred_preds = torch.argmax(pred_outputs.logits, dim=-1)
         pred_accuracy = (pred_preds == pred_labels).float().mean()
+        
+        current_lr = self.optimizer.param_groups[0]["lr"]
 
         # Example accuracy calculation for explanations (if applicable)
         expl_labels = inputs['expl']['labels']  # Assuming true labels for explanations
@@ -355,7 +308,8 @@ class AdptTrainer(Seq2SeqTrainer):
                    'train/loss_pred * alpha': self.alpha * pred_outputs.loss,
                    'train/loss_expl': expl_outputs.loss,
                    'train/pred_accuracy': pred_accuracy.item(),  # Logging prediction accuracy
-                    'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)          
+                    'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)   
+                    'learning_rate': current_lr      
                    },
                   step=self.state.global_step)
         

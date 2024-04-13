@@ -26,7 +26,7 @@ from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
 from utils.data_utils import MEDQADatasetLoader
 
-from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefix_COS, CoTDataCollator, CoTTrainer, AdapterDataCollator, AdptTrainer
+from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefix_COS, CoTTrainer, AdptTrainer
 
 
 def get_config_dir(args):

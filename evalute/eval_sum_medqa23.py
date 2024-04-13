@@ -1,4 +1,6 @@
 import sys
+
+sys.path.append("..")  # 添加上层目录到路径中，使得 utils 模块可以被找到
 import json
 import argparse
 import torch
@@ -6,7 +8,7 @@ import evaluate
 import pandas as pd
 import numpy as np
 
-from sectiontagger import SectionTagger
+from utils.sectiontagger import SectionTagger
 section_tagger = SectionTagger()
 
 
@@ -76,7 +78,7 @@ from email.mime.multipart import MIMEMultipart
 
 def send_email(subject, message, to_email):
     from_email = 'rosaliu.567@gmail.com'
-    with open("./k.txt", 'r') as k:
+    with open("../app_keys/k.txt", 'r') as k:
         psw = k.read()
     
     password = psw

@@ -34,4 +34,14 @@ sh decode_taskA_run1.sh
 copy generated_predictions_df.csv to ./distill-d2n
 3.
 cd distill-d2n
-python eval_sum_medqa23.py --task taskA --fn_eval_data "./inference/output/generated_predictions_df.csv"
+python eval_sum_medqa23.py --task taskA --fn_eval_data "./output/9500/generated_predictions_df.csv"
+
+
+	rouge1 -> 0.36
+	rouge2 -> 0.169
+	rougeL -> 0.305
+	rougeLsum -> 0.305
+	bertscore_precision -> 0.716
+	bertscore_recall -> 0.678
+	bertscore_f1 -> 0.691
+	bleurt -> 0.515

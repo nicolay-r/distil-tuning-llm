@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 
-#     https://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0为法国
 
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -352,23 +352,16 @@ class TaskPrefixTrainerWithHead(Seq2SeqTrainer):
         self.output_rationale = output_rationale
         self.weight = weight
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
-    
-    # def _task_head(self, inputs, model):
-    #     mlp_hidden_dim = 1024
-    #     output_dim = 10  # 假设你想提取的关键信息维度为10
-    #     model = T5WithMLPHead(model, mlp_hidden_dim, output_dim)
-    #     head_outputs = model(inputs_ids)
-    #     return head_outputs
         
     
     def compute_loss(self, model, inputs, return_outputs=False):
         pred_outputs = model(**inputs['pred'])
         # expl_outputs = model(**inputs['expl'])
         mlp_hidden_dim = 512
-        output_dim = 10  # 假设你想提取的关键信息维度为10
-        head_model = T5WithMLPHead(model, mlp_hidden_dim, output_dim, device)
+        output_dim = 17  # 假设你想提取的关键信息维度为10
+        head_model = T5WithMLPHead(model, mlp_hidden_dim, output_dim).to(device)
         # breakpoint()
-        expl_outputs = head_model(inputs['expl'])
+        expl_logits, expl_loss = head_model(inputs['expl'])
         '''
         Seq2SeqLMOutput,  model.forward()返回内容说明：
 
@@ -386,7 +379,7 @@ class TaskPrefixTrainerWithHead(Seq2SeqTrainer):
         
         
 
-        loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
+        loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_loss
         
         
         
@@ -398,18 +391,19 @@ class TaskPrefixTrainerWithHead(Seq2SeqTrainer):
         current_lr = self.optimizer.param_groups[0]["lr"]
         # Example accuracy calculation fprint(pred_outputs[0].shape)or explanations (if applicable)
         expl_labels = inputs['expl']['labels']  # Assuming true labels for explanations
-        expl_preds = torch.argmax(expl_outputs.logits, dim=-1)
-        expl_accuracy = (expl_preds == expl_labels).float().mean()
+        expl_preds = expl_logits
+        # breakpoint()
+        # expl_accuracy = (expl_preds == expl_labels).float().mean()
         wandb.log({'train/loss': loss, 
                    'train/loss_pred': pred_outputs.loss, 
-                   'train/loss_expl': expl_outputs.loss,
+                   'train/loss_expl': expl_loss,
                    'train/pred_accuracy': pred_accuracy.item(),  # Logging prediction accuracy
-                    'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)    
+                    # 'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)    
                     'learning_rate': current_lr,    
                    },
                   step=self.state.global_step)
-        
-        return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
+        # breakpoint()
+        return (loss, {'pred': pred_outputs, 'expl': expl_loss}) if return_outputs else loss
     
     
     def prediction_step(

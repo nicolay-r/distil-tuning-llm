@@ -35,5 +35,6 @@ deepspeed distill_finetune.py \
     --addi_info $ADDITIONAL_INFO \
     --bf16 \
     --parallelize \
+    --deepspeed $CONFIG_FILE \
     --with_head \
-    --deepspeed $CONFIG_FILE
+    

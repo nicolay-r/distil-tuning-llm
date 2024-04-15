@@ -450,9 +450,6 @@ def main():
         # model = AutoModelForSeq2SeqLM.from_pretrained(config.base_model_name_or_path)
         # model = PeftModel.from_pretrained(model, model_dir)
         from peft import PeftModel, PeftConfig
-
-        # peft_model_id = f"{model_name_or_path}_{peft_config.peft_type}_{peft_config.task_type}"
-
         config = PeftConfig.from_pretrained(model_args.checkpoint_dir)
         model = AutoModelForSeq2SeqLM.from_pretrained(model_args.model_name_or_path)
         model = PeftModel.from_pretrained(model, model_args.checkpoint_dir)

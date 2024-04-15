@@ -1,13 +1,13 @@
 #!/bin/bash
 # Submits our Flan-T5 large based approach for task A
 
-TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
+TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test1.json"  # Provided to the script by the submission system
 
-OUTPUT_DIR="./output/9500"
+OUTPUT_DIR="./test1/9000"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
-CKPT_DIR="../ckpts/adapter/flan-t5-xl_distill_adpt_xl/checkpoint-9500/"
+CKPT_DIR="../ckpts/task_prefix/flan-t5-large_distill_large/checkpoint-9000/"
 # /root/distill-d2n/ckpts/adapter/flan-t5-xl_distill_adpt_xl/checkpoint-5000/pytorch_model.bin
-
+# /root/distill-d2n/ckpts/task_prefix/flan-t5-large_distill_large/checkpoint-9000/pytorch_model.bin
 
 # Notes:
 # - The model will be downloaded from the HuggingFace model hub
@@ -19,7 +19,7 @@ CKPT_DIR="../ckpts/adapter/flan-t5-xl_distill_adpt_xl/checkpoint-9500/"
 # - Use the run=1 argument to ensure that the output file is named correctly
 # 
 python3 ./run_summarization.py "./conf/base.yml" "./conf/taskA.yml" output_dir="$OUTPUT_DIR" \
-    model_name_or_path="google/flan-t5-xl" \
+    model_name_or_path="google/flan-t5-large" \
     summary_column="dialogue" \
     checkpoint_dir="$CKPT_DIR" \
     train_file=null \
@@ -35,7 +35,7 @@ python3 ./run_summarization.py "./conf/base.yml" "./conf/taskA.yml" output_dir="
     load_best_model_at_end=false \
     bertscore_model_type=null \
     bleurt_checkpoint=null \
-    model_type=adapter \
+    model_type=task_prefix \
     
     
-   
+# python eval_sum_medqa23.py --task taskA --fn_eval_data "./test1/9000/generated_predictions_df.csv"

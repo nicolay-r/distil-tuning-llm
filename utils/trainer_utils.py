@@ -357,9 +357,9 @@ class TaskPrefixTrainerWithHead(Seq2SeqTrainer):
     def compute_loss(self, model, inputs, return_outputs=False):
         pred_outputs = model(**inputs['pred'])
         # expl_outputs = model(**inputs['expl'])
-        mlp_hidden_dim = 512
-        output_dim = 17  # 假设你想提取的关键信息维度为10
-        head_model = T5WithMLPHead(model, mlp_hidden_dim, output_dim).to(device)
+        mlp_hidden_dim = 1024
+        # output_dim = 17  # 假设你想提取的关键信息维度为10
+        head_model = T5WithMLPHead(model, mlp_hidden_dim).to(device)
         # breakpoint()
         expl_logits, expl_loss = head_model(inputs['expl'])
         '''

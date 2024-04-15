@@ -6,7 +6,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 class T5WithMLPHead(nn.Module):
-    def __init__(self, model, mlp_hidden_dim, output_dim):
+    def __init__(self, model, mlp_hidden_dim):
         super(T5WithMLPHead, self).__init__()
         
         self.t5 = model  # 直接使用传递的T5模型实例
@@ -14,7 +14,7 @@ class T5WithMLPHead(nn.Module):
         self.mlp = nn.Sequential(
             nn.Linear(self.t5.model_dim, mlp_hidden_dim),  # d_model是T5模型的隐藏层维度
             nn.ReLU(),
-            nn.Linear(self.t5.model_dim, 32318),
+            nn.Linear(mlp_hidden_dim, 32318),
         )
 
     def forward(self, inputs, attention_mask=None):

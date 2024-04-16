@@ -51,11 +51,11 @@ class TaskPrefixDataCollator(DataCollatorForSeq2Seq):
 
 
 class TaskPrefixTrainer(Seq2SeqTrainer):
-    def __init__(self, alpha, output_rationale, weight, data_collator=None,**kwargs):
+    def __init__(self, alpha, data_collator=None,**kwargs):
         super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。
         self.alpha = alpha
-        self.output_rationale = output_rationale
-        self.weight = weight
+        # self.output_rationale = output_rationale
+        # self.weight = weight
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
     
     def compute_loss(self, model, inputs, return_outputs=False):
@@ -130,11 +130,11 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
         )
 
 class TaskPrefix_COS(Seq2SeqTrainer):
-    def __init__(self, alpha, output_rationale, weight, data_collator=None,**kwargs):
+    def __init__(self, alpha, data_collator=None,**kwargs):
         super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。
         self.alpha = alpha
-        self.output_rationale = output_rationale
-        self.weight = weight
+        # self.output_rationale = output_rationale
+        # self.weight = weight
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
 
     def _cosine_loss(self, pred_outputs, expl_outputs):
@@ -227,11 +227,11 @@ class TaskPrefix_COS(Seq2SeqTrainer):
 
 
 class CoTTrainer(Seq2SeqTrainer):
-    def __init__(self, alpha, output_rationale, weight, data_collator=None,**kwargs):
+    def __init__(self, alpha, data_collator=None,**kwargs):
         super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。
         self.alpha = alpha
-        self.output_rationale = output_rationale
-        self.weight = weight
+        # self.output_rationale = output_rationale
+        # self.weight = weight
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
 
 
@@ -347,24 +347,25 @@ class AdptTrainer(Seq2SeqTrainer):
         )
         
 class TaskPrefixTrainerWithHead(Seq2SeqTrainer):
-    def __init__(self, alpha, output_rationale, weight, data_collator=None,**kwargs):
+    def __init__(self, alpha, data_collator=None,**kwargs):
         super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。
+        # breakpoint()
         self.alpha = alpha
-        self.output_rationale = output_rationale
-        self.weight = weight
+        # self.output_rationale = output_rationale
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
+        # self.head_model = T5WithMLPHead(expl_outputs, model, mlp_hidden_dim).to(device)
         
     
     def compute_loss(self, model, inputs, return_outputs=False):
-        pred_outputs = model(**inputs['pred'])
-        # expl_outputs = model(**inputs['expl'])
-        mlp_hidden_dim = 1024
-        # output_dim = 17  # 假设你想提取的关键信息维度为10
-        expl_outputs = model(**inputs['expl'])
-        head_model = T5WithMLPHead(expl_outputs, model, mlp_hidden_dim).to(device)
+        # breakpoint()
+        pred_outputs = model(inputs['pred'],with_head=False)
+        
+        expl_outputs = model(inputs['expl'],with_head=True)
+        
+        # head_model = T5WithMLPHead(expl_outputs, model, mlp_hidden_dim).to(device)
         # head_model = T5WithMLPHead(model, mlp_hidden_dim).to(device)
         # breakpoint()
-        expl_logits, expl_loss = head_model(inputs['expl'])
+        # expl_logits, expl_loss = self.head_model(**inputs['expl'])
         '''
         Seq2SeqLMOutput,  model.forward()返回内容说明：
 
@@ -382,7 +383,7 @@ class TaskPrefixTrainerWithHead(Seq2SeqTrainer):
         
         
 
-        loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_loss
+        loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
         
         
         
@@ -394,19 +395,18 @@ class TaskPrefixTrainerWithHead(Seq2SeqTrainer):
         current_lr = self.optimizer.param_groups[0]["lr"]
         # Example accuracy calculation fprint(pred_outputs[0].shape)or explanations (if applicable)
         expl_labels = inputs['expl']['labels']  # Assuming true labels for explanations
-        expl_preds = expl_logits
-        # breakpoint()
-        # expl_accuracy = (expl_preds == expl_labels).float().mean()
+        expl_preds = torch.argmax(expl_outputs.logits, dim=-1)        # breakpoint()
+        expl_accuracy = (expl_preds == expl_labels).float().mean()
         wandb.log({'train/loss': loss, 
                    'train/loss_pred': pred_outputs.loss, 
-                   'train/loss_expl': expl_loss,
+                   'train/loss_expl': expl_outputs.loss,
                    'train/pred_accuracy': pred_accuracy.item(),  # Logging prediction accuracy
-                    # 'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)    
+                    'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)    
                     'learning_rate': current_lr,    
                    },
                   step=self.state.global_step)
         # breakpoint()
-        return (loss, {'pred': pred_outputs, 'expl': expl_loss}) if return_outputs else loss
+        return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
     
     
     def prediction_step(

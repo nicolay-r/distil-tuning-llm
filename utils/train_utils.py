@@ -25,6 +25,7 @@ from transformers import T5ForConditionalGeneration
 from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
 from utils.data_utils import MEDQADatasetLoader
+from utils.head_utils import T5WithMLPHead
 
 
 from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskPrefix_COS, CoTTrainer, AdptTrainer,TaskPrefixTrainerWithHead
@@ -79,7 +80,9 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
 
-
+    elif args.model_type == 'task_prefix':
+        if args.with_head:
+            model = T5WithMLPHead.from_pretrained(args.from_pretrained)
     else:
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
     # breakpoint()
@@ -139,15 +142,13 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     
     trainer_kwargs = {
         'alpha': args.alpha,
-        'output_rationale': args.output_rationale,
-        'weight': args.weight,
         'model': model,
         'args': training_args,
         'train_dataset': tokenized_datasets["train"],
         'eval_dataset': {'test': tokenized_datasets["valid"],},
         'data_collator': data_collator,
         'tokenizer': tokenizer,
-        'compute_metrics': compute_metrics,        
+        'compute_metrics': compute_metrics,    
     }
 
     # breakpoint()
@@ -155,6 +156,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         if args.cos_sim:
             trainer = TaskPrefix_COS(**trainer_kwargs)
         elif args.with_head:
+
             trainer = TaskPrefixTrainerWithHead(**trainer_kwargs)
         else:
             trainer = TaskPrefixTrainer(**trainer_kwargs)
@@ -165,10 +167,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         trainer = AdptTrainer(**trainer_kwargs)
         
     elif args.model_type == 'standard':
+        trainer_kwargs.pop('alpha')
         
-        trainer_kwargs.pop('alpha') # 从trainer_kwargs字典中删除键'alpha'及其对应的值。
-        trainer_kwargs.pop('output_rationale')
-        trainer_kwargs.pop('weight')
         trainer = Seq2SeqTrainer(**trainer_kwargs) # Seq2SeqTrainer是Hugging Face Transformers库中的一个类，专门用于序列到序列（sequence-to-sequence）的模型训练，比如T5、BART等。
         '''解释一下：训练的是T5模型，而Seq2SeqTrainer是用于训练过程的工具。'''
         # breakpoint()

@@ -125,49 +125,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         metric_for_best_model="test_accuracy",
         greater_is_better=True
     )
-    # -- epoch --
-    # training_args = Seq2SeqTrainingArguments(
-    #     output_dir,                         # 输出目录，模型和训练日志将被保存在这里
-    #     report_to = "none",
-    #     remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列
-    #     evaluation_strategy = 'epoch',      # 评估策略，这里设置为“steps”，表示按步数进行评估
-    #     num_train_epochs=5,
-    #     # eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
-    #     save_strategy='epoch',                 # 保存策略
-    #     save_steps=args.eval_steps,         # 每隔多少步保存一次模型
-    #     logging_dir=logging_dir,            # 日志目录，训练日志将被保存在这里
-    #     logging_strategy="epoch",  # 日志记录策略，目前是step
-    #     logging_steps=1,      # 每隔多少步记录一次日志
-    #     # max_steps=args.max_steps,           # 最大步数，训练将在达到这个步数后停止
-    #     learning_rate=args.lr,              # 学习率
-    #     warmup_steps=1000,
-    #     gradient_accumulation_steps=args.grad_steps,  # 梯度累积步数，用于实现更大的有效批大小
-    #     per_device_train_batch_size=args.batch_size,  # 每个设备上的训练批大小
-    #     per_device_eval_batch_size=args.batch_size,   # 每个设备上的评估批大小
-    #     predict_with_generate=True,         # 是否使用生成模式进行预测
-    #     seed=run,                           # 随机种子，用于确保结果可复现
-    #     local_rank=args.local_rank,         # 本地排名，用于分布式训练
-    #     bf16=args.bf16,                     # 是否使用bfloat16进行训练，这可以提高性能
-    #     generation_max_length=args.gen_max_len,      # 生成的最大长度
-    #     prediction_loss_only=False,         # 是否只预测损失，这里设置为False
-    #     deepspeed=args.deepspeed,
-    #     save_total_limit=1,
-    #     load_best_model_at_end=True,
-    #     metric_for_best_model="test_accuracy",
-    #     greater_is_better=True
-    # )
-    
 
-    # if args.model_type == 'task_prefix':
-    #     print("model_type: {}".format(args.model_type))
-    #     # rouge_metric = datasets.load_metric("rouge")
-    #     data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
-    # elif args.model_type == 'CoT':
-    #     print("model_type: {}".format(args.model_type))
-    #     data_collator = CoTDataCollator(tokenizer=tokenizer, model=model)
-    # elif args.model_type == 'adapter':
-    #     print("model_type: {}".format(args.model_type))
-    #     data_collator = AdapterDataCollator(tokenizer=tokenizer, model=model)
+
     if args.model_type == 'standard':
         print("model_type: {}".format(args.model_type))
         data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)

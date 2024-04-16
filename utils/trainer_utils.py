@@ -59,6 +59,7 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
     
     def compute_loss(self, model, inputs, return_outputs=False):
+        
         pred_outputs = model(**inputs['pred'])
         expl_outputs = model(**inputs['expl'])
         '''
@@ -359,7 +360,9 @@ class TaskPrefixTrainerWithHead(Seq2SeqTrainer):
         # expl_outputs = model(**inputs['expl'])
         mlp_hidden_dim = 1024
         # output_dim = 17  # 假设你想提取的关键信息维度为10
-        head_model = T5WithMLPHead(model, mlp_hidden_dim).to(device)
+        expl_outputs = model(**inputs['expl'])
+        head_model = T5WithMLPHead(expl_outputs, model, mlp_hidden_dim).to(device)
+        # head_model = T5WithMLPHead(model, mlp_hidden_dim).to(device)
         # breakpoint()
         expl_logits, expl_loss = head_model(inputs['expl'])
         '''

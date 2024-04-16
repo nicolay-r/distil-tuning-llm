@@ -2,15 +2,15 @@ import torch
 import torch.nn as nn
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 from torch.nn import CrossEntropyLoss
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 class T5WithMLPHead(nn.Module):
-    def __init__(self, model, mlp_hidden_dim):
+    def __init__(self, expl_output, model, mlp_hidden_dim):
         super(T5WithMLPHead, self).__init__()
-        
+        self.expl_output = expl_output
         self.t5 = model  # 直接使用传递的T5模型实例
-        # self.lm_head = nn.Linear(config.d_model, config.vocab_size, bias=False)
+
         self.mlp = nn.Sequential(
             nn.Linear(self.t5.model_dim, mlp_hidden_dim),  # d_model是T5模型的隐藏层维度
             nn.ReLU(),
@@ -19,14 +19,13 @@ class T5WithMLPHead(nn.Module):
 
     def forward(self, inputs, attention_mask=None):
         
-        input_ids = inputs['input_ids'].to(device)
-        labels = inputs['labels'].to(device)
-        attention_mask = inputs['attention_mask'].to(device)
-        decoder_input_ids = inputs['decoder_input_ids'].to(device)
-        outputs = self.t5(input_ids=input_ids, attention_mask=attention_mask, decoder_input_ids=decoder_input_ids, return_dict=True)
-        
+        # input_ids = inputs['input_ids'].to(device)
+        labels = inputs['labels']
+        # attention_mask = inputs['attention_mask'].to(device)
+        # decoder_input_ids = inputs['decoder_input_ids'].to(device)
+        # outputs = self.t5(input_ids=input_ids, attention_mask=attention_mask, decoder_input_ids=decoder_input_ids, return_dict=True)
         # 使用encoder的最后一个隐藏状态
-        last_hidden_states = outputs.encoder_last_hidden_state
+        last_hidden_states = self.expl_output.encoder_last_hidden_state
 
         # 应用MLP
         mlp_output = self.mlp(last_hidden_states[:, 0, :].float()) # 取encoder最后层的CLS token的输出 

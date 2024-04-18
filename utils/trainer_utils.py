@@ -203,7 +203,8 @@ class TaskPrefix_COS(Seq2SeqTrainer):
         prediction_loss_only: bool,
         ignore_keys: Optional[List[str]] = None
     ) -> Tuple[Optional[float], Optional[torch.Tensor], Optional[torch.Tensor]]:
-        
+        print("****************开始********************")
+        breakpoint()
         pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False,
                                                ignore_keys=ignore_keys)
         # torch.cuda.empty_cache() # 也许可以试一下
@@ -416,16 +417,22 @@ class TaskPrefixTrainerWithHead(Seq2SeqTrainer):
         prediction_loss_only: bool,
         ignore_keys: Optional[List[str]] = None
     ) -> Tuple[Optional[float], Optional[torch.Tensor], Optional[torch.Tensor]]:
+        # inputs['pred'].pop('labels')
         
-        pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False,
-                                               ignore_keys=ignore_keys)
-        # torch.cuda.empty_cache() # 也许可以试一下
-        expl_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False,
-                                               ignore_keys=ignore_keys)  
+        # inputs['pred'].pop('decoder_input_ids')
+        # pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False,
+        #                                        ignore_keys=ignore_keys)
+        # # torch.cuda.empty_cache() # 也许可以试一下
+        # expl_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False,
+                                            #    ignore_keys=ignore_keys)  
+        pred_outputs = model(inputs['pred'],with_head=False)
+        
+        expl_outputs = model(inputs['expl'],with_head=True)
+        
         # breakpoint()
         # 原来的      
-        loss = self.alpha * pred_outputs[0]  + (1 - self.alpha) * expl_outputs[0]
-
+        # loss = self.alpha * pred_outputs[0]  + (1 - self.alpha) * expl_outputs[0]
+        loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
         
         wandb.log({'eval/loss': loss, 
                    'eval/loss_pred': pred_outputs[0], 

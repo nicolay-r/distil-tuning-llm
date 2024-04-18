@@ -15,7 +15,7 @@ class T5WithMLPHead(T5ForConditionalGeneration):
             nn.Linear(self.config.vocab_size, self.mlp_hidden_dim), # d_model是T5模型的隐藏层维度
             nn.GELU(), # GELU
             nn.Linear(self.mlp_hidden_dim, self.config.vocab_size),
-        ).to(torch.bfloat16)
+        )
         
     def forward(self, input_ids, with_head=False):
         outputs = super().forward(**input_ids)
@@ -29,7 +29,7 @@ class T5WithMLPHead(T5ForConditionalGeneration):
             # breakpoint()
             # 应用MLP
             # mlp_output = self.mlp(last_hidden_states[:, 0, :].to(torch.bfloat16))
-            mlp_output = self.mlp(last_hidden_states.to(torch.bfloat16))
+            mlp_output = self.mlp(last_hidden_states)
             # labels = labels.to(mlp_output.device)
             # (Pdb) lm_logits.shape
             # torch.Size([1, 14, 32128])
@@ -43,9 +43,9 @@ class T5WithMLPHead(T5ForConditionalGeneration):
             if labels is not None:
                 loss_fct = CrossEntropyLoss(ignore_index=-100)
                 # loss = loss_fct(mlp_output, labels)
-                breakpoint()
+                # breakpoint()
                 loss = loss_fct(mlp_output.view(-1, mlp_output.size(-1)), labels.view(-1))
-            breakpoint()
+            # breakpoint()
             outputs['loss'] = loss
             outputs['logits'] = mlp_output
         else:

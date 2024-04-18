@@ -83,6 +83,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     elif args.model_type == 'task_prefix':
         if args.with_head:
             model = T5WithMLPHead.from_pretrained(args.from_pretrained)
+        else:
+            model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
     else:
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
     # breakpoint()

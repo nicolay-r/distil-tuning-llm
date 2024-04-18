@@ -178,5 +178,5 @@ if __name__ == "__main__" :
     
     to_email = "rosaliu.567@gmail.com"
     # to_email = "rosaliu.567@gmail.com"
-    send_email('分数出炉啦！', f'您的模型评估已完成。{outputs}', to_email)
+    send_email('分数出炉啦！', f'您的模型评估已完成。model:{args.fn_eval_data}: {outputs}', to_email)
        

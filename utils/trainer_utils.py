@@ -359,9 +359,9 @@ class TaskPrefixTrainerWithHead(Seq2SeqTrainer):
     
     def compute_loss(self, model, inputs, return_outputs=False):
         # breakpoint()
-        pred_outputs = model(inputs['pred'],with_head=False)
+        pred_outputs = model(**inputs['pred'],with_head=False)
         
-        expl_outputs = model(inputs['expl'],with_head=True)
+        expl_outputs = model(**inputs['expl'],with_head=True)
         
         # head_model = T5WithMLPHead(expl_outputs, model, mlp_hidden_dim).to(device)
         # head_model = T5WithMLPHead(model, mlp_hidden_dim).to(device)
@@ -420,19 +420,18 @@ class TaskPrefixTrainerWithHead(Seq2SeqTrainer):
         # inputs['pred'].pop('labels')
         
         # inputs['pred'].pop('decoder_input_ids')
-        # pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False,
-        #                                        ignore_keys=ignore_keys)
-        # # torch.cuda.empty_cache() # 也许可以试一下
-        # expl_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False,
-                                            #    ignore_keys=ignore_keys)  
-        pred_outputs = model(inputs['pred'],with_head=False)
+        pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False,
+                                               ignore_keys=ignore_keys)
+        # torch.cuda.empty_cache() # 也许可以试一下
+        expl_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False,
+                                               ignore_keys=ignore_keys)
         
-        expl_outputs = model(inputs['expl'],with_head=True)
         
         # breakpoint()
         # 原来的      
-        # loss = self.alpha * pred_outputs[0]  + (1 - self.alpha) * expl_outputs[0]
-        loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
+        
+        loss = self.alpha * pred_outputs[0]  + (1 - self.alpha) * expl_outputs[0]
+        # loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
         
         wandb.log({'eval/loss': loss, 
                    'eval/loss_pred': pred_outputs[0], 

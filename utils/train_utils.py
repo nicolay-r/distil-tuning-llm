@@ -26,10 +26,11 @@ from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
 from utils.data_utils import MEDQADatasetLoader
 from utils.head_utils import T5WithMLPHead
-
+import torch
 
 from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskPrefix_COS, CoTTrainer, AdptTrainer,TaskPrefixTrainerWithHead
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def get_config_dir(args):
     
@@ -82,7 +83,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
 
     elif args.model_type == 'task_prefix':
         if args.with_head:
-            model = T5WithMLPHead.from_pretrained(args.from_pretrained)
+            model = T5WithMLPHead.from_pretrained(args.from_pretrained).to(device)
         else:
             model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
     else:
@@ -158,7 +159,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         if args.cos_sim:
             trainer = TaskPrefix_COS(**trainer_kwargs)
         elif args.with_head:
-
+            
             trainer = TaskPrefixTrainerWithHead(**trainer_kwargs)
         else:
             trainer = TaskPrefixTrainer(**trainer_kwargs)

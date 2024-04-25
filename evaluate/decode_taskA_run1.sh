@@ -1,12 +1,13 @@
 #!/bin/bash
 # Submits our Flan-T5 large based approach for task A
 
-TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test1.json"  # Provided to the script by the submission system
+TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
 
-OUTPUT_DIR="./test1/3000"
+OUTPUT_DIR="./test2/10000"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
-CKPT_DIR="../ckpts/task_prefix/flan-t5-large_distill_large/checkpoint-3000/"
-# /root/distill-d2n/ckpts/adapter/flan-t5-xl_distill_adpt_xl/checkpoint-5000/pytorch_model.bin
+CKPT_DIR="../ckpts/task_prefix/flan-t5-large_distill_large_28/checkpoint-10000/"
+
+# /root/distill-d2n/ckpts/task_prefix/flan-t5-large_distill_large_28/checkpoint-10000/special_tokens_map.json
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_distill_large/checkpoint-9000/pytorch_model.bin
 
 # Notes:
@@ -25,7 +26,7 @@ python3 ./run_summarization.py "./conf/base.yml" "./conf/taskA.yml" output_dir="
     train_file=null \
     validation_file=null \
     test_file="$TEST_FP" \
-    per_device_eval_batch_size=4 \
+    per_device_eval_batch_size=16 \
     fp16=false \
     bf16=false \
     do_train=false \
@@ -38,4 +39,4 @@ python3 ./run_summarization.py "./conf/base.yml" "./conf/taskA.yml" output_dir="
     model_type=task_prefix \
     
     
-# python eval_sum_medqa23.py --task taskA --fn_eval_data "./test2/3000/generated_predictions_df.csv"
+# python eval_sum_medqa23.py --task taskA --fn_eval_data "./test2/10000/generated_predictions_df.csv"

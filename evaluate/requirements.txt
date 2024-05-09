@@ -12,6 +12,7 @@ py7zr
 torch == 2.0
 evaluate
 peft 
+tf-keras
 
 # Metrics
 bert-score

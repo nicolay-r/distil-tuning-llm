@@ -50,37 +50,48 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     set_seed(run)
     
     if args.model_type == 'adapter':
-        # from adapters import AutoAdapterModel
-        from transformers import AutoModelForSeq2SeqLM
-        # from peft import get_peft_config, get_peft_model, get_peft_model_state_dict, PromptTuningConfig, TaskType
-        from peft import get_peft_model, PromptTuningInit, PromptTuningConfig, TaskType, PeftConfig
-        from peft import get_peft_config, get_peft_model, get_peft_model_state_dict, LoraConfig, TaskType
-
-        
+        # from peft import AdaLoraConfig, get_peft_model, 
+        from peft import AdaLoraConfig, PeftConfig, PeftModel, TaskType, get_peft_model
+        model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
         '''
         fan_in_fan_out (bool)：是否将层的存储形式替换成 (fan_in, fan_out) 的样子，默认为False；
         bias (str)：是否添加偏置。参数选择为：[“none”,“all”,“lora_only”]。如果为"all"或"lora_only"，则相应的偏差将在训练期间更新；
         modules_to_save (List[str])：要在训练过程中保存的模块列表，默认为None 表示不保存；
         '''
-
-        peft_config = LoraConfig(
-            task_type=TaskType.SEQ_2_SEQ_LM, 
-            inference_mode=False, 
-            # target_modules (Union[List[str],str])：添加lora的目标模块名称；
-            r=args.rank, # 低秩矩阵的维度，通常是1、2、4、8、16、32、64；
-            lora_alpha=args.lora_alpha, # 缩放参数，控制低秩矩阵的适应程度——越小的值对模型参数进行压缩的越强烈，可能会影响模型性能；越大的值，则减轻了对模型参数的压缩，可能保留了更多的模型性能。不同的模型可能有不同的默认值和具体用法；
-            lora_dropout=args.lora_dropout #防止过拟合的dropout；
-            )
-        
-        # r=4: trainable params: 2,359,296 || all params: 2,852,116,480 || trainable%: 0.08272088522836206
-        # r=8: trainable params: 4,718,592 || all params: 2,854,475,776 || trainable%: 0.16530502867367827
-        # r=2: trainable params: 1,179,648 || all params: 2,850,936,832 || trainable%: 0.04137755655471499
-        # r=1: trainable params: 589,824 || all params: 2,850,347,008 || trainable%: 0.0206930594185394
-
+        # 微调所有线性层
+        import re
+        pattern = r'\((\w+)\): Linear'
+        linear_layers = re.findall(pattern, str(model.modules))
+        target_modules = list(set(linear_layers))
+        breakpoint()
+        peft_config = AdaLoraConfig(
+            init_r=32,         # 初始压缩率，表示在训练开始时模型参数的压缩程度。
+            target_r=8,        # 目标压缩率，表示训练结束时希望达到的模型参数的压缩程度。
+            beta1=0.85,        # 优化器的第一个动量参数，常用于计算梯度的指数衰减平均，有助于稳定训练过程。
+            beta2=0.85,        # 优化器的第二个动量参数，用于计算梯度平方的指数衰减平均，通常用于自适应学习率算法。
+            tinit=20,         # 训练开始阶段，初始阶段的训练时长或迭代次数。
+            tfinal=1000,       # 训练结束阶段，最终阶段的训练时长或迭代次数。
+            deltaT=10,         # 每隔多少训练步骤更新一次压缩率，用于控制压缩率变化的频率。
+            lora_alpha=1,     # LoRA扩展的秩数，控制了低秩适应中秩的大小，影响模型调整的幅度。
+            lora_dropout=0.4,  # LoRA层中的dropout比率，用于防止过拟合，增加模型的泛化能力。
+            task_type=TaskType.SEQ_2_SEQ_LM, # 指定任务类型为序列到序列的语言模型，适用于需要生成序列输出的任务，如文本摘要。
+            inference_mode=False, # 指定是否为推理模式，False表示当前配置是用于训练。在推理时通常需要改为True。
+            target_modules='lm_head',
+        )
+        '''
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
+        peft_config = AdaLoraConfig(init_r=32, target_r=1, beta1=0.85, beta2=0.85, tinit=20, tfinal=1000, deltaT=10, lora_alpha=32, lora_dropout=0.4, task_type=TaskType.SEQ_2_SEQ_LM, inference_mode=False, target_modules='lm_head')
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
+        
+        '''
 
+
+        
+        model = get_peft_model(model, peft_config)
+        model.print_trainable_parameters()
+        breakpoint()
+        
     elif args.model_type == 'task_prefix':
         if args.with_head:
             model = T5WithMLPHead.from_pretrained(args.from_pretrained).to(device)
@@ -89,8 +100,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     else:
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
     # breakpoint()
-    if args.parallelize:
-        model.parallelize() # 用于将 T5 模型的层分布到多个 GPU 上，以便并行处理。
+    # if args.parallelize:
+    #     model.parallelize() # 用于将 T5 模型的层分布到多个 GPU 上，以便并行处理。
     
     # 整理路径
     config_dir = get_config_dir(args)
@@ -167,7 +178,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         trainer = CoTTrainer(**trainer_kwargs)
         
     elif args.model_type == 'adapter':
-        trainer = AdptTrainer(**trainer_kwargs)
+        # trainer = AdptTrainer(**trainer_kwargs)
+         trainer = TaskPrefixTrainer(**trainer_kwargs)
         
     elif args.model_type == 'standard':
         trainer_kwargs.pop('alpha')

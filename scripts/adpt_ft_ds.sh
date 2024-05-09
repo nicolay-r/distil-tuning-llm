@@ -9,13 +9,13 @@ MODEL_TYPE="adapter"
 
 # Training parameters
 MAX_STEPS=10000
-EVAL_STEPS=500
+EVAL_STEPS=10
 BATCH_SIZE_TRAIN=1
 BATCH_SIZE_EVAL=4
 GRAD_STEPS=2
 WEIGHT=1
 ALPHA=0.8
-ADDITIONAL_INFO="distill_adpt_xl"
+ADDITIONAL_INFO="distill_adpt_large"
 
 # Lora parameters
 RANK=4

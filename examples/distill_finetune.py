@@ -84,11 +84,11 @@ def run(args):
         len(model_inputs["input_ids"]) = 1000
 
         '''
-        model_inputs = tokenizer(['predict: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
-        expl_model_inputs = tokenizer(['keywords: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
+        model_inputs = tokenizer(['Please summarize this dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
+        expl_model_inputs = tokenizer(['Please extract the key information from the dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
         model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
         model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
-
+        # breakpoint()
         with tokenizer.as_target_tokenizer():
             label_output_encodings = tokenizer(examples['label'], max_length=1024, truncation=True)
             rationale_output_encodings = tokenizer(examples['rationale'], max_length=1024, truncation=True)
@@ -148,16 +148,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     
-    run(args)
+    # run(args)
     
-    # to_email = "rosaliu.567@gmail.com"
-    # send_email('模型训练开始', '您的模型已经开始训练。', to_email)
-    # try:  
-    #     run(args)
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
-    # except Exception as e:
-    #     print(e)
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
+    to_email = "rosaliu.567@gmail.com"
+    send_email('模型训练开始', '您的模型已经开始训练。', to_email)
+    try:  
+        run(args)
+        # to_email = "rosaliu.567@gmail.com"
+        send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
+    except Exception as e:
+        print(e)
+        # to_email = "rosaliu.567@gmail.com"
+        send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
        

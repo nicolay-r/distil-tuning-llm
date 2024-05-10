@@ -84,14 +84,14 @@ def run(args):
         len(model_inputs["input_ids"]) = 1000
 
         '''
-        model_inputs = tokenizer(['predict: ' + text for text in examples['input']], max_length=args.max_input_length, padding='max_length', truncation=True)
-        expl_model_inputs = tokenizer(['keywords: ' + text for text in examples['input']], max_length=args.max_input_length, padding='max_length', truncation=True)
+        model_inputs = tokenizer(['Please summarize this dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, padding='max_length', truncation=True)
+        expl_model_inputs = tokenizer(['Please extract the key information from the dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, padding='max_length', truncation=True)
         model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
         model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
 
         with tokenizer.as_target_tokenizer():
-            label_output_encodings = tokenizer(examples['label'], max_length=1024, padding='max_length',  truncation=True)
-            rationale_output_encodings = tokenizer(examples['rationale'], max_length=1024, padding='max_length',  truncation=True)
+            label_output_encodings = tokenizer(examples['label'], max_length=args.max_input_length, padding='max_length',  truncation=True)
+            rationale_output_encodings = tokenizer(examples['rationale'], max_length=args.max_input_length, padding='max_length',  truncation=True)
 
         model_inputs['labels'] = label_output_encodings['input_ids']
         model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
@@ -126,10 +126,10 @@ if __name__ == '__main__':
     parser.add_argument('--run', type=int, default=0)
     parser.add_argument('--from_pretrained', type=str, default='google/t5-v1_1-base')
     parser.add_argument('--label_type', type=str, default='gt')
-    parser.add_argument('--max_input_length', type=int, default=1024)
+    parser.add_argument('--max_input_length', type=int, default=512)
     parser.add_argument('--grad_steps', type=int, default=1)
     parser.add_argument('--local_rank', type=int, default=-1)
-    parser.add_argument('--gen_max_len', type=int, default=1024)
+    parser.add_argument('--gen_max_len', type=int, default=512)
     parser.add_argument('--parallelize', action='store_true')
     parser.add_argument('--model_type', type=str, default='task_prefix')
     parser.add_argument('--bf16', action='store_true')
@@ -146,16 +146,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     
-    run(args)
+    # run(args)
     
-    # to_email = "rosaliu.567@gmail.com"
-    # send_email('模型训练开始', '您的模型已经开始训练。', to_email)
-    # try:  
-    #     run(args)
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
-    # except Exception as e:
-    #     print(e)
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
+    to_email = "rosaliu.567@gmail.com"
+    send_email('模型训练开始', '您的模型已经开始训练。', to_email)
+    try:  
+        run(args)
+        # to_email = "rosaliu.567@gmail.com"
+        send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
+    except Exception as e:
+        print(e)
+        # to_email = "rosaliu.567@gmail.com"
+        send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)  
        

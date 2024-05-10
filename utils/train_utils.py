@@ -63,40 +63,79 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         pattern = r'\((\w+)\): Linear'
         linear_layers = re.findall(pattern, str(model.modules))
         target_modules = list(set(linear_layers))
-        breakpoint()
+        # target_modules = ['k', 'v']
+        # ['q', 'wi_0', 'lm_head', 'k', 'v', 'o', 'wi_1', 'wo']
+
         peft_config = AdaLoraConfig(
-            init_r=32,         # 初始压缩率，表示在训练开始时模型参数的压缩程度。
+            peft_type="ADALORA",
+            # r=2,
+            init_r=64,         #初始压缩率，表示在训练开始时模型参数的压缩程度。
             target_r=8,        # 目标压缩率，表示训练结束时希望达到的模型参数的压缩程度。
             beta1=0.85,        # 优化器的第一个动量参数，常用于计算梯度的指数衰减平均，有助于稳定训练过程。
             beta2=0.85,        # 优化器的第二个动量参数，用于计算梯度平方的指数衰减平均，通常用于自适应学习率算法。
             tinit=20,         # 训练开始阶段，初始阶段的训练时长或迭代次数。
             tfinal=1000,       # 训练结束阶段，最终阶段的训练时长或迭代次数。
             deltaT=10,         # 每隔多少训练步骤更新一次压缩率，用于控制压缩率变化的频率。
-            lora_alpha=1,     # LoRA扩展的秩数，控制了低秩适应中秩的大小，影响模型调整的幅度。
-            lora_dropout=0.4,  # LoRA层中的dropout比率，用于防止过拟合，增加模型的泛化能力。
+            lora_alpha=32,     # LoRA扩展的秩数，控制了低秩适应中秩的大小，影响模型调整的幅度。
+            lora_dropout=0.05,  # LoRA层中的dropout比率，用于防止过拟合，增加模型的泛化能力。
             task_type=TaskType.SEQ_2_SEQ_LM, # 指定任务类型为序列到序列的语言模型，适用于需要生成序列输出的任务，如文本摘要。
             inference_mode=False, # 指定是否为推理模式，False表示当前配置是用于训练。在推理时通常需要改为True。
-            target_modules='lm_head',
+            target_modules=target_modules,
         )
         '''
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
-        peft_config = AdaLoraConfig(init_r=32, target_r=1, beta1=0.85, beta2=0.85, tinit=20, tfinal=1000, deltaT=10, lora_alpha=32, lora_dropout=0.4, task_type=TaskType.SEQ_2_SEQ_LM, inference_mode=False, target_modules='lm_head')
+        peft_config = AdaLoraConfig(init_r=32, target_r=1, beta1=0.85, beta2=0.85, tinit=20, tfinal=1000, deltaT=10, lora_alpha=32, lora_dropout=0.4, task_type=TaskType.SEQ_2_SEQ_LM, inference_mode=False, target_modules=target_modules)
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
         
         '''
+        # trainable params: 53,524,044 || all params: 11,188,856,829 || trainable%: 0.4783691919381159
+        
+        # trainable params: 53,524,044 || all params: 11,188,856,829 || trainable%: 0.4783691919381159
+        #  trainable params: 1,093,664 || all params: 2,850,850,849 || trainable%: 0.03836272249681625
+        # trainable params: 546,832 || all params: 2,850,304,0c17 || trainable%: 0.019185041200466442
+        # trainable params: 35,943,184 || all params: 2,885,700,801 || trainable%: 1.2455617015992921
+        # 12: trainable params: 26,957,388 || all params: 2,876,715,005 || trainable%: 0.9370892825026301
+        #8 trainable params: 17,971,592 || all params: 2,867,729,209 || trainable%: 0.6266837169841024
+        #  trainable params: 13,478,694 || all params: 2,863,236,311 || trainable%: 0.47075031663357525
+        # 4_4: trainable params: 8,985,796 || all params: 2,858,743,413 || trainable%: 0.3143267758532479
+        # trainable params: 8,985,796 || all params: 2,858,743,413 || trainable%: 0.3143267758532479
+        # trainable params: 4,492,898 || all params: 2,854,250,515 || trainable%: 0.15741078004149892
+        
+        # trainable params: 2,246,449 || all params: 2,852,004,066 || trainable%: 0.07876738419769139
+        # trainable params: 12,192,384 || all params: 2,861,949,904 || trainable%: 0.42601668124796077
+        # t5-large: trainable params: 623,265 || all params: 783,773,634 || trainable%: 0.07952104701700134
+        # trainable params: 919,129 || all params: 2,850,676,530 || trainable%: 0.03224248666333251
+
+
+        # trainable params: 6,096,192 || all params: 2,855,853,712 || trainable%: 0.21346303469202346
+
+        # trainable params: 1,214,113 || all params: 2,850,971,586 || trainable%: 0.042585938280200034
+        # trainable params: 68,354 || all params: 2,849,825,539 || trainable%: 0.002398532789624214
+        # trainable params: 136,708 || all params: 2,849,893,893 || trainable%: 0.004796950522817237
+
+        # trainable params: 1,093,664 || all params: 2,850,850,849 || trainable%: 0.03836272249681625
+
+        # trainable params: 1,769,904 || all params: 2,851,527,304 || trainable%: 0.06206863239630407
+
+    
+        
+        # trainable params: 71,886,368 || all params: 2,921,643,985 || trainable%: 2.4604766483894513
+
+
 
 
         
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
-        breakpoint()
+        # breakpoint()
         
     elif args.model_type == 'task_prefix':
         if args.with_head:
             model = T5WithMLPHead.from_pretrained(args.from_pretrained).to(device)
         else:
             model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
+        # breakpoint()
     else:
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
     # breakpoint()

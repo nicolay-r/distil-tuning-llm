@@ -10,7 +10,6 @@ from utils.train_utils import train_and_evaluate
 import wandb
 from wandb import AlertLevel
 
-    
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -142,6 +141,7 @@ if __name__ == '__main__':
     parser.add_argument('--rank', type=int, default=8)
     parser.add_argument('--lora_alpha', type=int, default=8)
     parser.add_argument('--lora_dropout', type=float, default=0.1)
+    parser.add_argument('--peft_type', type=str, default='lora')
 
     args = parser.parse_args()
     

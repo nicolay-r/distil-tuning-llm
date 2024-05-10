@@ -13,7 +13,7 @@ torch == 2.0
 evaluate
 peft 
 tf-keras
-
+wandb
 # Metrics
 bert-score
 git+https://github.com/google-research/bleurt.git

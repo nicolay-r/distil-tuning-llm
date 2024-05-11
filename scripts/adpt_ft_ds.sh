@@ -2,21 +2,21 @@
 # Executes fine-tuning of the Flan-T5 XL model with specialized adapter configuration using DeepSpeed
 
 # Model, dataset, and configuration settings
-MODEL="google/flan-t5-large"
+MODEL="google/flan-t5-xxl"
 DATASET="medqa_d2n"
 CONFIG_FILE="../configs/ds_config_zero2.json"
 MODEL_TYPE="peft"
 PEFT_TYPE="prefix"
 
 # Training parameters
-MAX_STEPS=5000
-EVAL_STEPS=2500
+MAX_STEPS=12000
+EVAL_STEPS=600
 BATCH_SIZE_TRAIN=1
 BATCH_SIZE_EVAL=24
 GRAD_STEPS=2
 WEIGHT=1
 ALPHA=0.8
-ADDITIONAL_INFO="distill_prefix_lg"
+ADDITIONAL_INFO="distill_prefix_xxl"
 
 # Lora parameters
 RANK=4
@@ -39,10 +39,10 @@ deepspeed adpt_finetune.py \
     --weight $WEIGHT \
     --alpha $ALPHA \
     --addi_info $ADDITIONAL_INFO \
-    --bf16 \
     --parallelize \
     --rank $RANK \
     --lora_alpha $LORA_ALPHA \
     --lora_dropout $LORA_DROPOUT \
     --deepspeed $CONFIG_FILE \
-    --peft_type $PEFT_TYPE
+    --peft_type $PEFT_TYPE \
+    --bf16 \

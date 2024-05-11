@@ -36,6 +36,7 @@ unzip datasets.zip
     - `lora`: lora tuning 
     - `adalora`: adalora prompt tuning 
     - `multitask`: multitask prompt tuning  
+    - `prefix`: prefix tuning 
 - `--parallelize`: Model parallelism
 
 

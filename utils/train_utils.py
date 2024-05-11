@@ -93,9 +93,15 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
             peft_config = PrefixTuningConfig(
                 peft_type="PREFIX_TUNING",
                 task_type="SEQ_2_SEQ_LM",
-                num_virtual_tokens=30,
+                num_virtual_tokens=20,
             )
-            # trainable params: 1,474,560 || all params: 784,624,640 || trainable%: 0.18793190078761737
+
+            # trainable params: 3,932,160 || all params: 11,139,264,512 || trainable%: 0.035299996653854485
+
+
+
+
+
 
             
 

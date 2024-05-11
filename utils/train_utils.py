@@ -33,7 +33,7 @@ from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskP
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def get_config_dir(args):
-    
+    # breakpoint()
     path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
     return path
 
@@ -50,9 +50,10 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     set_seed(run)
     
     if args.model_type == 'peft':
+        from peft import get_peft_model
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
-        if args.peft_type == 'lora':
-            from peft import AdaLoraConfig, PeftConfig, PeftModel, TaskType, get_peft_model  
+        if args.peft_type == 'adalora':
+            from peft import AdaLoraConfig, PeftConfig, TaskType, get_peft_model  
             # 微调所有线性层
             pattern = r'\((\w+)\): Linear'
             linear_layers = re.findall(pattern, str(model.modules))
@@ -60,10 +61,10 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
             # ['q', 'wi_0', 'lm_head', 'k', 'v', 'o', 'wi_1', 'wo']
 
             peft_config = AdaLoraConfig(
-                peft_type="ADALORA",
+                # peft_type="ADALORA",
                 # r=2,
-                init_r=64,         #初始压缩率，表示在训练开始时模型参数的压缩程度。
-                target_r=8,        # 目标压缩率，表示训练结束时希望达到的模型参数的压缩程度。
+                init_r=4,         #初始压缩率，表示在训练开始时模型参数的压缩程度。
+                target_r=2,        # 目标压缩率，表示训练结束时希望达到的模型参数的压缩程度。
                 beta1=0.85,        # 优化器的第一个动量参数，常用于计算梯度的指数衰减平均，有助于稳定训练过程。
                 beta2=0.85,        # 优化器的第二个动量参数，用于计算梯度平方的指数衰减平均，通常用于自适应学习率算法。
                 tinit=20,         # 训练开始阶段，初始阶段的训练时长或迭代次数。
@@ -86,15 +87,27 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
                 num_transformer_submodules=1,
                 prompt_tuning_init_text="Please summarize this dialogue: ",
             )
+        elif args.peft_type =="prefix":
+            from peft import get_peft_model, PrefixEncoder, PrefixTuningConfig
+
+            peft_config = PrefixTuningConfig(
+                peft_type="PREFIX_TUNING",
+                task_type="SEQ_2_SEQ_LM",
+                num_virtual_tokens=30,
+            )
+            # trainable params: 1,474,560 || all params: 784,624,640 || trainable%: 0.18793190078761737
+
+            
 
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
+        # breakpoint()
     elif args.model_type == 'task_prefix':
         if args.with_head:
             model = T5WithMLPHead.from_pretrained(args.from_pretrained).to(device)
         else:
             model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
-        # breakpoint()
+        
     else:
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
    
@@ -172,7 +185,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     elif args.model_type == 'CoT':
         trainer = CoTTrainer(**trainer_kwargs)
         
-    elif args.model_type == 'adapter':
+    elif args.model_type == 'peft':
         # trainer = AdptTrainer(**trainer_kwargs)
          trainer = TaskPrefixTrainer(**trainer_kwargs)
         

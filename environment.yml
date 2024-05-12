@@ -33,6 +33,7 @@ dependencies:
     - adapters
     - peft
     - tf-keras
+    - huggingface_hub
     # - langchain
     - tiktoken
     # - thefuzz[speedup]

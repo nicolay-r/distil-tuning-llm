@@ -96,15 +96,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
                 num_virtual_tokens=20,
             )
 
-            # trainable params: 3,932,160 || all params: 11,139,264,512 || trainable%: 0.035299996653854485
-
-
-
-
-
-
-            
-
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
         # breakpoint()
@@ -154,7 +145,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         save_total_limit=1,
         load_best_model_at_end=True,
         metric_for_best_model="test_accuracy",
-        greater_is_better=True
+        greater_is_better=True,
+        push_to_hub=True
     )
 
 
@@ -210,6 +202,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     wandb.watch(model, log = 'gradients')
 
     trainer.train()
+    trainer.push_to_hub()
     wandb.finish()
     
-    # train_adapter()

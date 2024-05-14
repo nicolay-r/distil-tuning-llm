@@ -90,8 +90,8 @@ def run(args):
         model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
         # breakpoint()
         with tokenizer.as_target_tokenizer():
-            label_output_encodings = tokenizer(examples['label'], max_length=1024, truncation=True)
-            rationale_output_encodings = tokenizer(examples['rationale'], max_length=1024, truncation=True)
+            label_output_encodings = tokenizer(examples['label'], max_length=args.gen_max_len, truncation=True)
+            rationale_output_encodings = tokenizer(examples['rationale'], max_length=args.gen_max_len, truncation=True)
 
         model_inputs['labels'] = label_output_encodings['input_ids']
         model_inputs['aux_labels'] = rationale_output_encodings['input_ids']

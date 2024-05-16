@@ -2,20 +2,20 @@
 # Executes fine-tuning of the Flan-T5 XL model with specialized adapter configuration using DeepSpeed
 
 # Model, dataset, and configuration settings
-MODEL="google/flan-t5-xl"
+MODEL="google/flan-t5-large"
 DATASET="medqa_d2n"
 CONFIG_FILE="../configs/ds_config_zero2.json"
 MODEL_TYPE="task_prefix"
 
 # Training parameters
 MAX_STEPS=12000
-EVAL_STEPS=1200
-BATCH_SIZE_TRAIN=1
-BATCH_SIZE_EVAL=16
-GRAD_STEPS=2
+EVAL_STEPS=600
+BATCH_SIZE_TRAIN=2
+BATCH_SIZE_EVAL=32
+GRAD_STEPS=1
 WEIGHT=1
 ALPHA=0.8
-ADDITIONAL_INFO="MeDistill_xl_28"
+ADDITIONAL_INFO="MeDistill_28"
 
 
 # Run the DeepSpeed training command
@@ -35,7 +35,7 @@ deepspeed distill_finetune.py \
     --addi_info $ADDITIONAL_INFO \
     --parallelize \
     --deepspeed $CONFIG_FILE \
-    --bf16 \
-    # --with_head \
     # --bf16 \
+    # --with_head \
+
     

@@ -23,7 +23,7 @@ def write_to_json(data, file_path):
         json.dump(data, file, indent=4)
 
 if __name__ == "__main__" :
-    read_path = "./old/medqa_d2n_train.json"
+    read_path = "./with_KNOWLEDGE/medqa_d2n_valid.json"
     data = read_json(read_path)
     
     write_json = []
@@ -37,5 +37,5 @@ if __name__ == "__main__" :
         write_json.append(write_js)
     # print(write_json)
         
-    write_path = './medqa_d2n_train.json'
+    write_path = './medqa_d2n_valid.json'
     write_to_json(write_json, write_path)

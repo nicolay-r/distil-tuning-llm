@@ -10,12 +10,12 @@ MODEL_TYPE="task_prefix"
 # Training parameters
 MAX_STEPS=12000
 EVAL_STEPS=600
-BATCH_SIZE_TRAIN=2
-BATCH_SIZE_EVAL=32
+BATCH_SIZE_TRAIN=1
+BATCH_SIZE_EVAL=24
 GRAD_STEPS=1
 WEIGHT=1
-ALPHA=0.8
-ADDITIONAL_INFO="MeDistill_28"
+ALPHA=0.5
+ADDITIONAL_INFO="MeDistill_encoder_55"
 
 
 # Run the DeepSpeed training command
@@ -35,6 +35,7 @@ deepspeed distill_finetune.py \
     --addi_info $ADDITIONAL_INFO \
     --parallelize \
     --deepspeed $CONFIG_FILE \
+    --cos_sim
     # --bf16 \
     # --with_head \
 

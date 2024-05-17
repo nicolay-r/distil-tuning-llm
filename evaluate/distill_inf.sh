@@ -3,7 +3,7 @@
 
 TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
 
-OUTPUT_DIR="./test2/10000"
+OUTPUT_DIR="./results/test2"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
 CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-30/"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-30
@@ -20,9 +20,8 @@ CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-30/"
 # - Use the run=1 argument to ensure that the output file is named correctly
 # 
 python3 ./run_summarization.py "./conf/base.yml" "./conf/taskA.yml" output_dir="$OUTPUT_DIR" \
-    model_name_or_path="Xiaolihai/flan-t5-xl_distill_xl_28" \
+    model_name_or_path="Xiaolihai/flan-t5-large_MeDistill_classification" \
     summary_column="dialogue" \
-    checkpoint_dir="$CKPT_DIR" \
     train_file=null \
     validation_file=null \
     test_file="$TEST_FP" \
@@ -37,6 +36,6 @@ python3 ./run_summarization.py "./conf/base.yml" "./conf/taskA.yml" output_dir="
     bertscore_model_type=null \
     bleurt_checkpoint=null \
     model_type=task_prefix \
-    
+    # checkpoint_dir="$CKPT_DIR" \
     
 # python eval_sum_medqa23.py --task taskA --fn_eval_data "./test2/10000/generated_predictions_df.csv"

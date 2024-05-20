@@ -28,7 +28,7 @@ from utils.data_utils import MEDQADatasetLoader
 from utils.head_utils import T5WithMLPHead
 import torch
 
-from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskPrefix_COS, CoTTrainer, AdptTrainer,TaskPrefixTrainerWithHead
+from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskPrefix_COS, CoTTrainer, AdptTrainer,TaskPrefixTrainerWithHead, DynamicLossTrainer
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -122,6 +122,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     # 设置一些训练中的细节参数 -- step --
     training_args = Seq2SeqTrainingArguments(
         output_dir,                         # 输出目录，模型和训练日志将被保存在这里
+        num_train_epochs=10,
         report_to = "none",
         remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列
         evaluation_strategy = 'steps',      # 评估策略，这里设置为“steps”，表示按步数进行评估
@@ -129,7 +130,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         save_strategy='steps',                 # 保存策略
         save_steps=args.eval_steps,         # 每隔多少步保存一次模型
         logging_steps=1,      # 每隔多少步记录一次日志
-        max_steps=args.max_steps,           # 最大步数，训练将在达到这个步数后停止
+        # max_steps=args.max_steps,           # 最大步数，训练将在达到这个步数后停止
         learning_rate=args.lr,              # 学习率
         warmup_steps=1000,
         gradient_accumulation_steps=args.grad_steps,  # 梯度累积步数，用于实现更大的有效批大小
@@ -178,6 +179,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         elif args.with_head:
             
             trainer = TaskPrefixTrainerWithHead(**trainer_kwargs)
+        elif args.dynamic:
+            trainer = DynamicLossTrainer(**trainer_kwargs)
         else:
             trainer = TaskPrefixTrainer(**trainer_kwargs)
     elif args.model_type == 'CoT':

@@ -8,15 +8,15 @@ CONFIG_FILE="../configs/ds_config_zero2.json"
 MODEL_TYPE="task_prefix"
 
 # Training parameters
-TRAIN_EPOCHS=12
+TRAIN_EPOCHS=20
 # MAX_STEPS=12000
 EVAL_STEPS=600
-BATCH_SIZE_TRAIN=4
+BATCH_SIZE_TRAIN=2
 BATCH_SIZE_EVAL=32
-GRAD_STEPS=2
+GRAD_STEPS=1
 WEIGHT=1
-ALPHA=0.5
-ADDITIONAL_INFO="MeDistill_28_batch8"
+ALPHA=0.8
+ADDITIONAL_INFO="MeDistill_28_hyperparameters"
 
 
 # Run the DeepSpeed training command
@@ -26,7 +26,6 @@ deepspeed distill_finetune.py \
     --from_pretrained $MODEL \
     --dataset $DATASET \
     --model_type $MODEL_TYPE \
-    --train_epochs $TRAIN_EPOCHS\
     --eval_steps $EVAL_STEPS \
     --batch_size_train $BATCH_SIZE_TRAIN \
     --batch_size_eval $BATCH_SIZE_EVAL \
@@ -36,9 +35,12 @@ deepspeed distill_finetune.py \
     --addi_info $ADDITIONAL_INFO \
     --parallelize \
     --deepspeed $CONFIG_FILE \
-    --bf16 \
-    # --dynamic
+    --train_epochs $TRAIN_EPOCHS\
     # --max_steps $MAX_STEPS \
+    # 
+    # --bf16 \
+    # --dynamic
+    # 
 
     # --cos_sim
     # --bf16 \

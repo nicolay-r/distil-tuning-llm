@@ -117,13 +117,13 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, required=True)
     parser.add_argument('--subsample', type=float, default=1.0)
     parser.add_argument('--alpha', type=float, default=0.5)
-    parser.add_argument('--max_steps', type=int, default=1000)
+    parser.add_argument('--max_steps', type=int, default=50)
     parser.add_argument('--eval_steps', type=int, default=250)
     parser.add_argument('--batch_size_train', type=int, default=64)
     parser.add_argument('--batch_size_eval', type=int, default=64)
     parser.add_argument('--optimizer_name', type=str, default='AdamW')
     parser.add_argument('--lr', type=float, default=1e-05)
-    parser.add_argument('--run', type=int, default=0)
+    parser.add_argument('--run', type=int, default=42)
     parser.add_argument('--from_pretrained', type=str, default='google/t5-v1_1-base')
     parser.add_argument('--label_type', type=str, default='gt')
     # parser.add_argument('--llm', type=str, default='palm')
@@ -155,11 +155,11 @@ if __name__ == '__main__':
     # run(args)
     
     to_email = "rosaliu.567@gmail.com"
-    send_email('模型训练开始', '您的模型已经开始训练。', to_email)
+    send_email('模型训练开始', f'您的模型{args.addi_info}已经开始训练。', to_email)
     try:  
         run(args)
         # to_email = "rosaliu.567@gmail.com"
-        send_email('模型训练完成', '您的模型已经成功训练完成。', to_email)
+        send_email('模型训练完成', f'您的模型{args.addi_info}已经成功训练完成。', to_email)
     except Exception as e:
         print(e)
         # to_email = "rosaliu.567@gmail.com"

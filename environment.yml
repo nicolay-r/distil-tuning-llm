@@ -13,6 +13,8 @@ dependencies:
   - pip
   - pip:
     # - transformers==4.24.0
+    - setuptools==69.5.1
+    - pydantic==1.10.13
     - datasets>=1.8.0
     - sentencepiece!=0.1.92
     - protobuf==3.20.*

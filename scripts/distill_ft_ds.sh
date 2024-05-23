@@ -40,7 +40,7 @@ deepspeed distill_finetune.py \
     # 
     # --bf16 \
     # --dynamic
-    # 
+    # --peft
 
     # --cos_sim
     # --bf16 \

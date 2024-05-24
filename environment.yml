@@ -2,7 +2,7 @@ name: distill_ds
 channels:
   - pytorch
   - nvidia
-  - conda-forge
+  # - conda-forge
   - defaults
 dependencies:
   - python=3.9
@@ -20,7 +20,6 @@ dependencies:
     - protobuf==3.20.*
     - wandb
     - accelerate>=0.12.0
-    - deepspeed==0.12.0
     - chardet
     - rouge-score
     - nltk
@@ -36,6 +35,7 @@ dependencies:
     - peft
     - tf-keras
     - huggingface_hub
+    - deepspeed==0.12.0
     # - langchain
     - tiktoken
     # - thefuzz[speedup]

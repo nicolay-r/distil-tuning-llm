@@ -27,7 +27,5 @@ touch app_keys/k.txt
 conda env create -f environment.yml
 
 
-
-
-# cd evaluates
-# conda env create -f environment.yml
+cd evaluate
+conda env create -f environment.yml

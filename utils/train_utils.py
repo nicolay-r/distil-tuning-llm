@@ -37,13 +37,13 @@ def get_config_dir(args):
     path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
     return path
 
-def set_wandb(trainer_kwargs):
+def set_wandb(trainer_kwargs, args):
     # 获取当前时间的时间戳
     timestamp = time.time()
 
     # 将时间戳转换为datetime对象
     dt_object = datetime.fromtimestamp(timestamp)
-    wandb.init(group="lmflow", project="new-sota-model", name=f"fine-tuning-{dt_object}", config=trainer_kwargs)
+    wandb.init(group="lmflow", project="MeDistill", name=f"fine-tuning-{args.addi_info}-{dt_object}", config=trainer_kwargs)
 
 
 def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics):
@@ -68,7 +68,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
                 beta1=0.85,        # 优化器的第一个动量参数，常用于计算梯度的指数衰减平均，有助于稳定训练过程。
                 beta2=0.85,        # 优化器的第二个动量参数，用于计算梯度平方的指数衰减平均，通常用于自适应学习率算法。
                 tinit=20,         # 训练开始阶段，初始阶段的训练时长或迭代次数。
-                tfinal=1000,       # 训练结束阶段，最终阶段的训练时长或迭代次数。
+                tfinal=1000,       # nvidi训练结束阶段，最终阶段的训练时长或迭代次数。
                 deltaT=10,         # 每隔多少训练步骤更新一次压缩率，用于控制压缩率变化的频率。
                 lora_alpha=32,     # LoRA扩展的秩数，控制了低秩适应中秩的大小，影响模型调整的幅度。
                 lora_dropout=0.05,  # LoRA层中的dropout比率，用于防止过拟合，增加模型的泛化能力。
@@ -122,22 +122,22 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     # 设置一些训练中的细节参数 -- step --
     training_args = Seq2SeqTrainingArguments(
         output_dir,                         # 输出目录，模型和训练日志将被保存在这里
-        weight_decay=0.01,
-        warmup_ratio=0.1,
-        label_smoothing_factor=0.1,
-        generation_num_beams=2,
-        
+        # weight_decay=0.01,
+        # warmup_ratio=0.1,
+        # label_smoothing_factor=0.1,
+        # generation_num_beams=2,
+        eval_delay=1000,
         num_train_epochs=args.train_epochs,
         report_to = "none",
         remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列
-        evaluation_strategy = 'epoch',      # 评估策略，这里设置为“steps”，表示按步数进行评估
-        # eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
-        save_strategy='epoch',                 # 保存策略
-        # save_steps=args.eval_steps,         # 每隔多少步保存一次模型
+        evaluation_strategy = 'steps',      # 评估策略，这里设置为“steps”，表示按步数进行评估
+        eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
+        save_strategy='steps',                 # 保存策略
+        save_steps=args.eval_steps,         # 每隔多少步保存一次模型
         logging_steps=1,      # 每隔多少步记录一次日志
         # max_steps=args.max_steps,           # 最大步数，训练将在达到这个步数后停止
         learning_rate=args.lr,              # 学习率
-        # warmup_steps=1000,
+        warmup_steps=1000,
         gradient_accumulation_steps=args.grad_steps,  # 梯度累积步数，用于实现更大的有效批大小
         per_device_train_batch_size=args.batch_size_train,  # 每个设备上的训练批大小
         per_device_eval_batch_size=args.batch_size_eval,   # 每个设备上的评估批大小
@@ -150,7 +150,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         deepspeed=args.deepspeed,
         save_total_limit=1,
         load_best_model_at_end=True,
-        metric_for_best_model="test_accuracy",
+        metric_for_best_model="test_rouge_avg",
         greater_is_better=True,
         push_to_hub=True,
     )
@@ -205,7 +205,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     else:
         raise ValueError
     
-    set_wandb(trainer_kwargs)
+    set_wandb(trainer_kwargs, args)
 
     wandb.watch(model, log = 'gradients')
 

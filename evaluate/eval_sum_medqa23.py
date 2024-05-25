@@ -111,9 +111,9 @@ if __name__ == "__main__" :
     )
     
     args = parser.parse_args()
-
+    csv_path = f"{args.fn_eval_data}/generated_predictions_df.csv"
     # Only need id and prediction from df_predictions
-    full_df = pd.read_csv(args.fn_eval_data)
+    full_df = pd.read_csv(csv_path)
     # full_df = df_references.merge(df_predictions[[args.id_column, 'prediction']], on=args.id_column)
     full_df['dataset'] = 0
 

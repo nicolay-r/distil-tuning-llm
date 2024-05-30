@@ -3,7 +3,7 @@
 
 TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
 
-OUTPUT_DIR="./results/wang2"
+OUTPUT_DIR="./results/wang2_test2"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
 CKPT_DIR="../ckpts/task_prefix/flan-t5-large_MeDistill_28_rougeAve/checkpoint-7800/"
 
@@ -30,5 +30,7 @@ python3 ./run_summarization.py "./conf/base.yml" "./conf/taskA.yml" output_dir="
     # checkpoint_dir="$CKPT_DIR" \
      
 ls 
-python3 ./eval_sum_medqa23.py --task taskA --fn_eval_data $OUTPUT_DIR
+python3 ./eval_sum_medqa23.py \
+    --fn_eval_data $OUTPUT_DIR \
 
+exit

@@ -122,10 +122,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     # 设置一些训练中的细节参数 -- step --
     training_args = Seq2SeqTrainingArguments(
         output_dir,                         # 输出目录，模型和训练日志将被保存在这里
-        # weight_decay=0.01,
-        # warmup_ratio=0.1,
-        # label_smoothing_factor=0.1,
-        # generation_num_beams=2,
+        weight_decay=0.01,
         eval_delay=1000,
         num_train_epochs=args.train_epochs,
         report_to = "none",
@@ -135,7 +132,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         save_strategy='steps',                 # 保存策略
         save_steps=args.eval_steps,         # 每隔多少步保存一次模型
         logging_steps=1,      # 每隔多少步记录一次日志
-        # max_steps=args.max_steps,           # 最大步数，训练将在达到这个步数后停止
         learning_rate=args.lr,              # 学习率
         warmup_steps=1000,
         gradient_accumulation_steps=args.grad_steps,  # 梯度累积步数，用于实现更大的有效批大小
@@ -148,7 +144,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         generation_max_length=args.gen_max_len,      # 生成的最大长度
         prediction_loss_only=False,         # 是否只预测损失，这里设置为False
         deepspeed=args.deepspeed,
-        save_total_limit=1,
+        save_total_limit=2,
         load_best_model_at_end=True,
         metric_for_best_model="test_rouge_avg",
         greater_is_better=True,

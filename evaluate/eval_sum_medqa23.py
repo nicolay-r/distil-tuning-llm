@@ -1,5 +1,5 @@
 import sys
-
+import nltk
 sys.path.append("..")  # 添加上层目录到路径中，使得 utils 模块可以被找到
 import json
 import argparse
@@ -14,6 +14,20 @@ section_tagger = SectionTagger()
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # device = "cpu"
 
+def sanitize_text(text: str, lowercase: bool = False) -> str:
+    """Cleans text by removing whitespace, newlines and tabs and (optionally) lowercasing."""
+    sanitized_text = " ".join(text.strip().split())
+    sanitized_text = sanitized_text.lower() if lowercase else sanitized_text
+    return sanitized_text
+def postprocess_text(preds, labels):
+
+    preds = [sanitize_text(pred) for pred in preds]
+    labels = [sanitize_text(label) for label in labels]
+
+    # rougeLSum expects newline after each sentence
+    preds = ["\n".join(nltk.sent_tokenize(pred)) for pred in preds]
+    labels = ["\n".join(nltk.sent_tokenize(label)) for label in labels]
+    return preds, labels
 
 def filter_and_aggregate(obj, indices):
     agg_obj = {}
@@ -71,6 +85,9 @@ if __name__ == "__main__" :
     # create lists for references/predictions so we only need to calculate the scores once per instance
     references = full_df['output'].tolist()
     predictions = full_df['prediction'].tolist()
+    
+    # predictions, references  = postprocess_text(full_df['output'].tolist(), full_df['prediction'].tolist())
+    
     num_test = len(full_df)
 
     ######## Load Metrics from HuggingFace ########

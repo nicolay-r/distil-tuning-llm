@@ -1,0 +1,17 @@
+{
+    "predict_ensemble_gen_score": 27.4802,
+    "predict_ensemble_score": 63.7401,
+    "predict_exact_match": 100.0,
+    "predict_loss": 2.8853869438171387,
+    "predict_mean_generated_len": 50.485,
+    "predict_mean_reference_len": 57.32,
+    "predict_rouge1": 82.4405,
+    "predict_rouge2": 69.4888,
+    "predict_rougeL": 81.3303,
+    "predict_rougeLsum": 81.6028,
+    "predict_rouge_avg": 77.7532,
+    "predict_runtime": 131.725,
+    "predict_samples": 200,
+    "predict_samples_per_second": 1.518,
+    "predict_steps_per_second": 0.053
+}

@@ -18,7 +18,7 @@ import evaluate
 import torch
 import nltk
 from transformers.utils import check_min_version, is_offline_mode, send_example_telemetry
-
+import wandb
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -220,7 +220,7 @@ def compute_metrics_equation(tokenizer):
         reference_lens = [np.count_nonzero(label != tokenizer.pad_token_id) for label in labels]
         result["mean_generated_len"] = np.mean(generated_lens)
         result["mean_reference_len"] = np.mean(reference_lens)
-        
+        wandb.log(result)
         return result
     return compute_metrics
 

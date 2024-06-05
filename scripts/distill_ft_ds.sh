@@ -8,15 +8,15 @@ CONFIG_FILE="../configs/ds_config_zero2.json"
 MODEL_TYPE="task_prefix"
 
 # Training parameters
-TRAIN_EPOCHS=20
-MAX_STEPS=24000
+TRAIN_EPOCHS=30
+MAX_STEPS=36000
 EVAL_STEPS=600
 BATCH_SIZE_TRAIN=2
 BATCH_SIZE_EVAL=32
 GRAD_STEPS=1
 WEIGHT=1
 ALPHA=0.8
-ADDITIONAL_INFO="MeDistill_28_rougeAve"
+ADDITIONAL_INFO="MeDistill_28_hierarchical_ep30"
 
 
 # Run the DeepSpeed training command

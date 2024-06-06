@@ -415,9 +415,9 @@ def main():
             revision=model_args.model_revision,
             use_auth_token=True if model_args.use_auth_token else None,
         )
-        # model_dir = model_args.checkpoint_dir
-        # checkpoint = torch.load(f"{model_dir}pytorch_model.bin", map_location="cpu") #读取本地训练好的chekpoint
-        # model.load_state_dict(checkpoint)
+        model_dir = model_args.checkpoint_dir
+        checkpoint = torch.load(f"{model_dir}pytorch_model.bin", map_location="cpu") #读取本地训练好的chekpoint
+        model.load_state_dict(checkpoint)
     
    
 

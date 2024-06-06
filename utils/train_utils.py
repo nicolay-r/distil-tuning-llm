@@ -20,7 +20,7 @@ import os
 import logging
 import re
 # from adapters import Seq2SeqAdapterTrainer
-from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer
+from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, get_linear_schedule_with_warmup
 from transformers import T5ForConditionalGeneration
 from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
@@ -119,6 +119,17 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         os.removedirs(output_dir)
     # 路径整理完了
     
+    # 定义优化器
+    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
+    
+    # 定义调度器
+    scheduler = get_linear_schedule_with_warmup(
+        optimizer,
+        num_warmup_steps=500, # 预热步数
+        num_training_steps=1201 * args.train_epochs
+    )
+      
+
     # 设置一些训练中的细节参数 -- step --
     training_args = Seq2SeqTrainingArguments(
         output_dir,                         # 输出目录，模型和训练日志将被保存在这里
@@ -133,7 +144,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         save_steps=args.eval_steps,         # 每隔多少步保存一次模型
         logging_steps=1,      # 每隔多少步记录一次日志
         learning_rate=args.lr,              # 学习率
-        warmup_steps=1000,
+        warmup_steps=500,
         gradient_accumulation_steps=args.grad_steps,  # 梯度累积步数，用于实现更大的有效批大小
         per_device_train_batch_size=args.batch_size_train,  # 每个设备上的训练批大小
         per_device_eval_batch_size=args.batch_size_eval,   # 每个设备上的评估批大小
@@ -149,6 +160,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         metric_for_best_model="test_rouge_avg",
         greater_is_better=True,
         push_to_hub=True,
+        optimizers=(optimizer, scheduler),  # 注意这里传递的是一个元组(optimizer, scheduler)
     )
 
 
@@ -170,7 +182,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         'eval_dataset': {'test': tokenized_datasets["valid"],},
         'data_collator': data_collator,
         'tokenizer': tokenizer,
-        'compute_metrics': compute_metrics,    
+        'compute_metrics': compute_metrics,  
+        'optimizers': 
     }
 
     # breakpoint()
@@ -178,7 +191,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         if args.cos_sim:
             trainer = TaskPrefix_COS(**trainer_kwargs)
         elif args.with_head:
-            
             trainer = TaskPrefixTrainerWithHead(**trainer_kwargs)
         elif args.dynamic:
             trainer = DynamicLossTrainer(**trainer_kwargs)

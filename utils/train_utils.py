@@ -128,6 +128,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         num_warmup_steps=500, # 预热步数
         num_training_steps=1201 * args.train_epochs
     )
+    optimizers = (optimizer, scheduler)
       
 
     # 设置一些训练中的细节参数 -- step --
@@ -160,7 +161,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         metric_for_best_model="test_rouge_avg",
         greater_is_better=True,
         push_to_hub=True,
-        optimizers=(optimizer, scheduler),  # 注意这里传递的是一个元组(optimizer, scheduler)
+        # optimizers=(optimizer, scheduler),  # 注意这里传递的是一个元组(optimizer, scheduler)
     )
 
 
@@ -183,7 +184,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         'data_collator': data_collator,
         'tokenizer': tokenizer,
         'compute_metrics': compute_metrics,  
-        'optimizers': 
     }
 
     # breakpoint()
@@ -196,6 +196,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
             trainer = DynamicLossTrainer(**trainer_kwargs)
         else:
             trainer = TaskPrefixTrainer(**trainer_kwargs)
+            trainer.optimizers = optimizers
     elif args.model_type == 'CoT':
         trainer = CoTTrainer(**trainer_kwargs)
         

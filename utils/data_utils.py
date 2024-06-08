@@ -36,9 +36,9 @@ class MEDQADatasetLoader(object):
             'valid': 'valid'
             # 'test': 'test',
         }
-        self.batch_size = 500
-        self.train_batch_idxs = range(2)
-        self.test_batch_idxs = range(1)
+        # self.batch_size = 500
+        # self.train_batch_idxs = range(2)
+        # self.test_batch_idxs = range(1)
         self.model_type = model_type
 
     def load_from_json(self):
@@ -46,21 +46,19 @@ class MEDQADatasetLoader(object):
             'train': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
             'valid': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_valid.json',
         }
-
-        datasets = load_dataset('json', data_files=data_files)
-        
+        datasets = load_dataset('json', data_files=data_files)       
 
         return datasets
 
     
     def load_from_json_rationale(self):
         data_files = {
-            'train': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
+            # 'train': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
             'valid': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_valid.json',
         }
-
+        breakpoint()
         datasets = load_dataset('json', data_files=data_files) 
-
+        # breakpoint()
         return datasets
 
     
@@ -76,5 +74,22 @@ class MEDQADatasetLoader(object):
             rationales.append(rationale)
             labels.append(label)
         # breakpoint()
+        return rationales, labels
+    
+    def load_multi_rationale(self, split):
+        labels = list()
+        rationales = list()
+        with open(f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_{split}.json') as f:
+            outputs = json.load(f)
+        breakpoint()    
+        i = 0
+        for output in outputs:
+            print(i)
+            rationale = output['rationale']
+            label = output['output']
+            # rationales.append(rationale)
+            labels.append(label)
+            i+=1
+        breakpoint()
         return rationales, labels
     

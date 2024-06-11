@@ -79,7 +79,7 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
         '''
         # 原来的
         loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
-        
+        # breakpoint()
         # ********************Accuracy**************************
         # Example accuracy calculation for predictions
         pred_labels = inputs['pred']['labels']  # Assuming true labels are here

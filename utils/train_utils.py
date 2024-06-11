@@ -135,7 +135,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     training_args = Seq2SeqTrainingArguments(
         output_dir,                         # 输出目录，模型和训练日志将被保存在这里
         weight_decay=0.01,
-        eval_delay=1000,
+        eval_delay=1,
         num_train_epochs=args.train_epochs,
         report_to = "none",
         remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列

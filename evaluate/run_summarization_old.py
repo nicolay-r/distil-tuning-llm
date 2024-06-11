@@ -267,7 +267,23 @@ class DataTrainingArguments:
     )
 
     def __post_init__(self):
-
+        if (
+            # self.dataset_name is None
+            self.train_file is None
+            and self.validation_file is None
+            and self.test_file is None
+        ):
+            raise ValueError("Need either a dataset name or a training, validation, or test file.")
+        else:
+            if self.train_file is not None:
+                extension = self.train_file.split(".")[-1]
+                assert extension in ["csv", "json"], "`train_file` should be a csv or a json file."
+            if self.validation_file is not None:
+                extension = self.validation_file.split(".")[-1]
+                assert extension in ["csv", "json"], "`validation_file` should be a csv or a json file."
+            if self.test_file is not None:
+                extension = self.test_file.split(".")[-1]
+                assert extension in ["csv", "json"], "`test_file` should be a csv or a json file."
         if self.val_max_target_length is None:
             self.val_max_target_length = self.max_target_length
 
@@ -364,6 +380,37 @@ def main():
     )
     logger.info(f"Training/evaluation parameters {training_args}")
 
+    if data_args.source_prefix is None and model_args.model_name_or_path in [
+        "t5-small",
+        "t5-base",
+        "t5-large",
+        "t5-3b",
+        "t5-11b",
+    ]:
+        logger.warning(
+            "You're running a t5 model but didn't provide a source prefix, which is the expected, e.g. with "
+            "`--source_prefix 'summarize: ' `"
+        )
+
+    # Detecting last checkpoint.
+    last_checkpoint = None
+    if os.path.isdir(training_args.output_dir) and training_args.do_train and not training_args.overwrite_output_dir:
+        last_checkpoint = get_last_checkpoint(training_args.output_dir)
+        if last_checkpoint is None and len(os.listdir(training_args.output_dir)) > 0:
+            raise ValueError(
+                f"Output directory ({training_args.output_dir}) already exists and is not empty. "
+                "Use --overwrite_output_dir to overcome."
+            )
+        elif last_checkpoint is not None and training_args.resume_from_checkpoint is None:
+            logger.info(
+                f"Checkpoint detected, resuming training at {last_checkpoint}. To avoid this behavior, change "
+                "the `--output_dir` or add `--overwrite_output_dir` to train from scratch."
+            )
+
+    # Set seed before initializing model.
+    set_seed(training_args.seed)
+
+
     data_files = {}
 
     data_files["test"] = data_args.test_file
@@ -415,53 +462,50 @@ def main():
             revision=model_args.model_revision,
             use_auth_token=True if model_args.use_auth_token else None,
         )
-        model_dir = model_args.checkpoint_dir
-        checkpoint = torch.load(f"{model_dir}pytorch_model.bin", map_location="cpu") #读取本地训练好的chekpoint
-        model.load_state_dict(checkpoint)
+        # model_dir = model_args.checkpoint_dir
+        # checkpoint = torch.load(f"{model_dir}pytorch_model.bin", map_location="cpu") #读取本地训练好的chekpoint
+        # model.load_state_dict(checkpoint)
     
    
 
     # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
     # on a small vocab and want a smaller embedding size, remove this test.
-    # embedding_size = model.get_input_embeddings().weight.shape[0]
-    # if len(tokenizer) > embedding_size:
-    #     print('没有')
-    #     model.resize_token_embeddings(len(tokenizer))
-    # breakpoint()
-    # 不知道是干啥的
-    # if model.config.decoder_start_token_id is None and isinstance(tokenizer, (MBartTokenizer, MBartTokenizerFast)):
-    #     if isinstance(tokenizer, MBartTokenizer):
-    #         model.config.decoder_start_token_id = tokenizer.lang_code_to_id[data_args.lang]
-    #     else:
-    #         model.config.decoder_start_token_id = tokenizer.convert_tokens_to_ids(data_args.lang)
+    embedding_size = model.get_input_embeddings().weight.shape[0]
+    if len(tokenizer) > embedding_size:
+        model.resize_token_embeddings(len(tokenizer))
 
-    # if model.config.decoder_start_token_id is None:
-    #     raise ValueError("Make sure that `config.decoder_start_token_id` is correctly defined")
-    #
-    # if (
-    #     hasattr(model.config, "max_position_embeddings")
-    #     and model.config.max_position_embeddings < data_args.max_source_length
-    # ):
-    #     print('这里')
-    #     if model_args.resize_position_embeddings is None:
-    #         logger.warning(
-    #             "Increasing the model's number of position embedding vectors from"
-    #             f" {model.config.max_position_embeddings} to {data_args.max_source_length}."
-    #         )
-    #         model.resize_position_embeddings(data_args.max_source_length)
-    #     elif model_args.resize_position_embeddings:
-    #         model.resize_position_embeddings(data_args.max_source_length)
-    #     else:
-    #         raise ValueError(
-    #             f"`--max_source_length` is set to {data_args.max_source_length}, but the model only has"
-    #             f" {model.config.max_position_embeddings} position encodings. Consider either reducing"
-    #             f" `--max_source_length` to {model.config.max_position_embeddings} or to automatically resize the"
-    #             " model's position encodings by passing `--resize_position_embeddings`."
-    #         )
-    
-    # prefix = data_args.source_prefix if data_args.source_prefix is not None else ""
+    if model.config.decoder_start_token_id is None and isinstance(tokenizer, (MBartTokenizer, MBartTokenizerFast)):
+        if isinstance(tokenizer, MBartTokenizer):
+            model.config.decoder_start_token_id = tokenizer.lang_code_to_id[data_args.lang]
+        else:
+            model.config.decoder_start_token_id = tokenizer.convert_tokens_to_ids(data_args.lang)
+
+    if model.config.decoder_start_token_id is None:
+        raise ValueError("Make sure that `config.decoder_start_token_id` is correctly defined")
+
+    if (
+        hasattr(model.config, "max_position_embeddings")
+        and model.config.max_position_embeddings < data_args.max_source_length
+    ):
+        if model_args.resize_position_embeddings is None:
+            logger.warning(
+                "Increasing the model's number of position embedding vectors from"
+                f" {model.config.max_position_embeddings} to {data_args.max_source_length}."
+            )
+            model.resize_position_embeddings(data_args.max_source_length)
+        elif model_args.resize_position_embeddings:
+            model.resize_position_embeddings(data_args.max_source_length)
+        else:
+            raise ValueError(
+                f"`--max_source_length` is set to {data_args.max_source_length}, but the model only has"
+                f" {model.config.max_position_embeddings} position encodings. Consider either reducing"
+                f" `--max_source_length` to {model.config.max_position_embeddings} or to automatically resize the"
+                " model's position encodings by passing `--resize_position_embeddings`."
+            )
+
+    prefix = data_args.source_prefix if data_args.source_prefix is not None else ""
     suffix = data_args.source_suffix if data_args.source_suffix is not None else ""
-    prefix = "Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: "
+    suffix = "SUMMARY: "
 
     
     column_names = raw_datasets["test"].column_names
@@ -474,11 +518,11 @@ def main():
     max_target_length = data_args.max_target_length
     padding = "max_length" if data_args.pad_to_max_length else False
 
-    # if training_args.label_smoothing_factor > 0 and not hasattr(model, "prepare_decoder_input_ids_from_labels"):
-    #     logger.warning(
-    #         "label_smoothing is enabled but the `prepare_decoder_input_ids_from_labels` method is not defined for"
-    #         f"`{model.__class__.__name__}`. This will lead to loss being calculated twice and will take up more memory"
-    #     )
+    if training_args.label_smoothing_factor > 0 and not hasattr(model, "prepare_decoder_input_ids_from_labels"):
+        logger.warning(
+            "label_smoothing is enabled but the `prepare_decoder_input_ids_from_labels` method is not defined for"
+            f"`{model.__class__.__name__}`. This will lead to loss being calculated twice and will take up more memory"
+        )
 
     def preprocess_function(examples):
         # remove pairs where at least one record is None
@@ -560,7 +604,7 @@ def main():
         max_predict_samples = (
             data_args.max_predict_samples if data_args.max_predict_samples is not None else len(predict_dataset)
         )
-        # breakpoint()
+        
         if trainer.is_world_process_zero():
             if training_args.predict_with_generate:
                 res_predictions = predict_results.predictions
@@ -584,12 +628,10 @@ def main():
                         matches = re.findall(pattern, p, re.DOTALL)[0][0]
                     except:
                         matches = p
-                        
+                        # print("这个错了：",p)
+                        # print(i)
                     pred_result.append(matches)
-                    
-                
-    
-                
+                # SECTION_DIVISIONS = ['subjective', 'objective_exam', 'objective_results', 'assessment_and_plan']
                 full_df = pd.DataFrame(raw_datasets['test'], columns=raw_datasets['test'].features)
                 
                 # breakpoint()

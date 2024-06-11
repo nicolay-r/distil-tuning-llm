@@ -53,10 +53,10 @@ class MEDQADatasetLoader(object):
     
     def load_from_json_rationale(self):
         data_files = {
-            # 'train': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
+            'train': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
             'valid': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_valid.json',
         }
-        breakpoint()
+        # breakpoint()
         datasets = load_dataset('json', data_files=data_files) 
         # breakpoint()
         return datasets

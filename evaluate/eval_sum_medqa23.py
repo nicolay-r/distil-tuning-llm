@@ -1,5 +1,5 @@
 import sys
-import nltk
+
 sys.path.append("..")  # 添加上层目录到路径中，使得 utils 模块可以被找到
 import json
 import argparse
@@ -11,23 +11,59 @@ import numpy as np
 from utils.sectiontagger import SectionTagger
 section_tagger = SectionTagger()
 
+
+# SECTION_DIVISIONS = ['subjective', 'objective_exam', 'objective_results', 'assessment_and_plan']
+
+TASKA_RANGE = [0,199]
+TASKA_PREFIX = ''
+
+TASKB_RANGE = [88,127]
+TASKB_PREFIX = 'D2N'
+
+TASKC_RANGE = [128,167]
+TASKC_PREFIX = 'D2N'
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # device = "cpu"
 
-def sanitize_text(text: str, lowercase: bool = False) -> str:
-    """Cleans text by removing whitespace, newlines and tabs and (optionally) lowercasing."""
-    sanitized_text = " ".join(text.strip().split())
-    sanitized_text = sanitized_text.lower() if lowercase else sanitized_text
-    return sanitized_text
-def postprocess_text(preds, labels):
 
-    preds = [sanitize_text(pred) for pred in preds]
-    labels = [sanitize_text(label) for label in labels]
+# def add_section_divisions(row, dialogue_column ):
+#     row['src_len'] = len(row[ dialogue_column ].split())
+#     for evaltype in ['output', 'prediction']:
+#         text = row[evaltype]
+#         text_with_endlines = text.replace( '__lf1__', '\n' )
+#         detected_divisions = section_tagger.divide_note_by_metasections(text_with_endlines)
+#         for detected_division in detected_divisions:
+#             label, _, _, start, _, end = detected_division
+#             row[ '%s_%s' % (evaltype, label)] = text_with_endlines[start:end].replace('\n', '__lf1__')
 
-    # rougeLSum expects newline after each sentence
-    preds = ["\n".join(nltk.sent_tokenize(pred)) for pred in preds]
-    labels = ["\n".join(nltk.sent_tokenize(label)) for label in labels]
-    return preds, labels
+#     return row
+
+
+# def select_values_by_indices(lst, indices) :
+#     return [lst[ind] for ind in indices]
+
+
+# def read_text(fn):
+#     with open(fn, 'r') as f:
+#         texts = f.readlines()
+#     return texts
+
+
+# def _validate(args, df_predictions, task_prefix, task_range):
+#     id_range = df_predictions.apply(lambda row: int( str(row[args.id_column]).replace(task_prefix, '')), axis=1)
+#     min_id = min(id_range)
+#     max_id = max(id_range)
+#     if min_id < task_range[0] or min_id > task_range[1]:
+#         print('Your encounter ID range does not match the test encounters')
+#         sys.exit(1)
+#     if max_id < task_range[0] or max_id > task_range[1]:
+#         print('Your encounter ID range does not match the test encounters')
+#         sys.exit(1)
+#     if not args.debug and len(df_predictions) != task_range[1] - task_range[0] + 1:
+#         print('The number of test encounters does not match expected for this task!')
+#         sys.exit(1)
+
+
 
 def filter_and_aggregate(obj, indices):
     agg_obj = {}
@@ -69,25 +105,22 @@ if __name__ == "__main__" :
 
     parser.add_argument('--fn_eval_data', required=True, help='filename of gold references requires id and note column.')
 
-    # parser.add_argument(
-    #     '--task', action='store', default='taskA',
-    #     help='summarization task, default is for full note (taskB). (use snippet, taskA, otherwise).'
-    # )
+    parser.add_argument(
+        '--task', action='store', default='taskA',
+        help='summarization task, default is for full note (taskB). (use snippet, taskA, otherwise).'
+    )
     
     args = parser.parse_args()
-    
-    csv_path = f"{args.fn_eval_data}/generated_predictions_df.csv"
+
     # Only need id and prediction from df_predictions
-    full_df = pd.read_csv(csv_path)
+    full_df = pd.read_csv(f"{args.fn_eval_data}/generated_predictions_df.csv") 
+    # 
     # full_df = df_references.merge(df_predictions[[args.id_column, 'prediction']], on=args.id_column)
     full_df['dataset'] = 0
 
     # create lists for references/predictions so we only need to calculate the scores once per instance
     references = full_df['output'].tolist()
     predictions = full_df['prediction'].tolist()
-    
-    # predictions, references  = postprocess_text(full_df['output'].tolist(), full_df['prediction'].tolist())
-    
     num_test = len(full_df)
 
     ######## Load Metrics from HuggingFace ########

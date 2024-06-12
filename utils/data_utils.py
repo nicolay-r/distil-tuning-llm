@@ -75,21 +75,41 @@ class MEDQADatasetLoader(object):
             labels.append(label)
         # breakpoint()
         return rationales, labels
+
+    def load_from_json_multi(self):
+        data_files_train = {
+            'train': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
+            # 'valid': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_valid.json',
+        }
+        data_files_valid = {
+            # 'train': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
+            'valid': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_valid.json',
+        }
+        datasets_train = load_dataset('json', data_files=data_files_train)
+        datasets_valid = load_dataset('json', data_files=data_files_valid)
+        datasets = DatasetDict({
+            'train': datasets_train['train'],  # or whatever split your datasets_train is under
+            'valid': datasets_valid['valid']  # or whatever split your datasets_valid is under
+        })
+
+        # breakpoint()
+        return datasets
+
     
     def load_multi_rationale(self, split):
         labels = list()
         rationales = list()
         with open(f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_{split}.json') as f:
             outputs = json.load(f)
-        breakpoint()    
+        # breakpoint()
         i = 0
         for output in outputs:
-            print(i)
+            # print(i)
             rationale = output['rationale']
             label = output['output']
-            # rationales.append(rationale)
+            rationales.append(rationale)
             labels.append(label)
             i+=1
-        breakpoint()
+        # breakpoint()
         return rationales, labels
     

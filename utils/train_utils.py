@@ -28,7 +28,7 @@ from utils.data_utils import MEDQADatasetLoader
 from utils.head_utils import T5WithMLPHead
 import torch
 
-from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskPrefix_COS, CoTTrainer, AdptTrainer,TaskPrefixTrainerWithHead, DynamicLossTrainer
+from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskPrefix_COS, CoTTrainer, AdptTrainer,TaskPrefixTrainerWithHead, DynamicLossTrainer, TaskPrefixDataCollator_hierarchical, TaskPrefix_hierarchical
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -163,15 +163,19 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         push_to_hub=True,
         # optimizers=(optimizer, scheduler),  # 注意这里传递的是一个元组(optimizer, scheduler)
     )
-
+    # breakpoint()
 
     if args.model_type == 'standard':
         print("model_type: {}".format(args.model_type))
         data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
+
     else:
-        print("model_type: {}".format(args.model_type))
-        # rouge_metric = datasets.load_metric("rouge")
-        data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
+        if args.hierarchical:
+            data_collator = TaskPrefixDataCollator_hierarchical(tokenizer=tokenizer, model=model)
+        else:
+            print("model_type: {}".format(args.model_type))
+            # rouge_metric = datasets.load_metric("rouge")
+            data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
 
     
     
@@ -194,6 +198,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
             trainer = TaskPrefixTrainerWithHead(**trainer_kwargs)
         elif args.dynamic:
             trainer = DynamicLossTrainer(**trainer_kwargs)
+        elif args.hierarchical:
+            trainer =TaskPrefix_hierarchical(**trainer_kwargs)
         else:
             trainer = TaskPrefixTrainer(**trainer_kwargs)
             trainer.optimizers = optimizers

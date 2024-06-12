@@ -36,6 +36,7 @@ from transformers import (
     Seq2SeqTrainer,
     Seq2SeqTrainingArguments,
     set_seed,
+    T5ForConditionalGeneration
 )
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, is_offline_mode, send_example_telemetry
@@ -455,7 +456,7 @@ def main():
         model = PeftModel.from_pretrained(model, model_args.checkpoint_dir)
 
     else:
-        model = AutoModelForSeq2SeqLM.from_pretrained(
+        model = T5ForConditionalGeneration.from_pretrained(
             model_args.model_name_or_path,
             from_tf=bool(".ckpt" in model_args.model_name_or_path),
             config=config,

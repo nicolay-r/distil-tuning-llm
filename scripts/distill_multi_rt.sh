@@ -16,7 +16,7 @@ BATCH_SIZE_EVAL=32
 GRAD_STEPS=1
 WEIGHT=1
 ALPHA=0.8
-ADDITIONAL_INFO="MeDistill_28_softlabel_ep10"
+ADDITIONAL_INFO="MeDistill_hierarchical_ep10"
 
 
 # Run the DeepSpeed training command
@@ -37,6 +37,7 @@ deepspeed distill_multi.py \
     --deepspeed $CONFIG_FILE \
     --train_epochs $TRAIN_EPOCHS\
     --max_steps $MAX_STEPS \
+    --hierarchical \
     # 
     # --bf16 \
     # --dynamic

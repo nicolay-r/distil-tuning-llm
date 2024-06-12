@@ -3,7 +3,7 @@
 
 TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
 
-OUTPUT_DIR="./results/MeDistill_28_softlabel"
+OUTPUT_DIR="./results/MeDistill_wang2_t5"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
 CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-30
@@ -20,12 +20,12 @@ CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
 # - Use the run=1 argument to ensure that the output file is named correctly
 # 
 python3 ./run_summarization_old.py "./conf/base.yml" "./conf/taskA.yml" output_dir="$OUTPUT_DIR" \
-    model_name_or_path="Xiaolihai/flan-t5-large_MeDistill_28_softlabel_ep20" \
+    model_name_or_path="wanglab/task-a-flan-t5-large-run-2" \
     summary_column="dialogue" \
     train_file=null \
     validation_file=null \
     test_file="$TEST_FP" \
-    per_device_eval_batch_size=32 \
+    per_device_eval_batch_size=2 \
     fp16=false \
     bf16=false \
     do_train=false \

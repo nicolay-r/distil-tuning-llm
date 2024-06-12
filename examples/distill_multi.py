@@ -43,7 +43,7 @@ def run(args):
     dataset_loader = MEDQADatasetLoader(args.dataset, args.model_type)
 
     # 加载数据
-    datasets = dataset_loader.load_from_json_rationale()
+    datasets = dataset_loader.load_from_json_multi()
     
     
     # 整理数据集的label和rationale
@@ -61,45 +61,61 @@ def run(args):
     datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
 
 
-    # # if args.llm is not None: # 重命名rationale
-    # if 'rationale' in datasets['train'].column_names:
-    #     datasets = datasets.remove_columns('rationale')
-    # datasets = datasets.rename_column('llm_rationale', 'rationale')
-    # if 'output' in datasets['train'].column_names:
-    #     datasets = datasets.rename_column('output', 'label')
+    # if args.llm is not None: # 重命名rationale
+    if 'rationale' in datasets['train'].column_names:
+        datasets = datasets.remove_columns('rationale')
+    datasets = datasets.rename_column('llm_rationale', 'rationale')
+    if 'output' in datasets['train'].column_names:
+        datasets = datasets.rename_column('output', 'label')
         
-
-    # #### Prepare datasets Prepare data for training
-    # tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
-
+    # breakpoint()
+    #### Prepare datasets Prepare data for training
+    tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
+    # tokenizer = AutoTokenizer.from_pretrained('google/t5-v1_1-base')
     
-    # def tokenize_function(examples):
-    #     # For the first label
-    #     model_inputs = tokenizer(['Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue:' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
-    #     expl_model_inputs = tokenizer(['Extract the key information from the dialogue, Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
-        
-    #     model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
-    #     model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
-    #     # breakpoint()
-    #     with tokenizer.as_target_tokenizer():
-    #         label_output_encodings = tokenizer(examples['label'], max_length=args.gen_max_len, truncation=True)
-    #         rationale_output_encodings = tokenizer(examples['rationale'], max_length=args.gen_max_len, truncation=True)
+    def tokenize_function(examples):
+        # For the first label
+        # breakpoint()
+        dialogue = examples['input']
+        rationale = examples['rationale']
+        model_inputs = tokenizer(['Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue:' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
+        # expl_model_inputs = tokenizer(['Extract the key information from the dialogue, Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
+        #
+        # model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
+        # model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
+        # breakpoint()
+        with tokenizer.as_target_tokenizer():
+            label_output_encodings = tokenizer(examples['label'], max_length=args.gen_max_len, truncation=True)
+        modified_entries = []
+        for key, value in rationale.items():
+            # Create the new input sentence
+            new_input = f"Extract the {key} information from the dialogue: {dialogue}"
+            # Tokenize the new input
+            tokenized_input = tokenizer(new_input, truncation=True, padding='max_length', max_length=512)
+            # Store the tokenized input with its output
+            modified_entries.append({
+                'input_ids': tokenized_input['input_ids'],
+                'attention_mask': tokenized_input['attention_mask'],
+                'labels': tokenizer.encode(value, add_special_tokens=False)
+                # Assuming labels are encoded rationale values
+            })
 
-    #     model_inputs['labels'] = label_output_encodings['input_ids']
-    #     model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
-
-    #     return model_inputs
-
-    # print("这里mei有")
-    # tokenized_datasets = datasets.map(
-    #     tokenize_function,
-    #     remove_columns=['input', 'rationale', 'label', 'llm_label'],
-    #     batched=True
-    # )
-    # compute_metrics = compute_metrics_equation(tokenizer)
+        model_inputs['labels'] = label_output_encodings['input_ids']
+        model_inputs['rationale_list'] = modified_entries
 
 
-    # train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
+        return model_inputs
+
+    print("这里mei有")
+    tokenized_datasets = datasets.map(
+        tokenize_function,
+        remove_columns=['input', 'rationale', 'label', 'llm_label'],
+        batched=True
+    )
+    compute_metrics = compute_metrics_equation(tokenizer)
+
+
+    train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
 
 
 if __name__ == '__main__':
@@ -139,7 +155,7 @@ if __name__ == '__main__':
     parser.add_argument('--cos_sim', action='store_true')
     
     parser.add_argument('--dynamic', action='store_true')
-    
+    parser.add_argument('--hierarchical', action='store_true')
 
     args = parser.parse_args()
     

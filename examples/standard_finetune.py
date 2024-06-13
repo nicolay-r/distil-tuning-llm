@@ -58,7 +58,7 @@ def run(args):
         )
 
         with tokenizer.as_target_tokenizer():
-            label_output_encodings = tokenizer(examples['output'], max_length=args.gen_max_len, truncation=True) #设置最大长度为1024，并在超出时截断文本。
+            label_output_encodings = tokenizer(examples['output'], max_length=args.gen_max_len, truncation=True, padding='max_length') #设置最大长度为1024，并在超出时截断文本。
 
         model_inputs['labels'] = label_output_encodings['input_ids']
         
@@ -74,7 +74,7 @@ def run(args):
     )
     
 
-    compute_metrics = compute_metrics_equation_aux(tokenizer)
+    compute_metrics = compute_metrics_equation(tokenizer)
     # compute_metrics = compute_metrics_equation(tokenizer)
 
     train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
@@ -108,6 +108,7 @@ if __name__ == '__main__':
     parser.add_argument('--addi_info', type=str, default="")
     parser.add_argument("--deepspeed", type=str, default=None, help="Path to deepspeed config file.")
     parser.add_argument('--weight', type=int, default=1)
+    parser.add_argument('--train_epochs', type=int, default=10)
 
     args = parser.parse_args()
 

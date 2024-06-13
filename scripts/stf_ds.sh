@@ -2,20 +2,20 @@
 # Executes fine-tuning of the Flan-T5 large model with specified parameters using DeepSpeed
 
 # Model, dataset, and configuration settings
-MODEL="google/flan-t5-xxl"
+MODEL="google/flan-t5-small"
 DATASET="medqa_d2n"
 CONFIG_FILE="../configs/ds_config_zero2.json"
 MODEL_TYPE="standard"
 
 # Training parameters
-MAX_STEPS=50
-EVAL_STEPS=10
-BATCH_SIZE_TRAIN=2
+MAX_STEPS=12000
+EVAL_STEPS=600
+BATCH_SIZE_TRAIN=1
 BATCH_SIZE_EVAL=4
 GRAD_STEPS=1
 WEIGHT=1
 ALPHA=0
-ADDITIONAL_INFO="sft_xxl"
+ADDITIONAL_INFO="MeDistill_stf_merge_ep10"
 
 
 # Run the DeepSpeed training command

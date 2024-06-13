@@ -164,7 +164,6 @@ def compute_metrics_equation(tokenizer):
         ls = np.where(labels[0] != -100, labels[0], tokenizer.pad_token_id)
         # preds = np.where(preds != -100,preds,tokenizer.pad_token_id)
         decoded_labels = tokenizer.batch_decode(ls, skip_special_tokens=True)
-
         # Some simple post-processing
         decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
 
@@ -179,7 +178,7 @@ def compute_metrics_equation(tokenizer):
             # result.update(exact_match.compute(predictions=header_preds, references=header_labels))
 
         # Compute section text metrics...
-
+        # breakpoint()
         # ROUGE
         rouge_results = rouge.compute(predictions=decoded_preds, references=decoded_labels, use_stemmer=True)
         result.update(rouge_results)

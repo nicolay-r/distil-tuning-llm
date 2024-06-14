@@ -49,6 +49,7 @@ from transformers import (
     Seq2SeqTrainer,
     Seq2SeqTrainingArguments,
     set_seed,
+    T5ForConditionalGeneration
 )
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, is_offline_mode, send_example_telemetry
@@ -527,12 +528,12 @@ def main():
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
     )
-    model = AutoModelForSeq2SeqLM.from_pretrained(
+    model = T5ForConditionalGeneration.from_pretrained(
         model_args.model_name_or_path,
-        from_tf=bool(".ckpt" in model_args.model_name_or_path),
+        # from_tf=bool(".ckpt" in model_args.model_name_or_path),
         config=config,
         cache_dir=model_args.cache_dir,
-        revision=model_args.model_revision,
+        # revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
     )
 
@@ -581,6 +582,8 @@ def main():
 
     prefix = data_args.source_prefix if data_args.source_prefix is not None else ""
     suffix = data_args.source_suffix if data_args.source_suffix is not None else ""
+    prefix = "Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue:\n"
+    suffix = ""
     # breakpoint()
     training_args.do_eval = False
     # Preprocessing the datasets.
@@ -619,22 +622,23 @@ def main():
     # Get the column names for input/target.
     dataset_columns = summarization_name_mapping.get(data_args.dataset_name, None)
     text_column = "input"
-    if data_args.text_column is None:
-        text_column = dataset_columns[0] if dataset_columns is not None else column_names[0]
-    else:
-        text_column = data_args.text_column
-        if text_column not in column_names:
-            raise ValueError(
-                f"--text_column' value '{data_args.text_column}' needs to be one of: {', '.join(column_names)}"
-            )
-    if data_args.summary_column is None:
-        summary_column = dataset_columns[1] if dataset_columns is not None else column_names[1]
-    else:
-        summary_column = "output"
-        if summary_column not in column_names:
-            raise ValueError(
-                f"--summary_column' value '{data_args.summary_column}' needs to be one of: {', '.join(column_names)}"
-            )
+    summary_column = "output"
+    # if data_args.text_column is None:
+    #     text_column = dataset_columns[0] if dataset_columns is not None else column_names[0]
+    # else:
+    #     text_column = data_args.text_column
+    #     if text_column not in column_names:
+    #         raise ValueError(
+    #             f"--text_column' value '{data_args.text_column}' needs to be one of: {', '.join(column_names)}"
+    #         )
+    # if data_args.summary_column is None:
+    #     summary_column = dataset_columns[1] if dataset_columns is not None else column_names[1]
+    # else:
+    #     summary_column = "output"
+    #     if summary_column not in column_names:
+    #         raise ValueError(
+    #             f"--summary_column' value '{data_args.summary_column}' needs to be one of: {', '.join(column_names)}"
+    #         )
 
     # Temporarily set max_target_length for training.
     max_target_length = data_args.max_target_length
@@ -996,47 +1000,10 @@ def main():
                 with open(output_prediction_file, "w") as writer:
                     writer.write("\n".join(pred_result))
 
-                # with open(output_prediction_file, "w") as writer:
-                #     writer.write("\n".join(predictions))
 
-                # # Output predictions to a file expected by the challenge task
-                # # See: https://github.com/abachaa/MEDIQA-Chat-2023#submission-instructions for details on format
-                # if data_args.task == TASK_A:
-                #     text_preds, header_preds = extract_header_and_text(predictions)
-                #     ct_output = {
-                #         TEST_ID: raw_datasets["test"][ID_COL],
-                #         SYSTEM_OUTPUT_1: header_preds,
-                #         SYSTEM_OUTPUT_2: text_preds,
-                #     }
-                # else:
-                #     ct_output = {TEST_ID: raw_datasets["test"][ENCOUNTER_ID_COL], SYSTEM_OUTPUT: predictions}
-                # ct_fn = f"task{data_args.task.upper().strip()}_{TEAM_NAME}_run{data_args.run}.csv"
-                # ct_fp = os.path.join(training_args.output_dir, ct_fn)
-                # pd.DataFrame.from_dict(ct_output).to_csv(ct_fp, index=False)
-
-    # kwargs = {"finetuned_from": model_args.model_name_or_path, "tasks": "summarization"}
-    # if data_args.dataset_name is not None:
-    #     kwargs["dataset_tags"] = data_args.dataset_name
-    #     if data_args.dataset_config_name is not None:
-    #         kwargs["dataset_args"] = data_args.dataset_config_name
-    #         kwargs["dataset"] = f"{data_args.dataset_name} {data_args.dataset_config_name}"
-    #     else:
-    #         kwargs["dataset"] = data_args.dataset_name
-
-    # if data_args.lang is not None:
-    #     kwargs["language"] = data_args.lang
-
-    # if training_args.push_to_hub:
-    #     trainer.push_to_hub(**kwargs)
-    # else:
-    #     trainer.create_model_card(**kwargs)
 
     return results
 
-
-# def _mp_fn(index):
-#     # For xla_spawn (TPUs)
-#     main()
 
 
 if __name__ == "__main__":

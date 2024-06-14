@@ -51,65 +51,78 @@ def run(args):
     train_llm_rationales, train_llm_labels = dataset_loader.load_multi_rationale(split='train')
     valid_llm_rationales, valid_llm_labels = dataset_loader.load_multi_rationale(split='valid')
 
-    
-
-    # # if args.llm is not None: # 给数据集添加labels,
+    #
+    #
+    # # # if args.llm is not None: # 给数据集添加labels,
     datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
     datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
-    
     datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
     datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
-
-
+    #
+    #
     # if args.llm is not None: # 重命名rationale
     if 'rationale' in datasets['train'].column_names:
         datasets = datasets.remove_columns('rationale')
     datasets = datasets.rename_column('llm_rationale', 'rationale')
     if 'output' in datasets['train'].column_names:
         datasets = datasets.rename_column('output', 'label')
-        
-    # breakpoint()
+
     #### Prepare datasets Prepare data for training
     tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
     # tokenizer = AutoTokenizer.from_pretrained('google/t5-v1_1-base')
-    
+
     def tokenize_function(examples):
-        # For the first label
+        # This function now expects batched input, so examples['input'] and examples['output'] are lists
+        rationale_list = ['Immunizations', 'Alcohol', 'Lab Results', 'Past Surgical History', 'Other',
+                          'Medications or Drugs', 'Family History', 'Sex', 'Past Medical History', 'Smoking',
+                          'Known Allergies', 'Diagnosis', 'Age']
+        modified_entries = {
+            'input_ids': [],
+            'attention_mask': [],
+            'labels': [] # Add a type label to distinguish between original and rationale-based entries
+        }
+        for rationale_name in rationale_list:
+            modified_entries[f'{rationale_name}_input_ids'] = []
+            modified_entries[f'{rationale_name}_attention_mask'] = []
+            modified_entries[f'{rationale_name}_labels'] = []
+
+
+        for idx, dialogue in enumerate(examples['input']):
+            # Original dialogue tokenization
+            prompt = 'Summarize the following patient-doctor dialogue in a clinical note style. DIALOGUE:'
+            original_input = tokenizer(prompt+dialogue, truncation=True, padding='max_length',max_length=args.max_input_length)
+            original_output = tokenizer(examples['label'][idx], truncation=True, padding='max_length', max_length=args.max_input_length)
+
+            # Append the original input and output
+            modified_entries['input_ids'].append(original_input['input_ids'])
+            modified_entries['attention_mask'].append(original_input['attention_mask'])
+            modified_entries['labels'].append(original_output['input_ids'])  # Assume we use input_ids for labels
+
+            # Process each rationale key-value pair
+            rationale = examples['rationale'][idx]
+            for key, value in rationale.items():
+                # breakpoint()
+                if value == None:
+                    value = 'None'
+
+                new_input = f"Extract the {key} information from the dialogue: {dialogue}"
+                tokenized_input = tokenizer(new_input, truncation=True, padding='max_length', max_length=args.max_input_length)
+                # breakpoint()
+                labels = tokenizer.encode(value, add_special_tokens=False)
+
+                # Append the rationale-based entries
+                modified_entries[f'{key}_input_ids'].append(tokenized_input['input_ids'])
+                modified_entries[f'{key}_attention_mask'].append(tokenized_input['attention_mask'])
+                modified_entries[f'{key}_labels'].append(labels)
         # breakpoint()
-        dialogue = examples['input']
-        rationale = examples['rationale']
-        model_inputs = tokenizer(['Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue:' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
-        # expl_model_inputs = tokenizer(['Extract the key information from the dialogue, Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
-        #
-        # model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
-        # model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
-        # breakpoint()
-        with tokenizer.as_target_tokenizer():
-            label_output_encodings = tokenizer(examples['label'], max_length=args.gen_max_len, truncation=True)
-        modified_entries = []
-        for key, value in rationale.items():
-            # Create the new input sentence
-            new_input = f"Extract the {key} information from the dialogue: {dialogue}"
-            # Tokenize the new input
-            tokenized_input = tokenizer(new_input, truncation=True, padding='max_length', max_length=512)
-            # Store the tokenized input with its output
-            modified_entries.append({
-                'input_ids': tokenized_input['input_ids'],
-                'attention_mask': tokenized_input['attention_mask'],
-                'labels': tokenizer.encode(value, add_special_tokens=False)
-                # Assuming labels are encoded rationale values
-            })
+        modified_entries = {key: value for key, value in modified_entries.items() if len(modified_entries[key])>0}
 
-        model_inputs['labels'] = label_output_encodings['input_ids']
-        model_inputs['rationale_list'] = modified_entries
-
-
-        return model_inputs
+        return modified_entries
 
     print("这里mei有")
     tokenized_datasets = datasets.map(
         tokenize_function,
-        remove_columns=['input', 'rationale', 'label', 'llm_label'],
+        remove_columns= ['input', 'label', 'llm_label', 'rationale'],
         batched=True
     )
     compute_metrics = compute_metrics_equation(tokenizer)

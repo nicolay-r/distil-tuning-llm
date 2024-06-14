@@ -53,26 +53,42 @@ class TaskPrefixDataCollator(DataCollatorForSeq2Seq):
 
 
 class TaskPrefixDataCollator_hierarchical(DataCollatorForSeq2Seq):
-    def __call__(self, features, return_tensors=None):
-        features_df = pd.DataFrame(features)
-        breakpoint()
-        pred_features = features_df.loc[:,
-                        ~features_df.columns.isin(['aux_labels', 'expl_input_ids', 'expl_attention_mask'])].to_dict(
-            'records')
-        expl_features = features_df.loc[:, ~features_df.columns.isin(['labels', 'input_ids', 'attention_mask'])].rename(
-            columns={'aux_labels': 'labels', 'expl_input_ids': 'input_ids',
-                     'expl_attention_mask': 'attention_mask'}).to_dict('records')
-        # breakpoint()
-        '''
-        tokenizer.decode(expl_features['labels'][1], skip_special_tokens=True)
-        '''
-        pred_features = super().__call__(pred_features, return_tensors)
-        expl_features = super().__call__(expl_features, return_tensors)
 
-        return {
-            'pred': pred_features,
-            'expl': expl_features,
-        }
+    def __call__(self, features, return_tensors=None):
+
+
+        features_df = pd.DataFrame(features)
+        rationale_list = ['Immunizations', 'Alcohol', 'Lab Results', 'Past Surgical History', 'Other',
+                          'Medications or Drugs', 'Family History', 'Sex', 'Past Medical History', 'Smoking',
+                          'Known Allergies', 'Diagnosis', 'Age']
+
+        pred_features = features_df.loc[:,
+                        features_df.columns.isin(['input_ids', 'attention_mask', 'labels'])].to_dict(
+            'records')
+        # breakpoint()
+        pred_features = super().__call__(pred_features, return_tensors)
+        output = {'pred': pred_features}
+        for rationale in rationale_list:
+            if f'{rationale}_input_ids' in features_df.columns:
+                feature = features_df.loc[:,
+                            features_df.columns.isin([f'{rationale}_input_ids', f'{rationale}_attention_mask', f'{rationale}_labels'])].copy()
+                rename_columns = {
+                    f'{rationale}_input_ids': 'input_ids',
+                    f'{rationale}_attention_mask': 'attention_mask',
+                    f'{rationale}_labels': 'labels'
+                }
+                # breakpoint()
+
+                feature.rename(columns=rename_columns, inplace=True)
+                feature = feature.to_dict('records')
+                feature = super().__call__(feature, return_tensors)
+                output[f'{rationale}'] = feature
+        '''
+        tokenizer = AutoTokenizer.from_pretrained('google/t5-v1_1-base')
+        tokenizer.decode(pred_features[0]['input_ids'], skip_special_tokens=True)
+        '''
+
+        return  output
 
 
 class TaskPrefixTrainer(Seq2SeqTrainer):
@@ -165,9 +181,16 @@ class TaskPrefix_hierarchical(Seq2SeqTrainer):
 
 
     def compute_loss(self, model, inputs, return_outputs=False):
-        breakpoint()
+        # breakpoint()
         pred_outputs = model(**inputs['pred'])
-        expl_outputs = model(**inputs['expl'])
+        loss_rationale = 0
+        for key in inputs:
+            if key == 'pred':
+                continue
+            else:
+                loss_rationale += model(**inputs[f'{key}']).loss
+        loss = pred_outputs.loss+loss_rationale
+
         '''
         Seq2SeqLMOutput,  model.forward()返回内容说明：
     
@@ -182,7 +205,7 @@ class TaskPrefix_hierarchical(Seq2SeqTrainer):
         encoder_attentions: 编码器的注意力权重，展示了编码过程中各个输入之间的关联强度。
         '''
         # 原来的
-        loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
+        # loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
         # breakpoint()
         # ********************Accuracy**************************
         # Example accuracy calculation for predictions
@@ -191,19 +214,15 @@ class TaskPrefix_hierarchical(Seq2SeqTrainer):
         pred_accuracy = (pred_preds == pred_labels).float().mean()
         current_lr = self.optimizer.param_groups[0]["lr"]
         # Example accuracy calculation fprint(pred_outputs[0].shape)or explanations (if applicable)
-        expl_labels = inputs['expl']['labels']  # Assuming true labels for explanations
-        expl_preds = torch.argmax(expl_outputs.logits, dim=-1)
-        expl_accuracy = (expl_preds == expl_labels).float().mean()
         wandb.log({'train/loss': loss,
                    'train/loss_pred': pred_outputs.loss,
-                   'train/loss_expl': expl_outputs.loss,
+                   'train/loss_expl': loss_rationale,
                    'train/pred_accuracy': pred_accuracy.item(),  # Logging prediction accuracy
-                   'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)
                    'learning_rate': current_lr,
                    },
                   step=self.state.global_step)
         # breakpoint()
-        return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
+        return loss
 
 
     def prediction_step(
@@ -216,22 +235,22 @@ class TaskPrefix_hierarchical(Seq2SeqTrainer):
         pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False,
                                                ignore_keys=ignore_keys)
         # torch.cuda.empty_cache() # 也许可以试一下
-        expl_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False,
+        expl_outputs = super().prediction_step(model, inputs['Diagnosis'], prediction_loss_only=False,
                                                ignore_keys=ignore_keys)
-        # breakpoint()
-        # 原来的
-        loss = self.alpha * pred_outputs[0] + (1 - self.alpha) * expl_outputs[0]
+        loss = pred_outputs[0]
 
         wandb.log({'eval/loss': loss,
                    'eval/loss_pred': pred_outputs[0],
-                   'eval/loss_expl': expl_outputs[0]
+                    'eval/loss_Diagnosis': expl_outputs[0]
                    },
                   step=self.state.global_step)
+        # breakpoint()
         return (
             loss,
             [pred_outputs[1], expl_outputs[1]],
             [pred_outputs[2], expl_outputs[2]],
         )
+
 
 class TaskPrefix_COS(Seq2SeqTrainer):
     def __init__(self, alpha, data_collator=None,**kwargs):

@@ -117,7 +117,7 @@
             "Sex": "Male",
             "Medications or Drugs": "History of methamphetamine use",
             "Smoking": "Smoker",
-            "Alcohol": "None",
+            "Alcohol": "No",
             "Past Medical History": "Completed high school, history of drug use (methamphetamine), under counselling",
             "Other": "Has a case manager (Mister X Y Z), lives alone, not married, no children, work status: employed"
         }
@@ -208,7 +208,7 @@
         "input": "Doctor: Let me write you a prescription for Cipro and Flagyl.\nPatient: Okay.",
         "output": "Include Cipro and Flagyl.",
         "rationale": {
-            "Medicatons or Drugs": "Cipro and Flagyl"
+            "Medications or Drugs": "Cipro and Flagyl"
         }
     },
     {
@@ -267,7 +267,7 @@
         "rationale": {
             "Age": "52",
             "Sex": "Male",
-            "Medicatons or Drugs": "Heroin, Cocaine",
+            "Medications or Drugs": "Heroin, Cocaine",
             "Alcohol": "Previously abused, currently switched to drugs",
             "Diagnosis": "Heroin addiction, Cocaine use",
             "Other": "Patient reports body pain and feeling cold, seeking help for heroin addiction"
@@ -291,7 +291,7 @@
         "input": "Doctor: I have sent over your referral for physical therapy, occupational therapy and speech therapy. The patient coordinator at Siskin Rehab Hospital will give you a call within two days to see up your appointments. It is important to take your medications regularly. You need to continue the Cipro for an additional two days only. That will take care of the U T I. Do you have any questions? \nPatient: No.",
         "output": "1. Take medications regularly. 2. PT, OT, speech therapist to evaluate and treat at Siskin Rehab Hospital. 3. Continue Cipro for an additional two days for his UTI.",
         "rationale": {
-            "Medicatons or Drugs": "Cipro for UTI",
+            "Medications or Drugs": "Cipro for UTI",
             "Diagnosis": "UTI",
             "Other": "Referral for physical therapy, occupational therapy, and speech therapy; Patient coordinator to call within two days for appointments"
         }
@@ -308,7 +308,7 @@
         "output": "Negative.  Generally very healthy.",
         "rationale": {
             "Sex": "Female",
-            "Past Medical History": "None",
+            "Past Medical History": "No",
             "Other": "Healthy child"
         }
     },
@@ -326,7 +326,7 @@
         "output": "The patient returns today for a followup.  She was recently in the hospital and was found to be septic from nephrolithiasis.  This was all treated.  She did require a stent in the left ureter.  Dr. XYZ took care of this.  She had a stone, which was treated with lithotripsy.  She is now back here for followup.  I had written out all of her medications with their dose and schedule on a progress sheet.  I had given her instructions regarding follow up here and follow with Dr. F.  Unfortunately, that piece of paper was lost.  Somehow between the hospital and home she lost it and has not been able to find it.  She has no followup appointment with Dr. F.  The day after she was dismissed, her nephew called me stating that the prescriptions were lost, instructions were lost, etc.  Later she apparently found the prescriptions and they were filled.  She tells me she is taking the antibiotic, which I believe was Levaquin and she has one more to take.  She had no clue as to seeing Dr. XYZ again.  She says she is still not feeling very well and feels somewhat sick like.  She has no clue as to still having a ureteral stent.  I explained this to she and her husband again today.",
         "rationale": {
             "Sex": "Female",
-            "Medicatons or Drugs": "Levaquin (antibiotic)",
+            "Medications or Drugs": "Levaquin (antibiotic)",
             "Diagnosis": "Kidney stones, Urinary tract infection",
             "Past Medical History": "Ureteral stent placement",
             "Past Surgical History": "Kidney stones removal surgery",
@@ -508,7 +508,7 @@
         "rationale": {
             "Age": "53",
             "Sex": "Male",
-            "Medicatons or Drugs": "Coumadin (subtherapeutic) for atrial fibrillation",
+            "Medications or Drugs": "Coumadin (subtherapeutic) for atrial fibrillation",
             "Diagnosis": "Hernia, Lower leg pain, Nausea, Vomiting, Possible gastrointestinal bleeding, History of strokes (CVA), Peripheral vascular disease, Heart failure, Bowel ischemia",
             "Past Medical History": "History of strokes (CVA), Peripheral vascular disease, Heart failure, Multiple bowel ischemia",
             "Other": "Patient's wife is easily worried, Improved leg pain with previous tingling and numbness, Coumadin not optimal dose for his condition, Emergency visit for multiple medical issues"
@@ -526,7 +526,7 @@
         "input": "Doctor: So, ma'am, what brings you in for a visit today? \nPatient: Well, a few things, I have hay fever, um, eczema, sinus problems, and hives. \nDoctor: Wow, that's quite a lot. Do you have any history of melanoma, or skin cancer? \nPatient: No, just the eczema. \nDoctor: How about psoriasis? \nPatient: No, that doesn't ring any bells. \nDoctor: Do you have any family history of cancer? \nPatient: Um, yes, my mother had mouth cancer. \nDoctor: I see, do you smoke tobacco? \nPatient: Um, no, that never appealed to me, especially with the history of cancer. \nDoctor: Can I safely assume that you've been sunburned before? \nPatient: Sure, it happens when I go to the beach all the time. \nDoctor: What medicines are you taking right now? \nPatient: Um, I'm taking benzoyl peroxide and Daypro. Sorry I forgot to bring the blood test today.",
         "output": "She has hay fever, eczema, sinus, and hives.  She has no melanoma or skin cancers or psoriasis.  Her mother had oral cancer.  The patient is a nonsmoker.  No blood tests.  Had some sunburn in the past.  She is on benzoyl peroxide and Daypro.",
         "rationale": {
-            "Medicatons or Drugs": "Benzoyl peroxide, Daypro",
+            "Medications or Drugs": "Benzoyl peroxide, Daypro",
             "Smoking": "Non-smoker",
             "Family History": "Mother had mouth cancer",
             "Diagnosis": "Eczema, Hay fever, Sinus problems, Hives",
@@ -649,7 +649,7 @@
         "input": "Doctor: How long have you been having this pain in your ear?\nPatient: It's been three or four days. \nDoctor: Okay, let me check your ears, which side is in pain?\nPatient: The left one.\nDoctor: Okay let me check both ears. Well, you have lot of fluid accumulated in your left ear, which has caused infection in your middle part of the ear. It is called as Serous Otitis. \nPatient: Nothing to worry about?\nDoctor: I will prescribe you some antibiotics, it should take care of it. \nPatient: Thank you!\nDoctor: Anything else?\nPatient: Ah yes, my eczema is also acting up. \nDoctor: Hm, you have a history of atopic dermatitis in other words eczema.\nPatient: Yeah, I have had it since childhood.",
         "output": "1.  Serous otitis. 2.  Atopic dermatitis.",
         "rationale": {
-            "Medicatons or Drugs": "Antibiotics (prescribed for Serous Otitis)",
+            "Medications or Drugs": "Antibiotics (prescribed for Serous Otitis)",
             "Diagnosis": "Serous Otitis with infection in middle ear, Atopic dermatitis (eczema)",
             "Past Medical History": "Atopic dermatitis since childhood",
             "Other": "Fluid accumulation in left ear"
@@ -682,7 +682,7 @@
         "input": "Guest_clinician: Has she taken anything for her symptoms? \nDoctor: She's tried Loratadine Beclomethasone Nasal Fluticasone and Salmeterol Inhaled Montelukast Cephalexin Hydrocode. \nGuest_clinician: Has she noticed any relief with these medications? \nDoctor: Um some relief.",
         "output": "loratadine beclomethasone nasal fluticasone/salmeterol inhaled Montelukast cephalexin hydrocodone",
         "rationale": {
-            "Medicatons or Drugs": "Loratadine, Beclomethasone Nasal Fluticasone, Salmeterol, Inhaled Montelukast, Cephalexin, Hydrocodone",
+            "Medications or Drugs": "Loratadine, Beclomethasone Nasal Fluticasone, Salmeterol, Inhaled Montelukast, Cephalexin, Hydrocodone",
             "Diagnosis": "Symptoms relief reported"
         }
     },
@@ -716,7 +716,7 @@
         "input": "Doctor: Let me give you some medication in your I V. \nPatient: Please make this all go away. I am feeling really sick like I am going to throw up.\nDoctor: Sure, sure. Nurse, please give him Norflex sixty M G, Zofran four M G, morphine sulfate four M G.\nPatient: Will I feel better after that?\nDoctor: Yes.\nPatient: I am feeling better after couple hours.",
         "output": "The patient was given IV Norflex 60 mg, Zofran 4 mg, and morphine sulfate 4 mg and with that has significant improvement in her discomfort.",
         "rationale": {
-            "Medicatons or Drugs": "Norflex 60 mg IV, Zofran 4 mg IV, morphine sulfate 4 mg IV",
+            "Medications or Drugs": "Norflex 60 mg IV, Zofran 4 mg IV, morphine sulfate 4 mg IV",
             "Other": "Patient felt better after medication"
         }
     },
@@ -793,7 +793,7 @@
         "input": "Doctor: What medications are you taking currently? \nPatient: Well, I'm taking Remeron for depression and Ziac for high blood pressure.",
         "output": "His only medications are Ziac and Remeron.",
         "rationale": {
-            "Medicatons or Drugs": "Remeron (depression), Ziac (high blood pressure)"
+            "Medications or Drugs": "Remeron (depression), Ziac (high blood pressure)"
         }
     },
     {

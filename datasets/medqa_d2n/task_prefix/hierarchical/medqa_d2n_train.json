@@ -70,7 +70,7 @@
         "input": "Doctor: Any know drug allergies? \r\nPatient: No.",
         "output": "No known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -172,7 +172,7 @@
         "input": "Doctor: Is he currently taking any medication? \r\nGuest_family: No.",
         "output": "None.",
         "rationale": {
-            "Medications or Drugs": "None"
+            "Medications or Drugs": "No"
         }
     },
     {
@@ -188,8 +188,8 @@
         "input": "Doctor: Do you know about any medical traits in your family? \r\nPatient: No, everyone in my family is quite healthy. I'm not aware of any medical problems. \r\nDoctor: Are you sexually active? \r\nPatient: Yes, I am with my boyfriend. \r\nDoctor: Do you take any drugs or alcohol or smoke? \r\nPatient: No, none of them.",
         "output": "completely unremarkable FHx. Has boyfriend and is sexually active. Denied drug/ETOH/Tobacco use.",
         "rationale": {
-            "Smoking": "None",
-            "Alcohol": "None",
+            "Smoking": "No",
+            "Alcohol": "No",
             "Other": "Sexually active, Denies drug/alcohol/smoking use"
         }
     },
@@ -457,7 +457,7 @@
         "output": "The patient has a history of depression.  No history of substance abuse.",
         "rationale": {
             "Medications or Drugs": "Wellbutrin",
-            "Alcohol": "None"
+            "Alcohol": "No"
         }
     },
     {
@@ -866,7 +866,7 @@
         "input": "Doctor: Any known drug allergies? \r\nPatient: No.",
         "output": "No known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -1060,7 +1060,7 @@
         "input": "Doctor: Are you allergic to anything? \r\nPatient: No.",
         "output": "He has no known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -1188,7 +1188,7 @@
         "input": "Doctor: Any known allergies?\r\nPatient: No. \r\nDoctor: Any allergy to any drug? \r\nPatient: No.",
         "output": "She has no known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -1234,7 +1234,7 @@
         "input": "Doctor: Do you have any past medical history? \r\nPatient: No.",
         "output": "Negative.",
         "rationale": {
-            "Past Medical History": "None"
+            "Past Medical History": "No"
         }
     },
     {
@@ -1323,7 +1323,7 @@
         "input": "Doctor: Are you allergic to anything?\r\nPatient: No, I am not allergic to anything.\r\nDoctor: Okay so no drug allergies.\r\nPatient: Yeah.",
         "output": "No known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -1409,7 +1409,7 @@
         "input": "Doctor: And tell me, are you allergic to any medications? \r\nPatient: No. Not that I know of. \r\nDoctor: Okay.",
         "output": "There were no known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -1425,7 +1425,7 @@
         "output": "He was unemployed and denied any alcohol or drug use. He was a prior 'mild' smoker, but quit 10 years previous.",
         "rationale": {
             "Smoking": "Quit smoking 10 years ago",
-            "Alcohol": "None",
+            "Alcohol": "No",
             "Other": "Recently unemployed for a year, starting new job soon"
         }
     },
@@ -1511,7 +1511,7 @@
         "input": "Doctor: Any allergies?\r\nPatient: What do you mean?\r\nDoctor: Are you allergic to anything?\r\nPatient: No no, oh no.",
         "output": "He has no known medicine allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -1654,7 +1654,7 @@
         "input": "Doctor: Any medications I should know about? \r\nPatient: Nah, no daily meds.",
         "output": "None.",
         "rationale": {
-            "Medications or Drugs": "None"
+            "Medications or Drugs": "No"
         }
     },
     {
@@ -1984,7 +1984,7 @@
         "input": "Doctor: Are you allergic to anything?\r\nPatient: No, I do not have any allergies.\r\nDoctor: Great.",
         "output": "No known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -2565,7 +2565,7 @@
         "input": "Doctor: Does he have any known drug allergies? \r\nGuest_family: No.",
         "output": "He has no known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -2591,7 +2591,7 @@
         "input": "Doctor: How about any drugs, alcohol, or tobacco? \r\nPatient: No, no, and no.",
         "output": "Negative for illicit drugs, alcohol, and tobacco.",
         "rationale": {
-            "Medications or Drugs": "None",
+            "Medications or Drugs": "No",
             "Smoking": "No",
             "Alcohol": "No"
         }
@@ -2966,7 +2966,7 @@
         "input": "Doctor: Do you have any allergies? \r\nPatient: No allergies.\r\nDoctor: Nothing? Cat dander, pollen?\r\nPatient: Nope.",
         "output": "None.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -3271,7 +3271,7 @@
         "input": "Doctor: Are you allergic to anything?\r\nDoctor: Like any medications?\r\nPatient: No, I am not allergic to anything.\r\nDoctor: Perfect!\r\nPatient: Hm.",
         "output": "None.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -3302,7 +3302,7 @@
         "input": "Doctor: Did you ever visit any hospital for any kind of surgery?\r\nPatient: No.",
         "output": "No previous surgeries.",
         "rationale": {
-            "Past Surgical History": "None"
+            "Past Surgical History": "No"
         }
     },
     {
@@ -3381,7 +3381,7 @@
         "output": "She denies alcohol or tobacco use.  She is the caretaker for her daughter, who is widowed and lives at home.",
         "rationale": {
             "Smoking": "No",
-            "Alcohol": "None",
+            "Alcohol": "No",
             "Other": "Patient does not smoke, daughter is a widow, daughter lives at home."
         }
     },
@@ -3671,7 +3671,7 @@
         "rationale": {
             "Sex": "Male",
             "Smoking": "Former smoker, quit smoking 20 years ago, smoked 2 packs a day for 20 years",
-            "Alcohol": "None",
+            "Alcohol": "No",
             "Diagnosis": "Disability due to work-related injury on the pipeline (5 years ago)",
             "Past Medical History": "Worked on the pipeline, Disability approved by doctor evaluation",
             "Other": "Lives with wife, Work was a hobby"
@@ -3690,7 +3690,7 @@
         "input": "Doctor: Let's see. Are you taking any medications? \r\nPatient: No, none right now.",
         "output": "None.",
         "rationale": {
-            "Medications or Drugs": "None"
+            "Medications or Drugs": "No"
         }
     },
     {
@@ -3760,7 +3760,7 @@
         "input": "Doctor: Do you have any past or present medical conditions? \r\nPatient: No.",
         "output": "None.",
         "rationale": {
-            "Past Medical History": "None"
+            "Past Medical History": "No"
         }
     },
     {
@@ -3856,8 +3856,8 @@
         "rationale": {
             "Sex": "Female",
             "Medications or Drugs": "Multivitamin, low dose aspirin",
-            "Smoking": "None",
-            "Alcohol": "None",
+            "Smoking": "No",
+            "Alcohol": "No",
             "Past Medical History": "Yearly mammogram, no abnormalities, self breast examinations not performed",
             "Other": "Patient mentions being lazy with self-care routines, no exercise routine."
         }
@@ -3885,7 +3885,7 @@
         "input": "Doctor: Do you have any known allergies to medications? \r\nPatient: None whatsoever.",
         "output": "None.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -3969,7 +3969,7 @@
         "input": "Doctor: So just to double check. No past medical history? \r\nPatient: Yes, sir. None.",
         "output": "None.",
         "rationale": {
-            "Past Medical History": "None"
+            "Past Medical History": "No"
         }
     },
     {
@@ -3993,8 +3993,8 @@
         "input": "Doctor: Any drug allergies? \r\nPatient: No.",
         "output": "No known drug allergies.",
         "rationale": {
-            "Medications or Drugs": "None",
-            "Known Allergies": "None"
+            "Medications or Drugs": "No",
+            "Known Allergies": "No"
         }
     },
     {
@@ -4183,7 +4183,7 @@
         "input": "Doctor: Do you have any known allergies?\r\nPatient: Not that I know.\r\nDoctor: Any allergies to any drug? \r\nPatient: Nope.",
         "output": "No known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -4898,7 +4898,7 @@
         "input": "Doctor: Are you allergic to anything?\r\nPatient: No, I am not.\r\nDoctor: Are you sure? Penicillin or sulfa?\r\nPatient: Nope nothing.\r\nDoctor: That's good.",
         "output": "Denies any drug allergies",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -4973,7 +4973,7 @@
         "input": "Doctor: Have you had any surgeries in the past? \r\nPatient: No, none.",
         "output": "None.",
         "rationale": {
-            "Past Surgical History": "None"
+            "Past Surgical History": "No"
         }
     },
     {
@@ -5005,7 +5005,7 @@
         "input": "Doctor: How about allergies to medications? \r\nPatient: Nope.",
         "output": "No known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -5200,7 +5200,7 @@
         "input": "Doctor: Did you had any surgery in the past? \r\nPatient: No.",
         "output": "Noncontributory.",
         "rationale": {
-            "Past Surgical History": "None"
+            "Past Surgical History": "No"
         }
     },
     {
@@ -5788,7 +5788,7 @@
         "input": "Doctor: Do you have any history of surgical procedures?  \r\nPatient: No, none.",
         "output": "None.",
         "rationale": {
-            "Past Surgical History": "None"
+            "Past Surgical History": "No"
         }
     },
     {
@@ -5839,7 +5839,7 @@
         "input": "Doctor: Do you have any allergies?\r\nPatient: No I do not.\r\nDoctor: Are you sure?\r\nPatient: Yes I am.",
         "output": "No known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -5855,7 +5855,7 @@
         "rationale": {
             "Diagnosis": "Premature birth",
             "Past Medical History": "Hospitalized as a premature baby",
-            "Past Surgical History": "None",
+            "Past Surgical History": "No",
             "Other": "No respiratory support needed, No surgeries post birth"
         }
     },
@@ -5863,7 +5863,7 @@
         "input": "Doctor: Do you have any allergies?\r\nPatient: No I do not.\r\nDoctor: Okay.\r\nPatient: Okay.\r\nPatient: Are you only asking for medical allergies?\r\nDoctor: No, I want to know about all allergies.",
         "output": "There are no known allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -5956,8 +5956,8 @@
         "input": "Doctor: I will ask you a few questions about your past medical history. Were you ever diagnosed with anything medically related? \r\nPatient: No. \r\nDoctor: Were you ever diagnosed with diabetes or any heart conditions? \r\nPatient: No.\r\nDoctor: Did you ever take medications for any long-term disease? \r\nPatient: No. \r\nDoctor: Did you ever have any surgery? \r\nPatient: No.",
         "output": "Unremarkable.",
         "rationale": {
-            "Past Medical History": "None",
-            "Past Surgical History": "None"
+            "Past Medical History": "No",
+            "Past Surgical History": "No"
         }
     },
     {
@@ -6032,7 +6032,7 @@
         "rationale": {
             "Age": "21",
             "Sex": "Male",
-            "Medications or Drugs": "None",
+            "Medications or Drugs": "No",
             "Diagnosis": "Numbness and decreased coordination in legs, Sensation of pins and needles, Difficulty with spatial awareness, Symptoms started on 5th of November and have been ongoing",
             "Past Medical History": "No previous medical issues",
             "Past Surgical History": "No surgeries",
@@ -6297,7 +6297,7 @@
         "input": "Doctor: Are you allergic to any meds?\r\nPatient: Me?\r\nDoctor: Yes.\r\nPatient: No, I am not.\r\nDoctor: Are you sure?\r\nPatient: Yes, I am damn sure. \r\nDoctor: Okay great!",
         "output": "None known to medications.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -6346,7 +6346,7 @@
         "input": "Doctor: Are you allergic to anything?\r\nPatient: No, I am not allergic.\r\nDoctor: Okay.\r\nPatient: Yeah.",
         "output": "No known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -6573,7 +6573,7 @@
         "input": "Doctor: Are you allergic to any medications? \r\nPatient: No",
         "output": "None.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -6769,7 +6769,7 @@
         "input": "Doctor: Are you currently taking any medications? \r\nPatient: No.",
         "output": "None.",
         "rationale": {
-            "Medications or Drugs": "None"
+            "Medications or Drugs": "No"
         }
     },
     {
@@ -6848,7 +6848,7 @@
         "input": "Doctor: You are not allergic to anything?\r\nPatient: No, I am not.\r\nDoctor: Any food or other pollen?\r\nPatient: No, I am not allergic to anything.\r\nDoctor: Great!",
         "output": "None.",
         "rationale": {
-            "Known Allergies": "None",
+            "Known Allergies": "No",
             "Other": "No known allergies mentioned."
         }
     },
@@ -7056,7 +7056,7 @@
         "rationale": {
             "Sex": "Female",
             "Past Medical History": "Uncomplicated pregnancy and delivery",
-            "Past Surgical History": "None",
+            "Past Surgical History": "No",
             "Other": "Has one baby girl at home"
         }
     },
@@ -7390,8 +7390,8 @@
         "input": "Doctor: And you are not allergic to anything right?\r\nPatient: That's right.\r\nDoctor: Any drugs or pollens or anything?\r\nPatient: Nope nothing.\r\nDoctor: Good.",
         "output": "No known allergies.",
         "rationale": {
-            "Known Allergies": "None",
-            "Other": "None"
+            "Known Allergies": "No",
+            "Other": "No"
         }
     },
     {
@@ -7716,7 +7716,7 @@
         "input": "Doctor: Any known allergies? \r\nPatient: No.",
         "output": "None.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -7833,8 +7833,8 @@
         "input": "Doctor: Do you have any support system?\r\nPatient: No, I am single.\r\nDoctor: Okay so live alone at home?\r\nPatient: Yes.\r\nDoctor: Do you smoke or drink?\r\nPatient: Nope I do not.",
         "output": "The patient is single.  Living at home.  No smoking or alcohol.",
         "rationale": {
-            "Smoking": "None",
-            "Alcohol": "None",
+            "Smoking": "No",
+            "Alcohol": "No",
             "Other": "Single, Living alone"
         }
     },
@@ -7878,7 +7878,7 @@
         "input": "Doctor: Do you have any known allergies to medications?  \r\nPatient: No.",
         "output": "None.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -7903,7 +7903,7 @@
         "input": "Doctor: Did you ever have any surgery?\r\nPatient: No.",
         "output": "Negative.",
         "rationale": {
-            "Past Surgical History": "None"
+            "Past Surgical History": "No"
         }
     },
     {
@@ -8009,7 +8009,7 @@
         "input": "Doctor: Are you taking any medicine? \r\nPatient: No.",
         "output": "None.",
         "rationale": {
-            "Medications or Drugs": "None"
+            "Medications or Drugs": "No"
         }
     },
     {
@@ -8036,7 +8036,7 @@
         "input": "Doctor: Do you have any allergies?\r\nPatient: No, I do not have any allergies.\r\nDoctor: Okay so no medically relevant allergies then. Nothing?\r\nPatient: Nope.",
         "output": "She has no known medical allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -8090,7 +8090,7 @@
         "input": "Doctor: Do you have any known drug allergies? \r\nPatient: No.",
         "output": "None.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -8104,7 +8104,7 @@
         "input": "Doctor: Hi, do you smoke? \r\nPatient: No, sir, I don't. \r\nDoctor: Do you take any drugs? \r\nPatient: No. \r\nDoctor: What about drinks? Do you take alcohol in any form? \r\nPatient: No, none of those.",
         "output": "Denies Tobacco/ETOH/illicit drug use.",
         "rationale": {
-            "Medications or Drugs": "None",
+            "Medications or Drugs": "No",
             "Smoking": "No",
             "Alcohol": "No"
         }
@@ -8315,7 +8315,7 @@
         "input": "Doctor: Did you have any surgeries in the past?\r\nPatient: No.",
         "output": "Negative.",
         "rationale": {
-            "Past Surgical History": "None"
+            "Past Surgical History": "No"
         }
     },
     {
@@ -8378,7 +8378,7 @@
         "input": "Doctor:  Are you allergic to anything?\r\nPatient: No, I am not.\r\nDoctor: How about food allergies.\r\nPatient: No, I am fine.\r\nDoctor: Okay.",
         "output": "None.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -8511,8 +8511,8 @@
         "input": "Doctor: Do you use tobacco, alcohol, or recreational drugs? \r\nPatient: No.",
         "output": "Denied Tobacco/ETOH/illicit drug use.",
         "rationale": {
-            "Smoking": "None",
-            "Alcohol": "None"
+            "Smoking": "No",
+            "Alcohol": "No"
         }
     },
     {
@@ -8586,7 +8586,7 @@
         "output": "Abdominal pain.",
         "rationale": {
             "Diagnosis": "Abdominal pain (gnawing sensation)",
-            "Past Surgical History": "None",
+            "Past Surgical History": "No",
             "Other": "Pain location: all over the belly, Duration: 2-3 weeks, Pain description: gnawing sensation"
         }
     },
@@ -8636,7 +8636,7 @@
         "input": "Doctor: Do you have any known allergies to medications?  \r\nPatient: No.",
         "output": "No known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -8663,7 +8663,7 @@
         "output": "He does admit to one half pack of cigarette consumption per day.  He denies any alcohol consumption.",
         "rationale": {
             "Smoking": "Half a pack of cigarettes per day",
-            "Alcohol": "None"
+            "Alcohol": "No"
         }
     },
     {
@@ -8736,7 +8736,7 @@
         "input": "Doctor: Any past medical history? \r\nPatient: No.",
         "output": "Nonsignificant.",
         "rationale": {
-            "Past Medical History": "None"
+            "Past Medical History": "No"
         }
     },
     {
@@ -8953,7 +8953,7 @@
         "input": "Doctor: Any known drug allergies? \r\nPatient: Nope, none whatsoever.",
         "output": "No known drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {
@@ -9064,7 +9064,7 @@
         "output": "He is married and has support at home.  He denies tobacco and illicit drug use and drinks two to three alcoholic beverages a day and up to four to nine per week.",
         "rationale": {
             "Sex": "Male",
-            "Smoking": "None",
+            "Smoking": "No",
             "Alcohol": "Drinks alcohol daily, approximately 2-3 drinks per day (4-9 drinks per week)",
             "Other": "Married, Supportive relationship with wife"
         }
@@ -9124,7 +9124,7 @@
         "input": "Doctor: I need to ask you a few questions.\r\nPatient: Sure.\r\nDoctor: Do you feel any weakness or tiredness?\r\nPatient: No.\r\nDoctor: Any uneasiness or illness? \r\nPatient: No, nothing of that sort.\r\nDoctor: Any chills or high temperature? \r\nPatient: Nope.\r\nDoctor: Any excessive sweating or night sweating? \r\nPatient: Um, no.\r\nDoctor: How about allergies, are you allergic to anything? \r\nPatient: No, no allergies. \r\nDoctor: Alright.",
         "output": "GENERAL: Negative weakness, negative fatigue, native malaise, negative chills, negative fever, negative night sweats, negative allergies.",
         "rationale": {
-            "Known Allergies": "None",
+            "Known Allergies": "No",
             "Other": "Denies weakness, tiredness, uneasiness, illness, chills, high temperature, excessive sweating, night sweating, and allergies."
         }
     },
@@ -9132,7 +9132,7 @@
         "input": "Doctor: Do you smoke or drink? \r\nPatient: No. \r\nDoctor: Any drug use? \r\nPatient: No.",
         "output": "No alcohol, drugs, or tobacco.",
         "rationale": {
-            "Medications or Drugs": "None",
+            "Medications or Drugs": "No",
             "Smoking": "No",
             "Alcohol": "No"
         }
@@ -9323,7 +9323,7 @@
             "Alcohol": "No",
             "Diagnosis": "High blood pressure (resolved), Nervous breakdown",
             "Past Medical History": "High blood pressure (resolved)",
-            "Past Surgical History": "None",
+            "Past Surgical History": "No",
             "Other": "Loss of husband in 1975, Hospitalized for a nervous breakdown, Maintains good physical health with walks and clean diet, Supportive family and friends during difficult times"
         }
     },
@@ -9400,7 +9400,7 @@
         "input": "Doctor: Okay and are you working? \r\nPatient: Oh yes, I am a farmer. I have a farmland and my wife, and I do farming.\r\nDoctor: Good, so you are one happy married couple working together. \r\nPatient: Ah, yes.\r\nDoctor: And how about tobacco, do you smoke or eat? \r\nPatient: Absolutely not. \r\nDoctor: Any use of drugs or alcohol?\r\nPatient: Drugs? \r\nDoctor: Yeah, like cocaine or anything like that. \r\nPatient: Oh that, no. No drugs.\r\nPatient: And I don't drink either. \r\nDoctor: Alright.",
         "output": "Farmer, Married, no Tobacco/ETOH/illicit drug use.",
         "rationale": {
-            "Smoking": "None",
+            "Smoking": "No",
             "Alcohol": "No alcohol consumption",
             "Other": "Patient is a farmer, denies smoking, drug use, and alcohol consumption."
         }
@@ -10206,7 +10206,7 @@
         "input": "Doctor: Are you allergic to any medications?\r\nPatient: No, I am not allergic to any drugs.\r\nDoctor: Okay. Are you sure?\r\nPatient: Yes.",
         "output": "No drug allergies.",
         "rationale": {
-            "Known Allergies": "None"
+            "Known Allergies": "No"
         }
     },
     {

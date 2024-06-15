@@ -50,12 +50,13 @@ def run(args):
     
     def tokenize_function(examples):
         # 使用 tokenizer 将 examples 中的 'input' 字段的文本进行分词处理。
-        # 设置最大长度为 args.max_input_length，并在超出时截断文本。 
-        model_inputs = tokenizer(
-            examples['input'],
-            max_length=args.max_input_length,
-            truncation=True
-        )
+        # 设置最大长度为 args.max_input_length，并在超出时截断文本。
+        model_inputs = tokenizer(['Summarize the following patient-doctor dialogue and Extract the key information from the dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue:' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
+#         model_inputs = tokenizer(
+#             examples['input'],
+#             max_length=args.max_input_length,
+#             truncation=True
+#         )
 
         with tokenizer.as_target_tokenizer():
             label_output_encodings = tokenizer(examples['output'], max_length=args.gen_max_len, truncation=True, padding='max_length') #设置最大长度为1024，并在超出时截断文本。

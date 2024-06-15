@@ -1,0 +1,332 @@
+[
+    {
+        "input": "SUBJECT: spg11\nMESSAGE: My 24 year old son was recently diagnosed with  spg11 after over 15 years of trying to figure out what was wrong.  We are already doing some of the common treatments.  My question is, where do we go from here to give him the best chance at life,",
+        "output": "What are the treatments and prognosis for spg11?",
+        "rationale": "Age: 24 years old\nSex: Male\nMedical Condition: SPG11\nTreatments: Already doing some common treatments\nDiagnosis: Recently diagnosed with SPG11\nInquiry: Asking for further steps for treatment of SPG11 to enhance the quality of life."
+    },
+    {
+        "input": "SUBJECT: Asthma\nMESSAGE: I have been treated for breast cancer and had chemotherapy and readiation.  I am on many drugs but since stopping treatment I have now presented as having asthma.  I take Letrozole. 2.5 to block any estrogen in my body as my tumor was estrogen positive. What type of drugs impact asthma symptoms?   Please advise",
+        "output": "Where can I find information on drug-induced asthma?",
+        "rationale": "Medical Condition: Asthma, Breast Cancer\nTreatment History: Chemotherapy and Radiation for Breast Cancer\nMedication: Letrozole 2.5mg \nInquiry: Seeking information about which medications can impact asthma symptoms."
+    },
+    {
+        "input": "SUBJECT: Friedreich's ataxia\nMESSAGE: I have been told I have Friedreich's ataxia.  I am looking for a treatment to reverse it.\nI has to do with the chromosome number 9 defective in both of my parents and possible\ndamage to chromosome number 10.  Would you be able to tell me if number 9 is defective in me.",
+        "output": "Where can I get genetic testing for friedreich's, and what are the treatments for it?",
+        "rationale": "Medical Condition: Friedreich's ataxia\nPossible Genetic Condition: Defective chromosome number 9, potential damage to chromosome number 10\nInquiry: Information on treatments for Friedreich's ataxia, as well as a question if a defective chromosome number 9 is present in the patient's genetic makeup."
+    },
+    {
+        "input": "SUBJECT: Blood Sugar Levels and Parkinson's\nMESSAGE: I'm wondering if there is a correlation between blood sugar level's and how it may effect the presentation of Parkinson's particularly in tremors. It seems that extreme blood sugar levels would make the tremors a great deal worse and appearing none typical.",
+        "output": "Is there a connection between blood sugar levels and symptoms of Parkinson's disease?",
+        "rationale": "Medical Information: Blood Sugar Levels, Parkinson's Disease, tremors\nInquiry: Correlation between blood sugar levels and its effects on Parkinson's disease, particularly in tremors. Impact of extreme blood sugar levels on the severity and appearance of tremors in Parkinson's disease."
+    },
+    {
+        "input": "SUBJECT: permanent cure for Nystagmus\nMESSAGE: For me from birth shaking of eyes disorder is there & in family nobody is having this kind of issuse. Pls. Tell me if any curable option for this disease.",
+        "output": "What are the treatments for nystagmus and can it be cured?",
+        "rationale": "Medical Condition: Nystagmus\nInquiry: Seeking treatment options or possible cures for Nystagmus, a condition present since birth and unique within the family."
+    },
+    {
+        "input": "MESSAGE: Please i want to know the cure to Adenomyosis. I have been going through alot of pains during my menstruation. I want to see a specialist doctor to help me out. I am dying with pains.",
+        "output": "What are treatments for adenomyosis, and how can I find physician(s) who specialize in it?",
+        "rationale": "Medical Condition: Adenomyosis\nSymptoms: Severe menstrual pain\nInquiry: Seeking treatment options for Adenomyosis and needs to see a specialist doctor."
+    },
+    {
+        "input": "printed materials on osteoporosis.\n Is there any way you can please mail me literature on osteoporosis, I was just diagnosed.\nThank you,\n[NAME]\n[LOCATION]\n[LOCATION] [LOCATION] [LOCATION]",
+        "output": "Where can I find information on osteoporosis?",
+        "rationale": "Medical Condition: Osteoporosis\nDiagnosis: Recently diagnosed with osteoporosis\nInquiry: Request for literature or printed materials on osteoporosis to be mailed."
+    },
+    {
+        "input": "SUBJECT: Subject\nMESSAGE: I'm calling because I would like to know more advice on crating Risperdoine medicine and gain experiences on the medication. And creating the medication",
+        "output": "Where can I find information on risperidone, including how it is manufactured?",
+        "rationale": "Medication: Risperidone\nInquiry: Advice on creating Risperidone and experiences related to its use"
+    },
+    {
+        "input": "Many of us have a fear of getting an asymptomatic, insideous perforation in\nthe digestive tract -- one that leads to vague complaints or even\ndegenerative conditions but doesn't announce itself in any acute way.  Can\nthis ever happen?  And if it does, how can a patient detect it?  There are\nstories of people swallowing needles and they don't even know it!\nOne answer I've heard put forward is that foreign objects embedded in\ntissue become encased in some kind of hard flesh and somehow eliminated\nfrom the body.  Could this really happen?  Is there something I could read\nabout it?  What about the people who have found foreign objects still\nsitting around in their tissues after aeons?\nI'm one of those internet worry-worts.  I go to online forums where people\nreally want to know the worst case scenario for things like this.  This\nparticular issue has worried me for years.  Thanks for discussing it with\nme.\n[NAME]",
+        "output": "How to detect asymptomatic swallowed foreign objects in the body and what are the prognosis and treatments for them?",
+        "rationale": "Medical condition: Fear of asymptomatic, insidious perforation in the digestive tract, Degenerative conditions\nInquiry: Possibility of occurrence of asymptomatic perforation in the digestive tract, how it can be detected, stories of people swallowing needles and not knowing it, possibility of foreign objects becoming encased in hard flesh and being eliminated from the body, existence of reading materials on the issue, accounts of people finding foreign objects in their tissues, worst case scenario for such conditions."
+    },
+    {
+        "input": "SUBJECT: adema\nMESSAGE: I have adema in my ankles/shins.  What can I do to lesson the severity of the adema ( I take bp meds w/ diaretic) ?",
+        "output": "What are the treatments for leg edema?",
+        "rationale": "Medical Condition: Adema in ankles/shins\nMedication: Blood pressure medication with diuretic\nInquiry: Solutions to lessen the severity of the adema"
+    },
+    {
+        "input": "SUBJECT: generic valsartan ingredients\nMESSAGE: I presently take Diovan and my insurance company is suggesting your generic valsartan.  I have celiac disease and can't have any gluten.  Can you tell me if your product is gluten free?",
+        "output": "What are the ingredients of valsartan and is it gluten free?",
+        "rationale": "Medication: Diovan, Generic Valsartan\nMedical Condition: Celiac disease\nInquiry: If the generic Valsartan is gluten free."
+    },
+    {
+        "input": "ClinicalTrials.gov - General Complaint.\n I have had undisguised ADHD since I was 8 years old. I sold illicit drugs from 1979-1989 in large quantity's & self medicated with amphetamines as an adolescent which damaged my Brian & worsened my symptoms. Because I have had several drug induced psychotic episodes since I was busted for trafficking in 1989 & was unable to self medicate on a daily basis. I was wrongly diagnosed with schizophrenia 9years ago. The community psychiatrist's have treated me with all the wrong medication's that have made my ADHD symptoms worse & forced me to self medicate until now. I have no assets or money & I don't think it is worth while going on with out being put on the right medication Ritalin. When I take Meth amphetamines my symptoms improve & I haven't had any anti psychotic medication for 13 month's & have not gone psychotic or had any negative symptoms of schizophrenia. Can you suggest any type of tests I can do to prove I have Adult ADHD or a psychiatrist I can see in [LOCATION] Australia. Who can help me",
+        "output": "How is adult attention-deficit/hyperactivity disorder diagnosed, and how can I find physician(s) who specialize in it in Australia?",
+        "rationale": "Medical Information:\n- Medical Condition: ADHD, wrongly diagnosed schizophrenia, drug-induced psychotic episodes\n- Age: Not specified\n- Sex: Not specified\n- Treatments: self-medication (drugs, amphetamines), various falsely prescribed medications \n- Diagnosis in Question: ADHD vs. schizophrenia, misuse of amphetamines\n- Medication: Amphetamines, Ritalin, Antipsychotics (not named), wrongly prescribed various medications\n\nSpecific Inquiry:\n- Suggestions for tests to confirm adult ADHD diagnosis\n- Recommendations for a psychiatrist in Australia who could handle the case correctly."
+    },
+    {
+        "input": "SUBJECT: False positive UA results\nMESSAGE: I tested positive for amphetamine but do not use drugs? I do have bad allergies and heard several over the counter medications can cause false positives. Is this true and is there a list? Thanks to respond.",
+        "output": "What can cause a false positive on an amphetamine drug test?",
+        "rationale": "Medication: Over the counter medications for allergies\nMedical Condition: Bad allergies \nInquiry: Query on whether certain over-the-counter allergy medications can cause false positive results on an amphetamine urine test. Additionally, a request for a list of such medications (if they exist)."
+    },
+    {
+        "input": "May I can find a cure for my case in therapeutic your center that I have an infection chronic granulomatous Mastitis take and how much the treatment period. Please advise me of the post by you.to this my Email\nNote : that I have all the medical reports and tests for this disease ???\nthis case of my wife and can be send your comment by below E-mail",
+        "output": "What are the treatments for chronic granulomatous mastitis?",
+        "rationale": "Medical Condition: Chronic granulomatous Mastitis\nSex: Female (patient's wife)\nInquiry: Availability and duration for a cure at therapeutic center, request for advice and communication via email about the disease."
+    },
+    {
+        "input": "SUBJECT: ClinicalTrials.gov - General Complaint\nMESSAGE: I HAVE CRONIC PAIN FROM SEVERE SHINGLES.THE BLISTERS ARE GONE BUT THE PAIN IS SEVERE.WHAT SHOULD I DO. I CAN' KEEP THIS PAIN",
+        "output": "What are the treatments for shingles pain?",
+        "rationale": "Medical Condition: Chronic pain, Severe Shingles\nInquiry: Suggestions for managing severe pain from shingles"
+    },
+    {
+        "input": "MESSAGE: i am a male 60 yrs old; i have nf and conjestive heart failure is there a possibility that one is offsetting the other? because i am having unexplained problems i know this is alot to ask but any information would be helpful; thank you",
+        "output": "Does neurofibromatosis affect congestive heart failure?",
+        "rationale": "Age: 60 years old\nSex: Male\nMedical Conditions: Neurofibromatosis (NF), Congestive Heart Failure\nInquiry: Possible interactions between Neurofibromatosis and Congestive Heart Failure causing unexplained problems. Request for any information or insights."
+    },
+    {
+        "input": "SUBJECT: lymphedema\nMESSAGE: HelloI was suffering from filariasis before 6 month, then i observed that I started having leg swelling about 6 months ago.It's lymphedema of my left leg. I has seen many doctors for this problem. but nobody help me to cure this.Finally they answer me there is no treatment for this. i have to live with this disease. but i can't spend whole life with this disease. Better then i will comit or prefer sucide and say goodbye to life.So please suggest me treatment if any treatment available.please reply atleast if no solution.",
+        "output": "What are the treatments for lymphedema?",
+        "rationale": "Medical condition: Lymphedema, filariasis\nMedical history: Suffered from filariasis 6 months ago, developed leg swelling, many doctor visits without successful treatment\nInquiry: Request for available treatments for lymphedema"
+    },
+    {
+        "input": "SUBJECT: Testo-XL mixed Male Libido XL\nMESSAGE: I want to find out is it got any side effect if I take both medicine as above together? I'm new user, not so sure about both products if mixed together. Is it will harm my health? Please give me some advise and usage about both  medicine. Thank you.",
+        "output": "Can Testo-XL and Male Libido XL be taken together?",
+        "rationale": "Medications: Testo-XL, Male Libido XL\nInquiry: Inquiring about possible side effects, health risks and advice on usage of both medications when taken together."
+    },
+    {
+        "input": "Hi Team,\nI am writing mail because of my father (age 60) have experienced a loss of\nspeaking volume (loss speaking sound) for the last couple of months. We\nconsult two Doctors and they said to speak with low voice.\nPlease let me advice what can we do to resolve the problem.\nRegards,\n[NAME]",
+        "output": "What are the treatments for loss of voice?",
+        "rationale": "Age: 60\nSex: Male\nMedical Condition: Loss of speaking volume\nAdvice Sought: Steps to resolve the problem of loss in speaking volume (sound)"
+    },
+    {
+        "input": "SUBJECT: NEUROFIBROMATOSIS\nMESSAGE: Hi:  I have neurofibromatosis handed down by my Mother, (from what we understand was from spontaneous mutation).  I was diagnosed with an Optic Giloma about 25 years ago.  I have also been getting MRI\u2019s to keep an \u201ceye\u201d on it (excuse the pun please), along with visual fields.  The last MRI, according to the radiologist, said it was not there and my Neurologist told me that they do disappear.  My question is, do Optic Giloma go away?  Thanks",
+        "output": "Can an optic glioma in an adult spontaneously disappear?",
+        "rationale": "Medical Condition: Neurofibromatosis, Optic Giloma\nMedication: Not provided\nDiagnosis: Neurofibromatosis, Optic Giloma\nTreatments: Monitoring with MRI\nInquiry: Question about the nature of Optic Giloma and if it can disappear over time."
+    },
+    {
+        "input": "SUBJECT: sodium intake\nMESSAGE: My mother is 96 years old and generally in good health.  I keep her on a low sodium diet and wonder if I'm not allowing enough sodium in her diet.  What is the lowest amount she should have per day?  Thank you.",
+        "output": "What is the minimum required sodium intake per day in elderly?",
+        "rationale": "Age: 96\nSex: Female\nInquiry: Lowest amount of sodium intake per day for a 96-year old woman\nDiet: Low sodium diet \nGeneral health status: Good"
+    },
+    {
+        "input": "I know you probably get quite a few inquiries on this topic - but I am wondering if I might be a good (or not) candidate for the Flavinoid as nutrients to prevent strokes/heart attacks study. I appreciate any information you may have.\nThank you,\n[NAME]",
+        "output": "What are the eligibility criteria for the Flavonoid as nutrients to prevent strokes/heart attacks study?",
+        "rationale": "Medical Condition: Risk of strokes/heart attacks\nMedication/Treatment: Flavinoid nutrients\nInquiry: Query on potential suitability as a candidate for a study on Flavinoid nutrients for preventing strokes/heart attacks."
+    },
+    {
+        "input": "SUBJECT: scitica nerve pain treatment\nMESSAGE: I am from [LOCATION]. my cousin elder father suffering from sciatic nerve pain since long and his family members have already spent all their saving funds towards his treatment. At present they helpless and the patient is lying on bed. Nobody can help him to get recoup.",
+        "output": "What are the treatments for sciatica?",
+        "rationale": "Medical Condition: Sciatic nerve pain\nAge: Not specified\nSex: Male\nTreatments: Not specified\nDiagnosis: Sciatica\nInquiry: Seeking help and advice for treating sciatic nerve pain"
+    },
+    {
+        "input": "SUBJECT: severe full body weakness\nMESSAGE: Could you please tell me why the body would be severely weak. And after viral infection body does not return normal still is severely weak",
+        "output": "What are the causes of severe body weakness?",
+        "rationale": "Medical Condition: Severe full body weakness, Viral Infection\nInquiry: Wanting to understand the cause of severe full body weakness and why it persists after a viral infection."
+    },
+    {
+        "input": "SUBJECT: Pancreatitis Cancer\nMESSAGE: My Grandfather on my mothers side died of pancreatic cancer  and my mother also  i am the only daughter ,but also have 3 brothers is it more likely that i will have of chance of having this form of cancer that my brothers. My mom was only 57 when we lost her . I am now 51 and worry if i'm more likely to suffer with this cancer than my brothers.",
+        "output": "What is the risk of developing  pancreatic cancer and how is it inherited? ",
+        "rationale": "Medical Condition: Pancreatic cancer\nAge: 51\nSex: Female\nFamily Medical History: Grandfather and mother both died from pancreatic cancer.\nInquiry: Interested in knowing if her risk of developing pancreatic cancer is higher than her brothers' due to her genetic line from her mother."
+    },
+    {
+        "input": "MESSAGE: I just read an article submitted by you that stated your research shows that you've identified the mechanism that causes burning mouth syndrome. Also because of these findings you can find a treatment. I've had this for 15 yrs and am just holding on. When will a good treatment be available??  I belong to a group of over 500 bmsers. We're suffering terribly and were from all over the world. What would the treatment be?",
+        "output": "What are the treatments for burning mouth syndrome?",
+        "rationale": "Medical Condition: Burning mouth syndrome\nResearch Findings: Identified the mechanism that causes burning mouth syndrome, potential treatment identified\nInquiry: Timeline for when a good treatment will be available and supposed nature of the treatment"
+    },
+    {
+        "input": "SUBJECT: Diabetis\nMESSAGE: Can I use Novolin instead of Novolog? Is there any difference?",
+        "output": "What is the difference between Novolin and Novolog and are they interchangeable?",
+        "rationale": "Medical Condition: Diabetes\nMedications: Novolin, Novolog\nInquiry: Can Novolin be used as a substitute for Novolog and is there any difference between the two."
+    },
+    {
+        "input": "About Aarskog Syndrome. hi my name is [NAME] i am 21 this year and was wondering if it is connected with server  Astigmatism as i got it in my left eye. I have a mild form of As, i have the wide peek eyes and rugby shaped and missing DNA which they have discovered in MRI scans. I was diagnosed when i was born but it still seems to be in research as we speak and ever since i turned 18 i have been doing my own research and finding others around by connecting with them on Facebook. I live in the [LOCATION] and found out there are four people that have Aarskog syndrome. thank you for your time",
+        "output": "Is Astigmatism related to Aarskog Syndrome?",
+        "rationale": "Age: 21\nMedical Condition: Aarskog Syndrome, Severe Astigmatism\nSymptoms: Wide peek eyes, rugby shaped eyes \nTests/Diagnosis: MRI Scans\nInquiry: Wants to know if Aarskog Syndrome is connected with severe Astigmatism."
+    },
+    {
+        "input": "SUBJECT: Normal physical traits but no period\nMESSAGE: I'm a 40 yr. old woman that has infantile reproductive organs and have never experienced a mensus. I have had Doctors look but they all say I just have infantile female reproductive organs. When I try to look for answers on the internet I cannot find anything. ALL my \"girly\" parts are normal. My organs never matured. Could you give me more information please.",
+        "output": "Where can I find information on developmental disorders of the female reproductive system?",
+        "rationale": "Age: 40 years\nSex: Female\nMedical Condition: Infantile reproductive organs, absence of menstruation\nInquiry: Seeking more information regarding her condition of infantile reproductive organs and lack of menstruation despite having normal physical traits."
+    },
+    {
+        "input": "Patient Handouts.\n Are there patient handouts we can order on the topic of gum/periodontal disease? If so how can we order some?",
+        "output": "Where can I find patient handouts on gum/periodontal disease?",
+        "rationale": "Medical Condition: Gum/Periodontal disease\nInquiry: Availability and ordering process of patient handouts on gum/periodontal disease"
+    },
+    {
+        "input": "SUBJECT: is there any medicines for peristaltic movements?\nMESSAGE: I V[NAME] From [LOCATION] which is located at INDIA. I am a patient of less peristaltic movements which was digests the eaten food in 3 to 4 hours... In normal humans which was digests the eaten food in 2 to 3 hours...  I visited several hospitals in [LOCATION] which is located in INDIA...  When i was visited [LOCATION]\" Hospital at HYDERBAD in the year of 2010..  There Doctors has told there is no medicins for this problem..  Is  there any medicines to improve my  peristaltic movements?  Please Replay to My E-mail[CONTACT] and My Mobile Number is: [CONTACT]  Thanking You taking my request....",
+        "output": "What are the treatments for slow peristaltic movements? ",
+        "rationale": "Medical Condition: Less peristaltic movements\nNationality: Indian \nPrevious Consultations: Multiple hospitals in India, including a hospital in Hyderabad in 2010.\nPrevious Diagnosis/Treatment: No known medication for this problem according to previous doctors\nInquiry: Looking for any possible medications to improve peristaltic movements"
+    },
+    {
+        "input": "MESSAGE: My 3yrs old boy found my bleach at the laundry and I suspect he swallowed a bit of it. How do I treat this pls.",
+        "output": "What are the treatments for bleach poisoning?",
+        "rationale": "Age: 3 years old\nSex: Male\nMedical Condition: Possible bleach ingestion\nInquiry: Treatment for bleach ingestion"
+    },
+    {
+        "input": "SUBJECT: Best Disease\nMESSAGE: There are 38 members of our family that have Best Disease. All members of the [NAME] family. Most of us live in [LOCATION].",
+        "output": "Where can I find information on Best disease, including inheritance patterns?",
+        "rationale": "Medical Condition: Best Disease\nInquiry: Not explicitly mentioned but seems to be informative, sharing that 38 members of their family have Best Disease."
+    },
+    {
+        "input": "We appreciate your response.\nMy son is 24 years old. We cannot find any drugs, treatments as well as\nhospitals to fight against Wilson's disease in [LOCATION].\nCurrently there is [PHI] person with Wilson's disease in [LOCATION] who is my\nson. We cannot find anything good to help my son at the moment.\nTherefore, we need somewhere where my son can get help. We are also lack of\nfinancial condition to support full treatment for my son. However,\nwe wish to have good medication with less expense if possible. We want to\nget diagnosed my son's other infected organs and want to know how we can\nhelp to get them recovered well.\nRegards\n[NAME].",
+        "output": "What are the treatments for Wilson's disease, and how can I find physician(s) or hospital(s) who specialize in it?",
+        "rationale": "Age: 24\nSex: Male\nMedical Condition: Wilson's disease\nInquiry: Seeking guidance on available treatments and hospitals for Wilson's disease, cost-effective medications, diagnostic services for organ damage, and potential recovery options."
+    },
+    {
+        "input": "anemia in kids. My daughter is 6 years old she is suffering from microcytic anemia for last three years.in 2009 she has been blood transfused but now her hb count is 4.5.Doctors are unable to find out the cause of her anemia.we are much worried about her.plz if u can guide us in regard.",
+        "output": "What are the causes of  and treatments for microcytic anemia?",
+        "rationale": "Age: 6 years\nSex: Female\nMedical Condition: Microcytic Anemia\nTreatments: Blood transfusion in 2009\nDiagnosis: Unknown cause of anemia\nInquiry: Seeking guidance in managing her condition and possible treatment options for her anemia."
+    },
+    {
+        "input": "SUBJECT: ClinicalTrials.gov - General Complaint\nMESSAGE: Dear sir/ madam. I am a patient suffering from Friedreich's ataxia and i heard there was a medicine for it. In 2009 and since we are looking for the medicine kindly help on this and I have DNA report could You please help us on this as there are two people respective age 22 years and 24 years suffering from it. Looking for your help on this ASAP and please let us know when the medicine will be there in market and attaching two files for your reference",
+        "output": "What are the treatments for friedreich's ataxia?",
+        "rationale": "Medical Condition: Friedreich's ataxia\nAge: 22 years, 24 years\nInquiry: Availability and details of the medication for Friedreich's ataxia"
+    },
+    {
+        "input": "MESSAGE: Good evening. My name is [NAME] , I am from Bosnia and Herzegovina. I'm 18 years old. I wear a cochlear implant ,hearing aid,  for 14 years. I wear it because have totally lost ability to hear. When i was eleven months old I had a fever therefor I used garamycin , but the doctors gave me too much of it so they burned my hearing nerve. I would like to know if there is any way to give me back my hearing ability without using any kind of help?     Yours faithfuly , [NAME].",
+        "output": "What are the treatments for deafness caused by gentamicin?",
+        "rationale": "Age: 18\nSex: Not specified\nMedical condition: Hearing loss\nTreatment: Cochlear implant, hearing aid\nMedication: Garamycin (previously used)\nInquiry: Is there any possible way to restore hearing ability without using any kind of auditory aid?"
+    },
+    {
+        "input": "memory losses.\n Information about dealing with, or medical care for, beginning forgetfulness. Not been diagnosed w/ any disease.",
+        "output": "What are the treatments for forgetfulness?",
+        "rationale": "Medical Condition: Memory losses/Beginning forgetfulness\nInquiry: Seeking information on handling and medical care for beginning forgetfulness"
+    },
+    {
+        "input": "Phobia: fear of taxidermy.\n Hello, I was wondering if there was a name for the fear of taxidermy? I often find myself having the symptoms this website describes when in the presence of something I fear deeply.",
+        "output": "Where can I find information on fear of taxidermy?",
+        "rationale": "Medical Condition: Fear of taxidermy\nInquiry: Asking for the specific term/name for the fear of taxidermy"
+    },
+    {
+        "input": "SUBJECT: blind technology\nMESSAGE: Hello,\nI am a student doing a research project on blind technology. I am wondering if you have any contacts of people who have research information on this topic because I want to find out their opinions on certain technologies. Also, I would appreciate it if you could tell me ways to improve/cure blindness. For example, information on ' stem cell surgery', bionic eye', 'gene therapy to cure blindness' etc. Thankyou!",
+        "output": "How can I find someone doing research on technologies for the blind, and what are the treatments for blindness?",
+        "rationale": "Medical Condition: Blindness\nTreatments: Stem cell surgery, Bionic eye, Gene therapy\nInquiry: Research information and contacts related to blind technology and ways to improve/cure blindness."
+    },
+    {
+        "input": "MESSAGE: I need the information for posterior fossa  One of my friends struggling with this disease  ..",
+        "output": "Where can I find information on posterior fossa disease?",
+        "rationale": "Medical Condition: Posterior Fossa \nInquiry: Information on Posterior Fossa disease"
+    },
+    {
+        "input": "What can I use when I feel my bladder is sore when I urinate my bladder just burn and its awkward for me its the second time now what should I use or take? Please I need your help",
+        "output": "What drugs are there to relieve \"burning bladder\" on urination?",
+        "rationale": "Medical Condition: Sore and burning sensation in bladder during urination\nInquiry: Advice on what medication or treatment to use for the pain and discomfort in the bladder during urination."
+    },
+    {
+        "input": "SUBJECT: morphine withdrawal symptoms\nMESSAGE: I was taking 600 mgm ms contin over a long period - of course I didnt start on that high dose but over 20 years I ended up there. I weaned myself off last year, and when I finally got to zero I started having these leg spasms, is this from the morphine? I can stop them taking 15 mgm ms contin daily which irritates me to to no end, I do NOT want to take the stuff! BUT, if I don't take it I get the spasms and end up sitting up all nite and sometimes during the day with them. I get them in my arms sometimes as well as both legs, and my legs jump a lot! My limbs feel kind of numb when it is going to start, so I know it is coming. What can I do? Is this ever going to stop? Thanks for your help.....[NAME]",
+        "output": "What are symptoms of morphine withdrawal and how are they treated? ",
+        "rationale": "Medical Condition: Morphine withdrawal symptoms\nMedication: Morphine (600mg ms contin), 15mg ms contin\nSymptoms: Leg spasms, arm spasms, numb limbs, involuntary leg movements\nDuration: >20 years of usage, stopped last year\nInquiry: Seeks advice on dealing with withdrawal symptoms specifically leg spasms, numbness and concerns if it's ever going to stop without taking medication."
+    },
+    {
+        "input": "SUBJECT: ClinicalTrials.gov - Question - general information\nMESSAGE: for the last 2 years I have suffered with scalp psoriasis have tried every known shampoo for this problem and no I am trying vitamins also! I cannot afford the doctors treatment unless medicare would pay for it, please can u give me some advice. I take blood pressure meds after a triple bypass would that be working against me? I a, alicensed cosmetologist and even embarrassed to have a co worker cut my hair!",
+        "output": "What are the treatments for scalp psoriasis?",
+        "rationale": "Medical Condition: Scalp Psoriasis\nAge: Not specified\nSex: Not specified\nTreatment: Tried various shampoos, considering vitamins, previously had triple bypass, current blood pressure medication\nPast Diagnoses: Triple bypass surgery\nInquiry: Seeking advice on managing scalp psoriasis, questioning potential negative effect of blood pressure medication on scalp psoriasis, seeking information about Medicare coverage for scalp psoriasis treatment"
+    },
+    {
+        "input": "SUBJECT: sexual dysfunction\nMESSAGE: Dear Doctor  i am male of 39 years, and facing problem of sexual weekness, erection is ok, once my penis stand up and after some seconds its become down like dead, i also feel size is also came down, i am worried, kindly suggest me a medicine for such decease i shall be very great full to you.  Regards [NAME]  [LOCATION]",
+        "output": "What are the treatments for erectile dysfunction?",
+        "rationale": "Age: 39 years\nSex: Male\nMedical Condition: Sexual Weakness and problem in maintaining erection\nInquiry: Suggestion for medicine to treat sexual dysfunction"
+    },
+    {
+        "input": "SUBJECT: Please send me information on the treatement of hypertension and diabetes.\nMESSAGE:  What causes hypertension and diabetes?",
+        "output": "What causes hypertension and diabetes and what are the treatments for them?",
+        "rationale": "Medical Conditions: Hypertension, Diabetes\nInquiry: Information on the treatment and causes of Hypertension and Diabetes."
+    },
+    {
+        "input": "Thank you for your response to my inquiry about the MMR vaccine.  I was born in 1942, never had the 10-day measles but did have the 3-day measles, and did have mumps as a child.  A recent blood test indicated that I am not immune to Rubella so my doctor recommended I get the MMR vaccine.  In light of my age, etc., do you agree or do you feel it is unnecessary or is there a separate vaccine for just Rubella?  Which is the measles that has started to reappear?",
+        "output": "Who should get the MMR vaccine?",
+        "rationale": "Age: 1942 birth year\nMedical Conditions: Non-immune to Rubella, History of 3-day measles and mumps  \nVaccines: MMR Vaccine\nTests: Blood test\nInquiry: Seeking advice if MMR vaccine is necessary considering her age and past medical history, and asking if there's a separate vaccine for Rubella. Also asking about the type of measles that has started to reappear."
+    },
+    {
+        "input": "SUBJECT: Skin Rash (Petechiae?)\nMESSAGE: Yesterday I noticed a large cluster of pinprick red spots underneath my chin (not on my neck). Recently I have been self induced vomiting. I know that Petechiae can be caused by vomiting but would this cause it to be underneath the chin??",
+        "output": "Can vomiting cause petechiae on the chin?",
+        "rationale": "Medical Condition: Skin Rash (Possible Petechiae)\nOther Information: Self-induced vomiting \nInquiry: Whether self-induced vomiting can cause Petechiae under the chin."
+    },
+    {
+        "input": "SUBJECT: Muscle function loss of Left Arm\nMESSAGE: Dear Doctor,  I am [NAME] from [LOCATION] ,first of all thank you very much for this article and its a great service.I am writing this email for my loving father ,He lost his left arm muscle because of nerve damage but he can access his finger .he cannot lift his hand without help of right hand.we already get consults from many doctors but there is no result found ,We are from village and poor family background ,i don't have much money to give good treatment for my father .so i request you please recommend a proper treatment for my father .this is my kind request to save my father . for more details required please feel free to contact me  my Email:-[CONTACT] My contact number :-[CONTACT]  With lot s of expectations,  [NAME]",
+        "output": "What are the treatments for nerve damage in the arm?",
+        "rationale": "Medical Condition: Muscle function loss of left arm due to nerve damage\nInquiry: Request for recommendations for affordable treatment options"
+    },
+    {
+        "input": "ClinicalTrials.gov - Question - specific study. Hello! My daughters name is [NAME] and she has Trisomie 13 (free). She's now 15 month and I would like to find studies - how old is oldest child with this Syndrom? Many greetings from [LOCATION]. [NAME]",
+        "output": "What is the life expectancy of someone with free trisomy 13?",
+        "rationale": "Medical Condition: Trisomie 13 (free)\nAge: 15 months\nInquiry: Information on the oldest child with this syndrome and any related studies."
+    },
+    {
+        "input": "SUBJECT: Homozygout MTHFR A1298C Health Issues and long term prognosis?\nMESSAGE: What is your position on Homozygout MTHFR A1298C Health Issues and long term prognosis?",
+        "output": "What is the prognosis for someone with homozygous MTHFR A1298C?",
+        "rationale": "Medical Condition: Homozygous MTHFR A1298C\nInquiry: Wants to know about health issues associated with Homozygous MTHFR A1298C and its long-term prognosis."
+    },
+    {
+        "input": "SUBJECT: Achromobacter xylosoxidans colonisation\nMESSAGE: What are implications of A. xylosoxidans colonisation? Background: bronchiectasis, colonised Psa, MDR muc-strain Psa; MRSA also with A denitrificans.",
+        "output": "What are treatments for Achromobacter xylosoxidans colonisation?",
+        "rationale": "Medical Condition: Achromobacter xylosoxidans colonisation, bronchiectasis\nMedication: None mentioned\nAdditional Information: Patient is colonised with Pseudomonas aeruginosa (Psa), Multi-drug resistant (MDR) muc-strain Psa; Methicillin-resistant Staphylococcus aureus (MRSA) along with Achromobacter denitrificans.\nInquiry: Implications of Achromobacter xylosoxidans colonisation in this context."
+    },
+    {
+        "input": "SUBJECT: VD\nMESSAGE: A lot of yrs. ago I went to my Dr. because I had blister like bumps on the inside of the vagina. He squeezed all of them and I have always wondered if my husband had given me some kind of veneral disease. They came back and I squeezed them myself. They had runny stuff in them. I ask the dr. what they were and he only said this \"oh nothing to worry about, some women just get these.\" Was this some kind of VD do you think.? thank you for a reply. We are divorced now and he has passed away. [NAME]",
+        "output": "Could blister-like bumps on the inside of the vagina be indicative of veneral disease?",
+        "rationale": "Medical Condition: Blister-like bumps in the vagina\nInquiry: The person is questioning whether the blisters could have been a venereal disease (VD)."
+    },
+    {
+        "input": "SUBJECT: Ankle Injury\nMESSAGE: I got hurt in my left leg ankle almost 5 months ago. I went to doctor, got x-ray, where no damage was found. He suggested me some pain killers and advised me to wear anklet. I have been following the instruction since then; I went to another doctor who advised me to go for physiotherapy (Short Wave Diathermy) and advised me some exercises. I have been following them too. But yet now, I have not been fully recovered from the pain. Especially when I try to walk quickly or try to put pressure with my left leg, I feel pain. I am very tensed about this. Can you please suggest me how to overcome the pain. Thanks.",
+        "output": "What are the treatments for ankle injury and pain? ",
+        "rationale": "Medical Information:\n- Medical Condition: Ankle Injury\n- Treatments: X-ray, Pain killers, Anklet, Short Wave Diathermy, Physiotherapy \n- Age/Sex: Not specified \n\nInquiry: Suggestions on how to overcome persistent pain in the left ankle after various treatments and physical therapy."
+    },
+    {
+        "input": "SUBJECT: dark spot\nMESSAGE: i had a black spot on my skin face which was formed due to pimple by ithcing on it. this was formed one year before and i dont use any creams for it or i have not contacted any doctors for it but now want to remove it as soon as possible, i am from hyderbad.what to do?",
+        "output": "Where can I get help with a facial dark spot in Hyderabad?",
+        "rationale": "Medical Condition: Dark spot on face \nCause: Itching on a pimple \nDuration: 1 year\nTreatment till now: None\nLocation: Hyderabad\nInquiry: Seeking advice on how to remove the dark spot on the face as soon as possible"
+    },
+    {
+        "input": "In Vitro Fertilization\nHi. I am interested to have In vitro Fertilization (Test Tube Baby). May I know the risk and the cost. Thanks",
+        "output": "What are the risks of in vitro fertilization and how much does it cost?",
+        "rationale": "Treatment: In Vitro Fertilization\nInquiry: Risk and cost of undergoing In Vitro Fertilization treatment."
+    },
+    {
+        "input": "SUBJECT: DECUBITUS ULCERS\nMESSAGE: To Whom This May Concern, My name is [NAME], i am a year 12 student at [LOCATION], [LOCATION]. I am doing a subject called research project, it is a compulsory subject.  My question is 'What are the biological causations of decubitus ulcers?' I am writing to you as i am in need of primary information from medical professionals. I am requesting that you complete a survey. If you are willing to participate please email me on; [CONTACT]   so i will be able to give you the survey and a letter detailing what it is for.  Thank You for spending your time reading this email, and i look forward to hearing from you. Yours Sincerely,           [NAME], Year 12 student at [LOCATION]",
+        "output": "What causes decubitus ulcers?",
+        "rationale": "Medical Condition: Decubitus ulcers\nInquiry: Seeking primary information on the biological causations of decubitus ulcers. Requesting to complete a survey."
+    },
+    {
+        "input": "SUBJECT: Purpura\nMESSAGE: My brother has purpura disease since 2003. kindly gude us with the correct medicine and if you know any good doctor then please let us know.  Thank You",
+        "output": "What are the treatments for purpura and how can I find physician(s) who specialize in it?",
+        "rationale": "Medical Condition: Purpura\nInquiry: Requesting advice on appropriate medication for purpura and potential doctor recommendations."
+    },
+    {
+        "input": "Dear Sir\nSeveral diseases including skin cancer and hypovitaminosis D occur due to migration of dark skinned and light skinned people to each others habitats, I want to know what latitude woud be best for Fitzpatrick type IIIa skin, I mean, I'm moving to Portland, Maine is my skin best suited for UV rays there and what is the best skin type for Portland Maine, with regards on the ozone depletion that expose us to more UV,thanks.\nyours,\n[NAME]",
+        "output": "What is the best latitude for someone with Fitzpatrick type III skin?",
+        "rationale": "Medical Information: Skin cancer, hypovitaminosis D, Fitzpatrick type IIIa skin, UV rays, ozone depletion\nInquiry: Best latitude for Fitzpatrick type IIIa skin, suitability of skin type for UV rays exposure in Portland, Maine, Ideal skin type for Portland, Maine considering ozone depletion-related increased UV exposure."
+    },
+    {
+        "input": "MESSAGE: I am 23yr boy,i have knock knees i want treatment. Please help me.",
+        "output": "What are the treatments for knock-knee?",
+        "rationale": "Age: 23\nSex: Male\nMedical Condition: Knock knees\nInquiry: Seeking treatment for knock knees"
+    },
+    {
+        "input": "MESSAGE: Is it okay to drink alcohol in moderation when taking Ampicillin.  I was told it negates any medical effect of the drug",
+        "output": "Can I drink alcohol while taking Amoxicillin?",
+        "rationale": "Medication: Ampicillin\nInquiry: Can alcohol, consumed in moderation, negate the medical effects of Ampicillin?"
+    },
+    {
+        "input": "SUBJECT: Shortness of breath\nMESSAGE: Thank you for your tip on being short of breath upon doing simple chores around the house.  I have done what you told me, breath through nose then let it out through pursed lips.  Works for me, but I'm constantly out of breath my doctor checked my heart and lungs with his stethoscope and says all is fine.  However I do suffer from hypertension and high blood pressure, and take medication for it.  I'm 71 years old and would like to know if losing a bit of weight and walking would help me further, I need to toughen up my muscles because I tire kind of too easily, makes me feel like I'm lazy which I am not used to, I need to be doing things all the time.  I'm a kitty cat caregiver and take in strays and look after them so you can imagine the work required, litter boxes to lift, bowls of water, food bags, vet care and just a lot of running around doing this and that for the kitties.  Any suggestion from you would be appreciated.",
+        "output": "Can weight loss and exercise help alleviate shortness of breath?",
+        "rationale": "Age: 71\nSex: Not specified\nMedical Condition: Hypertension, High blood pressure, Shortness of breath\nMedicine: Not specified (but mentions taking medication for high blood pressure)\nInquiry: Wants to know if losing a bit of weight and walking would help further manage their shortness of breath and tiredness. Seeks advice on ways to toughen up muscles."
+    },
+    {
+        "input": "Good evening, I will contact you as my [NAME] a year and a half have been diagnosed with the genetic mutation STXBP1. I would like to know if there is something in the world that can help my son. I hope you contact us as soon as possible. \nGreetings [NAME]",
+        "output": "What are the treatments for genetic mutation STXBP1?",
+        "rationale": "Medical condition: Genetic mutation STXBP1 \nPatient Age: 1.5 years \nInquiry: Treatment options available for the genetic mutation STXBP1."
+    },
+    {
+        "input": "Pupil Dilation.\n How often can a pupil dilation or eye fundus can be performed? For example is there a problem if I had one last week and then to have another this week? I appreciate your quick answer.  Thank you",
+        "output": "How often can pupil dilation be performed?",
+        "rationale": "Medical Condition: Pupil Dilation \nInquiry: Frequency of performing pupil dilation or eye fundus examinations"
+    },
+    {
+        "input": "SUBJECT: Responsible for the Research on stem cells and tissue regeneration\nMESSAGE: Dear colleague Good day, my name is [NAME], 48, doctor; I was affected by a bladder cancer where the removal of the organ was needed. I read about the work of his lab and I wonder if there is interest or any possibility of using pluripotent stem cells redo a piece of fabric of my bladder, for so I can do a transplant with acellular matrix and repopulate this matrix with these modified stem cells . I'm using bricker, which depress me, I lost my self esteem, lost quality of life and already thought to suicide. Until that came the hope that transplantation of acellular matrix.  I am looking forward to answer, anxious and carefully.   [NAME] CRM88878  I just can not understand the difficulty in finding a laboratory or institution that can solve this problem as the peritoneal layer of the bladder peritoneum is I already own, the inner layer is smooth muscle, which can also be acquired via endoscopic biopsy of the stomach or a arterial tissue and the layer It is coated internally by internal polymorph or transitional epithelium which can be acquired from another organ. It would just replicate small pieces so that after implanted in the acellular scaffold covered.",
+        "output": "What is the latest research on using pluripotent stem cells and acellular matrix for  bladder regeneration?",
+        "rationale": "Age: 48\nSex: Not specified\nMedical Condition: Bladder Cancer\nTreatment History: Removal of the bladder\nCurrent Treatment: Using Bricker\nPotential Treatment: Transplantation of acellular matrix with modified stem cells\nInquiry: Interest and possibility of using pluripotent stem cells for bladder tissue regeneration and transplantation using the acellular matrix. Also, questioning the difficulty of finding a laboratory or institution that can address this issue."
+    },
+    {
+        "input": "williams sydrome conditon.\n i need to send me more information about Williams Syndrome and some tips how to educate people with this disorder.I hope having news from you soon!!thank you",
+        "output": "Where can I find information and educational materials on williams syndrome?",
+        "rationale": "Medical Condition: Williams Syndrome\nInquiry: Requests more information about Williams Syndrome and tips on educating people with this disorder."
+    }
+]

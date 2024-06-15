@@ -184,12 +184,16 @@ class TaskPrefix_hierarchical(Seq2SeqTrainer):
         # breakpoint()
         pred_outputs = model(**inputs['pred'])
         loss_rationale = 0
+        count = 0
         for key in inputs:
             if key == 'pred':
                 continue
             else:
-                loss_rationale += model(**inputs[f'{key}']).loss
-        loss = pred_outputs.loss+loss_rationale
+                if count<3:
+                    loss_rationale += model(**inputs[f'{key}']).loss
+                    count = count+1
+
+        loss = self.alpha*pred_outputs.loss + (1-self.alpha)*loss_rationale
 
         '''
         Seq2SeqLMOutput,  model.forward()返回内容说明：

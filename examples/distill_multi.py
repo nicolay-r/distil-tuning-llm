@@ -173,16 +173,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     
-    run(args)
+    # run(args)
     
-    # to_email = "rosaliu.567@gmail.com"
-    # send_email('模型训练开始', f'您的模型{args.addi_info}已经开始训练。', to_email)
-    # try:
-    #     run(args)
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型训练完成', f'您的模型{args.addi_info}已经成功训练完成。', to_email)
-    # except Exception as e:
-    #     print(e)
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)
+    to_email = "rosaliu.567@gmail.com"
+    send_email('模型训练开始', f'您的模型{args.addi_info}已经开始训练。', to_email)
+    try:
+        run(args)
+        # to_email = "rosaliu.567@gmail.com"
+        send_email('模型训练完成', f'您的模型{args.addi_info}已经成功训练完成。', to_email)
+    except Exception as e:
+        print(e)
+        # to_email = "rosaliu.567@gmail.com"
+        send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)
        

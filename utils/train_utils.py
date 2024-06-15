@@ -156,7 +156,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         generation_max_length=args.gen_max_len,      # 生成的最大长度
         prediction_loss_only=False,         # 是否只预测损失，这里设置为False
         deepspeed=args.deepspeed,
-        save_total_limit=2,
+        save_total_limit=1,
         load_best_model_at_end=True,
         metric_for_best_model="test_rouge_avg",
         greater_is_better=True,

@@ -3,9 +3,9 @@
 
 TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
 
-OUTPUT_DIR="./results/xsum"
+OUTPUT_DIR="./results/MeDistill_hierarchical_ep20"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
-CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
+#CKPT_DIR="../ckpts/task_prefix/flan-t5-large_MeDistill_hierarchical_ep20/checkpoint-25"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-30
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_distill_large_28/checkpoint-10000/special_tokens_map.json
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_distill_large/checkpoint-9000/pytorch_model.bin
@@ -18,9 +18,9 @@ CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
 # - Set evaluation_strategy="'no'" and load_best_model_at_end=false to avoid evaluation
 # - Set bertscore_model_type=null and bleurt_checkpoint=null to avoid loading them
 # - Use the run=1 argument to ensure that the output file is named correctly
-#  har1/HealthScribe-Clinical_Note_Generator
+#
 python3 ./run_summarization_old.py "./conf/base.yml" "./conf/taskA.yml" output_dir="$OUTPUT_DIR" \
-    model_name_or_path="Xiaolihai/bart-large-xsum_MeDistill_28_bart-large-xsum_ep5" \
+    model_name_or_path="Xiaolihai/flan-t5-large_MeDistill_28_hierarchical_ep20" \
     summary_column="dialogue" \
     train_file=null \
     validation_file=null \
@@ -37,6 +37,6 @@ python3 ./run_summarization_old.py "./conf/base.yml" "./conf/taskA.yml" output_d
     bleurt_checkpoint=null \
     # model_type=task_prefix \
     # checkpoint_dir="$CKPT_DIR" \
-    
+
 python eval_sum_medqa23.py --task taskA --fn_eval_data $OUTPUT_DIR
 

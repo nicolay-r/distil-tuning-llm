@@ -3,7 +3,7 @@
 
 TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
 
-OUTPUT_DIR="./results/xsum"
+OUTPUT_DIR="./results/base-flan-t5-large"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
 CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-30
@@ -20,12 +20,12 @@ CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
 # - Use the run=1 argument to ensure that the output file is named correctly
 #  har1/HealthScribe-Clinical_Note_Generator
 python3 ./run_summarization_old.py "./conf/base.yml" "./conf/taskA.yml" output_dir="$OUTPUT_DIR" \
-    model_name_or_path="Xiaolihai/bart-large-xsum_MeDistill_28_bart-large-xsum_ep5" \
+    model_name_or_path="google/flan-t5-large" \
     summary_column="dialogue" \
     train_file=null \
     validation_file=null \
     test_file="$TEST_FP" \
-    per_device_eval_batch_size=2 \
+    per_device_eval_batch_size=32 \
     fp16=false \
     bf16=false \
     do_train=false \

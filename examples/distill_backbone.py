@@ -1,22 +1,26 @@
 import sys
+
 sys.path.append("..")  # 添加上层目录到路径中，使得 utils 模块可以被找到
 from utils.data_utils import MEDQADatasetLoader
 import argparse
 from datasets import DatasetDict, concatenate_datasets
 from transformers import AutoTokenizer
 # from ..utils.data_utils import MEDQADatasetLoader
-from utils.metrics import compute_text_acc, compute_equation_acc, compute_metrics_text, compute_metrics_equation, compute_metrics_text_aux, compute_metrics_equation_aux
-from utils.train_utils import train_and_evaluate
+from utils.metrics import compute_text_acc, compute_equation_acc, compute_metrics_text, compute_metrics_equation, \
+    compute_metrics_text_aux, compute_metrics_equation_aux
+from utils.train_utils_hmq import train_and_evaluate
 import wandb
 from wandb import AlertLevel
 from transformers import AutoModel, AutoTokenizer
-    
+
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from transformers import BioGptTokenizer, BioGptForCausalLM
+
 
 def send_email(subject, message, to_email):
-    with open("../app_keys/k.txt",'r') as k:
+    with open("../app_keys/k.txt", 'r') as k:
         psw = k.read()
     k.close()
     from_email = 'rosaliu.567@gmail.com'
@@ -25,10 +29,10 @@ def send_email(subject, message, to_email):
     msg['From'] = from_email
     msg['To'] = to_email
     msg['Subject'] = subject
-    
+
     body = MIMEText(message, 'plain')
     msg.attach(body)
-    
+
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(from_email, password)
@@ -39,29 +43,25 @@ def send_email(subject, message, to_email):
 
 def run(args):
     #### Prepare datasets
-    
+
     dataset_loader = MEDQADatasetLoader(args.dataset, args.model_type)
 
     # 加载数据
     datasets = dataset_loader.load_from_json_rationale()
-    
-    
+
     # 整理数据集的label和rationale
     train_llm_rationales, train_llm_labels = dataset_loader.load_rationale_data(split='train')
     # test_llm_rationales, test_llm_labels = dataset_loader.load_rationale_data(split='test')
     valid_llm_rationales, valid_llm_labels = dataset_loader.load_rationale_data(split='valid')
-
-    
 
     # if args.llm is not None: # 给数据集添加labels,
     datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
     # datasets['test'] = datasets['test'].add_column('llm_label', test_llm_labels)
     datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
     # datasets['test'] = datasets['test'].add_column('llm_rationale', test_llm_rationales)
-    
+
     datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
     datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
-
 
     # if args.llm is not None: # 重命名rationale
     if 'rationale' in datasets['train'].column_names:
@@ -69,34 +69,74 @@ def run(args):
     datasets = datasets.rename_column('llm_rationale', 'rationale')
     if 'output' in datasets['train'].column_names:
         datasets = datasets.rename_column('output', 'label')
-        
 
     #### Prepare datasets Prepare data for training
-    tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
-    # tokenizer.pad_token = tokenizer.eos_token
-    
+    # tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
+
+
+    # tokenizer = AutoTokenizer.from_pretrained("BioMistral/BioMistral-7B")
+    tokenizer = BioGptTokenizer.from_pretrained(args.from_pretrained,padding_side = 'left')
+    tokenizer.pad_token = tokenizer.eos_token
+
+
     def tokenize_function(examples):
         '''
         tokenizer.decode(model_inputs["input_ids"][0], skip_special_tokens=True) : (input from train set)
-        'predict: Doctor: What brings you back into the clinic today, miss? 
-        Patient: I came in for a refill of my blood pressure medicine. 
+        'predict: Doctor: What brings you back into the clinic today, miss?
+        Patient: I came in for a refill of my blood pressure medicine.
         Doctor: It looks like Doctor Kumar followed up with you last time regarding your hypertension, osteoarthritis, osteoporosis, hypothyroidism, allergic rhinitis and kidney stones. Have you noticed any changes or do you have any concerns regarding these issues? Patient: No. Doctor: Have you had any fever or chills, cough, congestion, nausea, vomiting, chest pain, chest pressure? Patient: No. Doctor: Great. Also, for our records, how old are you and what race do you identify yourself as? Patient: I am seventy six years old and identify as a white female.'
         len(model_inputs["input_ids"]) = 1000
 
         '''
-        model_inputs = tokenizer(['Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue:' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
-        expl_model_inputs = tokenizer(['Extract the key information from the dialogue, Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
-        model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
-        model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
-        # breakpoint()
-        with tokenizer.as_target_tokenizer():
-            label_output_encodings = tokenizer(examples['label'], max_length=args.gen_max_len, truncation=True)
-            rationale_output_encodings = tokenizer(examples['rationale'], max_length=args.gen_max_len, truncation=True)
-
-        model_inputs['labels'] = label_output_encodings['input_ids']
-        model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
+        model_inputs = {
+            'input_ids': [],
+            'attention_mask': [],
+            'labels': [],
+            'expl_input_ids': [],
+            'expl_attention_mask': [],
+            'expl_labels': []
+        }
+        for idx, dialogue in enumerate(examples['input']):
+            # Original dialogue tokenization
+            prompt = 'Summarize the following patient-doctor dialogue in a clinical note style. DIALOGUE:'
+            label = "SUMMARY: " + examples['label'][idx]
+            rationale = "Key information: " + examples['rationale'][idx]
+            rationale_prompt = 'Extract the key information from the dialogue:'
+            pred_input = tokenizer(prompt + dialogue + label, truncation=True, padding='max_length',
+                                       max_length=args.max_input_length)
+            expl_input = tokenizer(rationale_prompt+dialogue+rationale, truncation=True, padding='max_length',
+                                        max_length=args.max_input_length)
+            model_inputs['input_ids'].append(pred_input['input_ids'])
+            model_inputs['attention_mask'].append(pred_input['attention_mask'])
+            model_inputs['labels'].append(pred_input['input_ids'])
+            model_inputs['expl_input_ids'].append(expl_input['input_ids'])
+            model_inputs['expl_attention_mask'].append(expl_input['attention_mask'])
+            model_inputs['expl_labels'].append(expl_input['input_ids'])
 
         return model_inputs
+
+    # def tokenize_function(examples):
+    #     '''
+    #     tokenizer.decode(model_inputs["input_ids"][0], skip_special_tokens=True) : (input from train set)
+    #     'predict: Doctor: What brings you back into the clinic today, miss?
+    #     Patient: I came in for a refill of my blood pressure medicine.
+    #     Doctor: It looks like Doctor Kumar followed up with you last time regarding your hypertension, osteoarthritis, osteoporosis, hypothyroidism, allergic rhinitis and kidney stones. Have you noticed any changes or do you have any concerns regarding these issues? Patient: No. Doctor: Have you had any fever or chills, cough, congestion, nausea, vomiting, chest pain, chest pressure? Patient: No. Doctor: Great. Also, for our records, how old are you and what race do you identify yourself as? Patient: I am seventy six years old and identify as a white female.'
+    #     len(model_inputs["input_ids"]) = 1000
+    #
+    #     '''
+    #     model_inputs = tokenizer(['Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue:' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
+    #     expl_model_inputs = tokenizer(['Extract the key information from the dialogue, Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
+    #     model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
+    #     model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
+    #     # breakpoint()
+    #     with tokenizer.as_target_tokenizer():
+    #         label_output_encodings = tokenizer(examples['label'], max_length=args.gen_max_len, truncation=True)
+    #         rationale_output_encodings = tokenizer(examples['rationale'], max_length=args.gen_max_len, truncation=True)
+    #
+    #     model_inputs['labels'] = label_output_encodings['input_ids']
+    #     model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
+    #
+    #     return model_inputs
 
     print("这里mei有")
     tokenized_datasets = datasets.map(
@@ -106,13 +146,10 @@ def run(args):
     )
     compute_metrics = compute_metrics_equation(tokenizer)
 
-
     train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
 
 
 if __name__ == '__main__':
-    
-    
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, required=True)
     parser.add_argument('--subsample', type=float, default=1.0)
@@ -127,10 +164,10 @@ if __name__ == '__main__':
     parser.add_argument('--from_pretrained', type=str, default='google/t5-v1_1-base')
     parser.add_argument('--label_type', type=str, default='gt')
     # parser.add_argument('--llm', type=str, default='palm')
-    parser.add_argument('--max_input_length', type=int, default=1024)
+    parser.add_argument('--max_input_length', type=int, default=2047)
     parser.add_argument('--grad_steps', type=int, default=1)
     parser.add_argument('--local_rank', type=int, default=-1)
-    parser.add_argument('--gen_max_len', type=int, default=512)
+    parser.add_argument('--gen_max_len', type=int, default=2048)
     parser.add_argument('--parallelize', action='store_true')
     parser.add_argument('--model_type', type=str, default='task_prefix')
     parser.add_argument('--bf16', action='store_true')
@@ -140,21 +177,19 @@ if __name__ == '__main__':
     parser.add_argument("--deepspeed", type=str, default=None, help="Path to deepspeed config file.")
     parser.add_argument('--weight', type=int, default=1)
     parser.add_argument('--train_epochs', type=int, default=10)
-    
-    
+    parser.add_argument('--max_new_tokens', type=int, default=2048)
+
     parser.add_argument('--with_head', action='store_true')
-    
+
     parser.add_argument('--cos_sim', action='store_true')
-    
+
     parser.add_argument('--dynamic', action='store_true')
     parser.add_argument('--hierarchical', action='store_true')
-    
 
     args = parser.parse_args()
-    
-    
+
     run(args)
-    
+
     # to_email = "rosaliu.567@gmail.com"
     # send_email('模型训练开始', f'您的模型{args.addi_info}已经开始训练。', to_email)
     # try:
@@ -165,4 +200,3 @@ if __name__ == '__main__':
     #     print(e)
     #     # to_email = "rosaliu.567@gmail.com"
     #     send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)
-       

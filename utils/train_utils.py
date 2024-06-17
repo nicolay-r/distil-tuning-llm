@@ -26,6 +26,7 @@ from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
 from utils.data_utils import MEDQADatasetLoader
 from utils.head_utils import T5WithMLPHead
+from transformers import AutoModel, AutoTokenizer
 import torch
 
 from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskPrefix_COS, CoTTrainer, AdptTrainer,TaskPrefixTrainerWithHead, DynamicLossTrainer, TaskPrefixDataCollator_hierarchical, TaskPrefix_hierarchical
@@ -104,6 +105,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
             model = T5WithMLPHead.from_pretrained(args.from_pretrained).to(device)
         else:
             model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
+            # model = AutoModel.from_pretrained(args.from_pretrained)
+
         
     else:
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符

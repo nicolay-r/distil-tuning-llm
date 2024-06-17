@@ -100,7 +100,6 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
     
     def compute_loss(self, model, inputs, return_outputs=False):
-        
         pred_outputs = model(**inputs['pred'])
         expl_outputs = model(**inputs['expl'])
         '''
@@ -467,9 +466,10 @@ class AdptTrainer(Seq2SeqTrainer):
         
         pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False,
                                                ignore_keys=ignore_keys)
-        torch.cuda.empty_cache() # 也许可以试一下
+
         expl_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False,
-                                               ignore_keys=ignore_keys)        
+                                               ignore_keys=ignore_keys)
+
         loss = self.alpha * pred_outputs[0] * self.weight  + (1 - self.alpha) * expl_outputs[0]
         wandb.log({'eval/loss': loss, 
                    'eval/loss_pred': pred_outputs[0], 
@@ -477,7 +477,7 @@ class AdptTrainer(Seq2SeqTrainer):
                    'eval/loss_expl': expl_outputs[0]                  
                    },
                   step=self.state.global_step)
-        torch.cuda.empty_cache() # 也许可以试一下
+
         return (
             loss,
             [pred_outputs[1], expl_outputs[1]],

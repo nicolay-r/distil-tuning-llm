@@ -2,7 +2,8 @@
 # Executes fine-tuning of the Flan-T5 XL model with specialized adapter configuration using DeepSpeed
 
 # Model, dataset, and configuration settings
-MODEL="BioMistral/BioMistral-7B"
+MODEL="
+microsoft/biogpt"
 DATASET="medqa_d2n"
 CONFIG_FILE="../configs/ds_config_zero2.json"
 MODEL_TYPE="task_prefix"
@@ -16,13 +17,13 @@ BATCH_SIZE_EVAL=32
 GRAD_STEPS=1
 WEIGHT=1
 ALPHA=0.8
-ADDITIONAL_INFO="MeDistill_28_BioMistral-7B_ep10"
+ADDITIONAL_INFO="MeDistill_28_biogpt_ep10"
 
 
 # Run the DeepSpeed training command
 cd ../examples  # 确保从 examples 目录执行
 
-deepspeed distill_finetune.py \
+deepspeed distill_backbone.py \
     --from_pretrained $MODEL \
     --dataset $DATASET \
     --model_type $MODEL_TYPE \
@@ -37,7 +38,7 @@ deepspeed distill_finetune.py \
     --deepspeed $CONFIG_FILE \
     --train_epochs $TRAIN_EPOCHS\
     --max_steps $MAX_STEPS \
-    # 
+    #
     # --bf16 \
     # --dynamic
     # --peft
@@ -46,4 +47,3 @@ deepspeed distill_finetune.py \
     # --bf16 \
     # --with_head \
 
-    

@@ -37,46 +37,46 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 class TaskPrefixDataCollator(DataCollatorForSeq2Seq):
-    def __call__(self, features, return_tensors=None):
-        features_df = pd.DataFrame(features)
-        pred_features = features_df.loc[:,
-                        ~features_df.columns.isin(['expl_input_ids', 'expl_attention_mask','expl_labels'])].to_dict(
-            'records')
-        expl_features = features_df.loc[:, ~features_df.columns.isin(['input_ids', 'attention_mask','labels'])].rename(
-            columns={'expl_input_ids': 'input_ids',
-                     'expl_attention_mask': 'attention_mask',
-                     'expl_labels':'labels'}).to_dict('records')
-        # breakpoint()
-        '''
-        tokenizer.decode(expl_features['labels'][1], skip_special_tokens=True)
-        '''
-        pred_features = super().__call__(pred_features, return_tensors)
-        expl_features = super().__call__(expl_features, return_tensors)
-        # breakpoint()
-        return {
-            'pred': pred_features,
-            'expl': expl_features,
-        }
-
     # def __call__(self, features, return_tensors=None):
     #     features_df = pd.DataFrame(features)
     #     pred_features = features_df.loc[:,
-    #                     ~features_df.columns.isin(['aux_labels', 'expl_input_ids', 'expl_attention_mask'])].to_dict(
+    #                     ~features_df.columns.isin(['expl_input_ids', 'expl_attention_mask','expl_labels'])].to_dict(
     #         'records')
-    #     expl_features = features_df.loc[:, ~features_df.columns.isin(['labels', 'input_ids', 'attention_mask'])].rename(
-    #         columns={'aux_labels': 'labels', 'expl_input_ids': 'input_ids',
-    #                  'expl_attention_mask': 'attention_mask'}).to_dict('records')
+    #     expl_features = features_df.loc[:, ~features_df.columns.isin(['input_ids', 'attention_mask','labels'])].rename(
+    #         columns={'expl_input_ids': 'input_ids',
+    #                  'expl_attention_mask': 'attention_mask',
+    #                  'expl_labels':'labels'}).to_dict('records')
     #     # breakpoint()
     #     '''
     #     tokenizer.decode(expl_features['labels'][1], skip_special_tokens=True)
     #     '''
     #     pred_features = super().__call__(pred_features, return_tensors)
     #     expl_features = super().__call__(expl_features, return_tensors)
-    #
+    #     # breakpoint()
     #     return {
     #         'pred': pred_features,
     #         'expl': expl_features,
     #     }
+
+    def __call__(self, features, return_tensors=None):
+        features_df = pd.DataFrame(features)
+        pred_features = features_df.loc[:,
+                        ~features_df.columns.isin(['aux_labels', 'expl_input_ids', 'expl_attention_mask'])].to_dict(
+            'records')
+        expl_features = features_df.loc[:, ~features_df.columns.isin(['labels', 'input_ids', 'attention_mask'])].rename(
+            columns={'aux_labels': 'labels', 'expl_input_ids': 'input_ids',
+                     'expl_attention_mask': 'attention_mask'}).to_dict('records')
+        # breakpoint()
+        '''
+        tokenizer.decode(expl_features['labels'][1], skip_special_tokens=True)
+        '''
+        pred_features = super().__call__(pred_features, return_tensors)
+        expl_features = super().__call__(expl_features, return_tensors)
+
+        return {
+            'pred': pred_features,
+            'expl': expl_features,
+        }
 
 
 class TaskPrefixTrainer(Seq2SeqTrainer):
@@ -141,22 +141,19 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
                                                ignore_keys=ignore_keys)
         # breakpoint()
         # 原来的
-        loss = self.alpha * pred_outputs[0] + (1 - self.alpha) * expl_outputs[0]
+        eval_loss = self.alpha * pred_outputs[0] + (1 - self.alpha) * expl_outputs[0]
         # breakpoint()
-        wandb.log({'eval/loss': loss,
+        wandb.log({'eval_loss': eval_loss,
                    'eval/loss_pred': pred_outputs[0],
                    'eval/loss_expl': expl_outputs[0]
                    },
                   step=self.state.global_step)
-        # return (
-        #     loss,
-        #     [pred_outputs[1], expl_outputs[1]],
-        #     [pred_outputs[2], expl_outputs[2]],
-        # )
         return (
-            loss,
+            eval_loss,
             pred_outputs[1],
             pred_outputs[2],
         )
+        # return loss
+
 
 

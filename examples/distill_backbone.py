@@ -76,44 +76,9 @@ def run(args):
 
     # tokenizer = AutoTokenizer.from_pretrained("BioMistral/BioMistral-7B")
     tokenizer = BioGptTokenizer.from_pretrained(args.from_pretrained,padding_side = 'left')
+    # tokenizer = BioGptTokenizer.from_pretrained("microsoft/biogpt", padding_side='left')
     tokenizer.pad_token = tokenizer.eos_token
 
-
-    def tokenize_function(examples):
-        '''
-        tokenizer.decode(model_inputs["input_ids"][0], skip_special_tokens=True) : (input from train set)
-        'predict: Doctor: What brings you back into the clinic today, miss?
-        Patient: I came in for a refill of my blood pressure medicine.
-        Doctor: It looks like Doctor Kumar followed up with you last time regarding your hypertension, osteoarthritis, osteoporosis, hypothyroidism, allergic rhinitis and kidney stones. Have you noticed any changes or do you have any concerns regarding these issues? Patient: No. Doctor: Have you had any fever or chills, cough, congestion, nausea, vomiting, chest pain, chest pressure? Patient: No. Doctor: Great. Also, for our records, how old are you and what race do you identify yourself as? Patient: I am seventy six years old and identify as a white female.'
-        len(model_inputs["input_ids"]) = 1000
-
-        '''
-        model_inputs = {
-            'input_ids': [],
-            'attention_mask': [],
-            'labels': [],
-            'expl_input_ids': [],
-            'expl_attention_mask': [],
-            'expl_labels': []
-        }
-        for idx, dialogue in enumerate(examples['input']):
-            # Original dialogue tokenization
-            prompt = 'Summarize the following patient-doctor dialogue in a clinical note style. DIALOGUE:'
-            label = "SUMMARY: " + examples['label'][idx]
-            rationale = "Key information: " + examples['rationale'][idx]
-            rationale_prompt = 'Extract the key information from the dialogue:'
-            pred_input = tokenizer(prompt + dialogue + label, truncation=True, padding='max_length',
-                                       max_length=args.max_input_length)
-            expl_input = tokenizer(rationale_prompt+dialogue+rationale, truncation=True, padding='max_length',
-                                        max_length=args.max_input_length)
-            model_inputs['input_ids'].append(pred_input['input_ids'])
-            model_inputs['attention_mask'].append(pred_input['attention_mask'])
-            model_inputs['labels'].append(pred_input['input_ids'])
-            model_inputs['expl_input_ids'].append(expl_input['input_ids'])
-            model_inputs['expl_attention_mask'].append(expl_input['attention_mask'])
-            model_inputs['expl_labels'].append(expl_input['input_ids'])
-
-        return model_inputs
 
     # def tokenize_function(examples):
     #     '''
@@ -124,19 +89,55 @@ def run(args):
     #     len(model_inputs["input_ids"]) = 1000
     #
     #     '''
-    #     model_inputs = tokenizer(['Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue:' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
-    #     expl_model_inputs = tokenizer(['Extract the key information from the dialogue, Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
-    #     model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
-    #     model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
-    #     # breakpoint()
-    #     with tokenizer.as_target_tokenizer():
-    #         label_output_encodings = tokenizer(examples['label'], max_length=args.gen_max_len, truncation=True)
-    #         rationale_output_encodings = tokenizer(examples['rationale'], max_length=args.gen_max_len, truncation=True)
-    #
-    #     model_inputs['labels'] = label_output_encodings['input_ids']
-    #     model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
+    #     model_inputs = {
+    #         'input_ids': [],
+    #         'attention_mask': [],
+    #         'labels': [],
+    #         'expl_input_ids': [],
+    #         'expl_attention_mask': [],
+    #         'expl_labels': []
+    #     }
+    #     for idx, dialogue in enumerate(examples['input']):
+    #         # Original dialogue tokenization
+    #         prompt = 'Summarize the following patient-doctor dialogue in a clinical note style. DIALOGUE:'
+    #         label = "SUMMARY: " + examples['label'][idx]
+    #         rationale = "Key information: " + examples['rationale'][idx]
+    #         rationale_prompt = 'Extract the key information from the dialogue:'
+    #         pred_input = tokenizer(prompt + dialogue + label, truncation=True, padding='max_length',
+    #                                    max_length=args.max_input_length)
+    #         expl_input = tokenizer(rationale_prompt+dialogue+rationale, truncation=True, padding='max_length',
+    #                                     max_length=args.max_input_length)
+    #         model_inputs['input_ids'].append(pred_input['input_ids'])
+    #         model_inputs['attention_mask'].append(pred_input['attention_mask'])
+    #         model_inputs['labels'].append(pred_input['input_ids'])
+    #         model_inputs['expl_input_ids'].append(expl_input['input_ids'])
+    #         model_inputs['expl_attention_mask'].append(expl_input['attention_mask'])
+    #         model_inputs['expl_labels'].append(expl_input['input_ids'])
     #
     #     return model_inputs
+
+    def tokenize_function(examples):
+        '''
+        tokenizer.decode(model_inputs["input_ids"][0], skip_special_tokens=True) : (input from train set)
+        'predict: Doctor: What brings you back into the clinic today, miss?
+        Patient: I came in for a refill of my blood pressure medicine.
+        Doctor: It looks like Doctor Kumar followed up with you last time regarding your hypertension, osteoarthritis, osteoporosis, hypothyroidism, allergic rhinitis and kidney stones. Have you noticed any changes or do you have any concerns regarding these issues? Patient: No. Doctor: Have you had any fever or chills, cough, congestion, nausea, vomiting, chest pain, chest pressure? Patient: No. Doctor: Great. Also, for our records, how old are you and what race do you identify yourself as? Patient: I am seventy six years old and identify as a white female.'
+        len(model_inputs["input_ids"]) = 1000
+
+        '''
+        model_inputs = tokenizer(['Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue:' + text for text in examples['input']], max_length=args.max_input_length, truncation=False,padding="max_length")
+        expl_model_inputs = tokenizer(['Extract the key information from the dialogue, Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=False,padding="max_length",)
+        model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
+        model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
+        # breakpoint()
+        with tokenizer.as_target_tokenizer():
+            label_output_encodings = tokenizer(examples['label'], max_length=args.max_input_length, truncation=True,padding="max_length")
+            rationale_output_encodings = tokenizer(examples['rationale'], max_length=args.max_input_length, truncation=True,padding="max_length")
+
+        model_inputs['labels'] = label_output_encodings['input_ids']
+        model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
+
+        return model_inputs
 
     print("这里mei有")
     tokenized_datasets = datasets.map(
@@ -145,7 +146,6 @@ def run(args):
         batched=True
     )
     compute_metrics = compute_metrics_equation(tokenizer)
-
     train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
 
 

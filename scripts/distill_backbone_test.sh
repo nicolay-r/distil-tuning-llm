@@ -2,8 +2,7 @@
 # Executes fine-tuning of the Flan-T5 XL model with specialized adapter configuration using DeepSpeed
 
 # Model, dataset, and configuration settings
-MODEL="
-microsoft/biogpt"
+MODEL="microsoft/biogpt"
 DATASET="medqa_d2n"
 CONFIG_FILE="../configs/ds_config_zero2.json"
 MODEL_TYPE="task_prefix"
@@ -18,8 +17,8 @@ GRAD_STEPS=1
 WEIGHT=1
 ALPHA=0.8
 ADDITIONAL_INFO="MeDistill_28_biogpt_ep10"
-
-
+GEN_MAX_LENGTH=1001
+MAX_INPUT_LENGTH=1000
 # Run the DeepSpeed training command
 cd ../examples  # 确保从 examples 目录执行
 
@@ -38,6 +37,8 @@ deepspeed distill_backbone.py \
     --deepspeed $CONFIG_FILE \
     --train_epochs $TRAIN_EPOCHS\
     --max_steps $MAX_STEPS \
+    --gen_max_len $GEN_MAX_LENGTH \
+    --max_input_length $MAX_INPUT_LENGTH \
     #
     # --bf16 \
     # --dynamic

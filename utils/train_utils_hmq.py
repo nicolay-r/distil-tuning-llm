@@ -28,7 +28,6 @@ from utils.data_utils import MEDQADatasetLoader
 from utils.head_utils import T5WithMLPHead
 from transformers import AutoModel, AutoTokenizer, AutoModelForCausalLM
 import torch
-from trl import SFTTrainer
 from transformers import TrainingArguments
 from transformers import BioGptTokenizer, BioGptForCausalLM
 
@@ -169,7 +168,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         deepspeed=args.deepspeed,
         save_total_limit=1,
         load_best_model_at_end=True,
-        metric_for_best_model="test_rouge_avg",
+        metric_for_best_model="eval_test_loss",
         greater_is_better=True,
         push_to_hub=True,
         # optimizers=(optimizer, scheduler),  # 注意这里传递的是一个元组(optimizer, scheduler)
@@ -185,7 +184,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         'eval_dataset': {'test': tokenized_datasets["valid"], },
         'data_collator': data_collator,
         'tokenizer': tokenizer,
-        'compute_metrics': compute_metrics,
+        # 'compute_metrics': compute_metrics,
     }
 
     trainer = TaskPrefixTrainer(**trainer_kwargs)

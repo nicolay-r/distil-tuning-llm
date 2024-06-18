@@ -40,7 +40,7 @@ from transformers import (
 from transformers.trainer_utils import get_last_checkpoint
 from transformers.utils import check_min_version, is_offline_mode, send_example_telemetry
 from transformers.utils.versions import require_version
-from transformers import BioGptTokenizer, BioGptForCausalLM
+from transformers import BioGptTokenizer, BioGptForCausalLM, AutoModelForCausalLM
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 check_min_version("4.27.0.dev0")
@@ -443,6 +443,14 @@ def main():
         use_auth_token=True if model_args.use_auth_token else None,
         padding_side = 'left'
     )
+
+    # tokenizer = AutoTokenizer.from_pretrained(
+    #     model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
+    #     use_fast=model_args.use_fast_tokenizer,
+    #     revision=model_args.model_revision,
+    #     use_auth_token=True if model_args.use_auth_token else None,
+    # )
+    tokenizer.pad_token = tokenizer.eos_token
     if model_args.model_type == 'peft':
         # from peft import PeftModel, PeftConfig
         # model_dir = model_args.checkpoint_dir
@@ -455,14 +463,14 @@ def main():
         model = PeftModel.from_pretrained(model, model_args.checkpoint_dir)
 
     else:
-        # model = AutoModelForSeq2SeqLM.from_pretrained(
+        # model = AutoModelForCausalLM.from_pretrained(
         #     model_args.model_name_or_path,
         #     from_tf=bool(".ckpt" in model_args.model_name_or_path),
         #     config=config,
         #     revision=model_args.model_revision,
         #     use_auth_token=True if model_args.use_auth_token else None,
         # )
-
+        # breakpoint()
         model = BioGptForCausalLM.from_pretrained(
             model_args.model_name_or_path,
             from_tf=bool(".ckpt" in model_args.model_name_or_path),
@@ -489,25 +497,25 @@ def main():
     # if model.config.decoder_start_token_id is None:
     #     raise ValueError("Make sure that `config.decoder_start_token_id` is correctly defined")
 
-    if (
-            hasattr(model.config, "max_position_embeddings")
-            and model.config.max_position_embeddings < data_args.max_source_length
-    ):
-        if model_args.resize_position_embeddings is None:
-            logger.warning(
-                "Increasing the model's number of position embedding vectors from"
-                f" {model.config.max_position_embeddings} to {data_args.max_source_length}."
-            )
-            model.resize_position_embeddings(data_args.max_source_length)
-        elif model_args.resize_position_embeddings:
-            model.resize_position_embeddings(data_args.max_source_length)
-        else:
-            raise ValueError(
-                f"`--max_source_length` is set to {data_args.max_source_length}, but the model only has"
-                f" {model.config.max_position_embeddings} position encodings. Consider either reducing"
-                f" `--max_source_length` to {model.config.max_position_embeddings} or to automatically resize the"
-                " model's position encodings by passing `--resize_position_embeddings`."
-            )
+    # if (
+    #         hasattr(model.config, "max_position_embeddings")
+    #         and model.config.max_position_embeddings < data_args.max_source_length
+    # ):
+    #     if model_args.resize_position_embeddings is None:
+    #         logger.warning(
+    #             "Increasing the model's number of position embedding vectors from"
+    #             f" {model.config.max_position_embeddings} to {data_args.max_source_length}."
+    #         )
+    #         model.resize_position_embeddings(data_args.max_source_length)
+    #     elif model_args.resize_position_embeddings:
+    #         model.resize_position_embeddings(data_args.max_source_length)
+    #     else:
+    #         raise ValueError(
+    #             f"`--max_source_length` is set to {data_args.max_source_length}, but the model only has"
+    #             f" {model.config.max_position_embeddings} position encodings. Consider either reducing"
+    #             f" `--max_source_length` to {model.config.max_position_embeddings} or to automatically resize the"
+    #             " model's position encodings by passing `--resize_position_embeddings`."
+    #         )
 
     prefix = data_args.source_prefix if data_args.source_prefix is not None else ""
     suffix = data_args.source_suffix if data_args.source_suffix is not None else ""
@@ -520,7 +528,8 @@ def main():
 
     # Temporarily set max_target_length for training.
     max_target_length = data_args.max_target_length
-    padding = "max_length" if data_args.pad_to_max_length else False
+    # padding = "max_length" if data_args.pad_to_max_length else False
+    padding = "max_length"
 
     if training_args.label_smoothing_factor > 0 and not hasattr(model, "prepare_decoder_input_ids_from_labels"):
         logger.warning(
@@ -548,10 +557,10 @@ def main():
 
         # Add global attention to start tokens (for models that use it)
         model_inputs["global_attention_mask"] = get_global_attention_mask(model_inputs["input_ids"], token_ids=[0])
-        # breakpoint()
-        # Tokenize targets with the `text_target` keyword argument
-        labels = tokenizer(text_target=targets, max_length=max_target_length, padding=padding, truncation=True)
 
+        # Tokenize targets with the `text_target` keyword argument
+        labels = tokenizer(text_target=targets, max_length=data_args.max_source_length, padding=padding, truncation=True)
+        # breakpoint()
         model_inputs["labels"] = labels["input_ids"]
         return model_inputs
 

@@ -3,7 +3,7 @@
 
 TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
 
-OUTPUT_DIR="./results/base-flan-t5-large"
+OUTPUT_DIR="./results/biogpt"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
 CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-30
@@ -20,7 +20,7 @@ CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
 # - Use the run=1 argument to ensure that the output file is named correctly
 #  har1/HealthScribe-Clinical_Note_Generator
 python3 ./run_summarization_old.py "./conf/base.yml" "./conf/taskA.yml" output_dir="$OUTPUT_DIR" \
-    model_name_or_path="google/flan-t5-large" \
+    model_name_or_path="Xiaolihai/biogpt_MeDistill_28_biogpt_ep10" \
     summary_column="dialogue" \
     train_file=null \
     validation_file=null \

@@ -110,8 +110,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
             model = T5WithMLPHead.from_pretrained(args.from_pretrained).to(device)
         else:
             # model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
-            # model = AutoModelForCausalLM.from_pretrained(args.from_pretrained)
-            model = BioGptForCausalLM.from_pretrained(args.from_pretrained)
+            model = AutoModelForCausalLM.from_pretrained(args.from_pretrained)
+            # model = BioGptForCausalLM.from_pretrained(args.from_pretrained)
 
 
 

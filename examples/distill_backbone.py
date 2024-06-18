@@ -71,13 +71,13 @@ def run(args):
         datasets = datasets.rename_column('output', 'label')
 
     #### Prepare datasets Prepare data for training
-    # tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
-
+    tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
+    tokenizer.pad_token = tokenizer.eos_token
 
     # tokenizer = AutoTokenizer.from_pretrained("BioMistral/BioMistral-7B")
-    tokenizer = BioGptTokenizer.from_pretrained(args.from_pretrained,padding_side = 'left')
+    # tokenizer = BioGptTokenizer.from_pretrained(args.from_pretrained,padding_side = 'left')
     # tokenizer = BioGptTokenizer.from_pretrained("microsoft/biogpt", padding_side='left')
-    tokenizer.pad_token = tokenizer.eos_token
+    # tokenizer.pad_token = tokenizer.eos_token
 
 
     # def tokenize_function(examples):
@@ -125,8 +125,8 @@ def run(args):
         len(model_inputs["input_ids"]) = 1000
 
         '''
-        model_inputs = tokenizer(['Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue:' + text for text in examples['input']], max_length=args.max_input_length, truncation=False,padding="max_length")
-        expl_model_inputs = tokenizer(['Extract the key information from the dialogue, Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=False,padding="max_length",)
+        model_inputs = tokenizer(['Summarize the following patient-doctor dialogue in a clinical note style. Dialogue:' + text for text in examples['input']], max_length=args.max_input_length, truncation=True,padding="max_length")
+        expl_model_inputs = tokenizer(['Extract the key information from the dialogue, Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True,padding="max_length",)
         model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
         model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
         # breakpoint()

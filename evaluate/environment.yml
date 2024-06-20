@@ -1,4 +1,4 @@
-name: evaluate
+name: eval
 channels:
   - defaults
   # - conda-forge
@@ -27,5 +27,6 @@ dependencies:
       - thefuzz[speedup]
       - git+https://github.com/huggingface/transformers.git
       - git+https://github.com/google-research/bleurt.git
+      - MedCat
       # 如果需要安装peft的最新版本，可以取消下面这行的注释
       # - git+https://github.com/huggingface/peft.git

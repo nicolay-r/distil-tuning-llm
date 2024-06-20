@@ -1,9 +1,9 @@
 #!/bin/bash
 # Submits our Flan-T5 large based approach for task A
 
-TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
+TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test1.json"  # Provided to the script by the submission system
 
-OUTPUT_DIR="./results/MeDistill_wang2_t5"
+OUTPUT_DIR="./results/no_trainer/wang"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
 # CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
 # /root/distill-d2n/ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-30
@@ -22,7 +22,7 @@ OUTPUT_DIR="./results/MeDistill_wang2_t5"
 python3 ./run_summarization_no_trainer.py \
     --model_name_or_path "wanglab/task-a-flan-t5-large-run-2" \
     --validation_file "$TEST_FP" \
-    --max_length 1024 \
+    --max_length 512 \
     --batch_size 2 \
     --output_dir "$OUTPUT_DIR" \
     # model_type=task_prefix \

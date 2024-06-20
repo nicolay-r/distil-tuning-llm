@@ -114,6 +114,8 @@ if __name__ == "__main__" :
 
     # Only need id and prediction from df_predictions
     full_df = pd.read_csv(f"{args.fn_eval_data}/generated_predictions_df.csv") 
+    # full_df = pd.read_csv(f"{args.fn_eval_data}/updated_predictions_df.csv") 
+    
     # 
     # full_df = df_references.merge(df_predictions[[args.id_column, 'prediction']], on=args.id_column)
     full_df['dataset'] = 0

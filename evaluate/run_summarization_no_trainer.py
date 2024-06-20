@@ -7,6 +7,8 @@ import torch
 from torch.utils.data import DataLoader
 import re
 import os
+from numpy import *
+
 
 
 def parse_args():
@@ -47,7 +49,7 @@ def main():
     
     # Load model and tokenizer
     model = AutoModelForSeq2SeqLM.from_pretrained(args.model_name_or_path)
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
+    tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
     model.eval()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
@@ -60,7 +62,7 @@ def main():
     def collate_fn(batch):
         inputs = [x['input'] for x in batch]
         targets = [x['output'] for x in batch]
-        inputs = tokenizer(inputs, padding="max_length", truncation=True, max_length=512, return_tensors="pt")
+        inputs = tokenizer(inputs, padding="max_length", truncation=True, max_length=1024, return_tensors="pt") #max_length是512或者1024都没太大差别
         with tokenizer.as_target_tokenizer():
             labels = tokenizer(targets, padding="max_length", truncation=True, max_length=args.max_length, return_tensors="pt")
         inputs['labels'] = labels['input_ids']
@@ -81,7 +83,16 @@ def main():
         attention_mask = batch['attention_mask'].to(device)
         
         with torch.no_grad():
-            outputs = model.generate(input_ids, attention_mask=attention_mask, max_length=args.max_length)
+            outputs = model.generate(input_ids, 
+                                     attention_mask=attention_mask, 
+                                     max_length=args.max_length,
+                                     top_p=0.9,  # Apply nucleus sampling with top-p
+                                     do_sample=True,  # Enable sampling
+                                     repetition_penalty=1.2,
+                                     temperature=0.7,
+                                     
+                                     
+                                    )
         
         predictions = tokenizer.batch_decode(outputs, skip_special_tokens=True)
         predictions = postprocess_text(predictions)  # Apply postprocessing here
@@ -101,12 +112,12 @@ def main():
     # Save predictions to text file
     os.makedirs(args.output_dir, exist_ok=True)
 
-    with open(f"{args.output_dir}/predictions.txt", "w") as f:
+    with open(f"{args.output_dir}/generated_predictions.txt", "w") as f:
         for pred in predictions_text:
             f.write(pred + "\n")
 
     # Save inputs, outputs, predictions to CSV
-    pd.DataFrame(results).to_csv(f"{args.output_dir}/predictions.csv", index=False)
+    pd.DataFrame(results).to_csv(f"{args.output_dir}/generated_predictions_df.csv", index=False)
 
     # Calculate and save metrics
     rouge_result = rouge.compute()
@@ -117,13 +128,16 @@ def main():
         "rouge2": rouge_result["rouge2"].mid.fmeasure,
         "rougeL": rouge_result["rougeL"].mid.fmeasure,
         "rougeLsum": rouge_result["rougeLsum"].mid.fmeasure,
-        "bertscore_precision": bert_result["precision"],
-        "bertscore_recall": bert_result["recall"],
-        "bertscore_f1": bert_result["f1"],
+        "bertscore_precision": mean(bert_result["precision"]),
+        "bertscore_recall": mean(bert_result["recall"]),
+        "bertscore_f1": mean(bert_result["f1"]),
         "bleurt": bleurt_result["scores"][0]
     }
     with open(f"{args.output_dir}/all_results.json", "w") as f:
         json.dump(final_scores, f, indent=4)
+        
+
 
 if __name__ == "__main__":
     main()
+    

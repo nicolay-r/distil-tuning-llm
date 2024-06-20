@@ -591,15 +591,19 @@ def main():
         else data_args.val_max_target_length
     )
     
-    num_beams = data_args.num_beams if data_args.num_beams is not None else training_args.generation_num_beams
+    # num_beams = data_args.num_beams if data_args.num_beams is not None else training_args.generation_num_beams
+    num_beams = 3
     
     
 
     if training_args.do_predict:
         logger.info("*** Predict ***")
         # breakpoint()
+        # predict_results = trainer.predict(
+        #     predict_dataset, metric_key_prefix="predict", max_length=max_length, num_beams=num_beams
+        # )
         predict_results = trainer.predict(
-            predict_dataset, metric_key_prefix="predict", max_length=max_length, num_beams=num_beams
+            predict_dataset, max_length=512, num_beams=num_beams
         )
         metrics = predict_results.metrics
         max_predict_samples = (

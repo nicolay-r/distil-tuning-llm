@@ -21,6 +21,8 @@ ADDITIONAL_INFO="Additional-Notes"
 # Run the DeepSpeed training command
 cd ../examples  # 确保从 examples 目录执行
 
+export DS_SKIP_CUDA_CHECK=1
+
 deepspeed distill_finetune.py \
     --from_pretrained $MODEL \
     --dataset $DATASET \

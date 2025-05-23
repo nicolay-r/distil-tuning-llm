@@ -6,32 +6,6 @@ from utils.metrics import compute_metrics_equation
 from utils.train_utils import train_and_evaluate
 from transformers import AutoTokenizer
     
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
-
-def send_email(subject, message, to_email):
-    with open("../app_keys/k.txt",'r') as k:
-        psw = k.read()
-    k.close()
-    from_email = 'rosaliu.567@gmail.com'
-    password = psw
-    msg = MIMEMultipart()
-    msg['From'] = from_email
-    msg['To'] = to_email
-    msg['Subject'] = subject
-    
-    body = MIMEText(message, 'plain')
-    msg.attach(body)
-    
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(from_email, password)
-    text = msg.as_string()
-    server.sendmail(from_email, to_email, text)
-    server.quit()
-
 
 def run(args):
 

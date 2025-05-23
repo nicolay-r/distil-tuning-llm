@@ -31,7 +31,6 @@ from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskP
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def get_config_dir(args):
-    # breakpoint()
     path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
     return path
 
@@ -61,30 +60,19 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
             peft_config = AdaLoraConfig(
                 # peft_type="ADALORA",
                 # r=2,
-                init_r=4,         #初始压缩率，表示在训练开始时模型参数的压缩程度。
-                target_r=2,        # 目标压缩率，表示训练结束时希望达到的模型参数的压缩程度。
-                beta1=0.85,        # 优化器的第一个动量参数，常用于计算梯度的指数衰减平均，有助于稳定训练过程。
-                beta2=0.85,        # 优化器的第二个动量参数，用于计算梯度平方的指数衰减平均，通常用于自适应学习率算法。
-                tinit=20,         # 训练开始阶段，初始阶段的训练时长或迭代次数。
-                tfinal=1000,       # nvidi训练结束阶段，最终阶段的训练时长或迭代次数。
-                deltaT=10,         # 每隔多少训练步骤更新一次压缩率，用于控制压缩率变化的频率。
-                lora_alpha=32,     # LoRA扩展的秩数，控制了低秩适应中秩的大小，影响模型调整的幅度。
-                lora_dropout=0.05,  # LoRA层中的dropout比率，用于防止过拟合，增加模型的泛化能力。
-                task_type=TaskType.SEQ_2_SEQ_LM, # 指定任务类型为序列到序列的语言模型，适用于需要生成序列输出的任务，如文本摘要。
-                inference_mode=False, # 指定是否为推理模式，False表示当前配置是用于训练。在推理时通常需要改为True。
+                init_r=4,                           #初始压缩率，表示在训练开始时模型参数的压缩程度。
+                target_r=2,                         # 目标压缩率，表示训练结束时希望达到的模型参数的压缩程度。
+                beta1=0.85,                         # 优化器的第一个动量参数，常用于计算梯度的指数衰减平均，有助于稳定训练过程。
+                beta2=0.85,                         # 优化器的第二个动量参数，用于计算梯度平方的指数衰减平均，通常用于自适应学习率算法。
+                tinit=20,                           # 训练开始阶段，初始阶段的训练时长或迭代次数。
+                tfinal=1000,                        # nvidi训练结束阶段，最终阶段的训练时长或迭代次数。
+                deltaT=10,                          # 每隔多少训练步骤更新一次压缩率，用于控制压缩率变化的频率。
+                lora_alpha=32,                      # LoRA扩展的秩数，控制了低秩适应中秩的大小，影响模型调整的幅度。
+                lora_dropout=0.05,                  # LoRA层中的dropout比率，用于防止过拟合，增加模型的泛化能力。
+                task_type=TaskType.SEQ_2_SEQ_LM,    # 指定任务类型为序列到序列的语言模型，适用于需要生成序列输出的任务，如文本摘要。
+                inference_mode=False,               # 指定是否为推理模式，False表示当前配置是用于训练。在推理时通常需要改为True。
                 target_modules=target_modules,
             )       
-        elif args.peft_type == 'multitask':
-            from peft import get_peft_model, MultitaskPromptTuningConfig, TaskType, MultitaskPromptTuningInit
-            peft_config = MultitaskPromptTuningConfig(
-                tokenizer_name_or_path=args.from_pretrained,
-                num_tasks=2,
-                task_type=TaskType.SEQ_2_SEQ_LM,
-                prompt_tuning_init=MultitaskPromptTuningInit.TEXT,
-                num_virtual_tokens=50,
-                num_transformer_submodules=1,
-                prompt_tuning_init_text="Please summarize this dialogue: ",
-            )
         elif args.peft_type =="prefix":
             from peft import get_peft_model, PrefixEncoder, PrefixTuningConfig
 

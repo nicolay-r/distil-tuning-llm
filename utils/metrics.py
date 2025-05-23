@@ -24,16 +24,6 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 nltk.download("punkt", quiet=True)
 
-# try:
-#     nltk.data.find("tokenizers/punkt")
-# except (LookupError, OSError):
-#     if is_offline_mode():
-#         raise LookupError(
-#             "Offline mode: run this script without TRANSFORMERS_OFFLINE first to download nltk data files"
-#         )
-#     with FileLock(".lock") as lock:
-#         nltk.download("punkt", quiet=True)
-
 
 def compute_text_acc(preds, labels):
     return np.mean(np.array(preds) == np.array(labels))

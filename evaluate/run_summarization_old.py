@@ -11,17 +11,13 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-import torch
 
 
 import datasets
-import evaluate
-import nltk  # Here to have a nice missing dependency error message early on
 import numpy as np
 import pandas as pd
 import transformers
 from datasets import load_dataset
-from filelock import FileLock
 from omegaconf import OmegaConf
 from transformers import (
     AutoConfig,
@@ -36,10 +32,9 @@ from transformers import (
     Seq2SeqTrainer,
     Seq2SeqTrainingArguments,
     set_seed,
-    T5ForConditionalGeneration
 )
 from transformers.trainer_utils import get_last_checkpoint
-from transformers.utils import check_min_version, is_offline_mode, send_example_telemetry
+from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
 
 
@@ -594,8 +589,6 @@ def main():
     # num_beams = data_args.num_beams if data_args.num_beams is not None else training_args.generation_num_beams
     num_beams = 3
     
-    
-
     if training_args.do_predict:
         logger.info("*** Predict ***")
         # breakpoint()
@@ -650,41 +643,6 @@ def main():
                     writer.write("\n".join(pred_result))
 
 
-
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
-def send_email(subject, message, to_email):
-    from_email = 'rosaliu.567@gmail.com'
-    password = 'jdrb ueoq ixik tuoa'
-    # jdrb ueoq ixik tuoa
-
-    
-    msg = MIMEMultipart()
-    msg['From'] = from_email
-    msg['To'] = to_email
-    msg['Subject'] = subject
-    
-    body = MIMEText(message, 'plain')
-    msg.attach(body)
-    
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(from_email, password)
-    text = msg.as_string()
-    server.sendmail(from_email, to_email, text)
-    server.quit()
-    
 if __name__ == "__main__":
     main()
-    # to_email = "rosaliu.567@gmail.com"
-    # try:  
-    #     main()
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型评估完成', '您的模型评估已完成。', to_email)
-    # except Exception as e:
-    #     print(e)
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型评估出错', f'您的模型评估时遇到问题: {e}', to_email)  
-       
+

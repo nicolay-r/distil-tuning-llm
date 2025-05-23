@@ -44,50 +44,8 @@ def set_wandb(trainer_kwargs, args):
 
 def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics):
     set_seed(run)
-#     breakpoint()
-    if args.model_type == 'peft':
-        from peft import get_peft_model
+    if args.model_type == 'task_prefix':
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
-        if args.peft_type == 'adalora':
-            from peft import AdaLoraConfig, PeftConfig, TaskType, get_peft_model  
-            # 微调所有线性层
-            pattern = r'\((\w+)\): Linear'
-            linear_layers = re.findall(pattern, str(model.modules))
-            target_modules = list(set(linear_layers))
-            # ['q', 'wi_0', 'lm_head', 'k', 'v', 'o', 'wi_1', 'wo']
-
-            peft_config = AdaLoraConfig(
-                # peft_type="ADALORA",
-                # r=2,
-                init_r=4,                           #初始压缩率，表示在训练开始时模型参数的压缩程度。
-                target_r=2,                         # 目标压缩率，表示训练结束时希望达到的模型参数的压缩程度。
-                beta1=0.85,                         # 优化器的第一个动量参数，常用于计算梯度的指数衰减平均，有助于稳定训练过程。
-                beta2=0.85,                         # 优化器的第二个动量参数，用于计算梯度平方的指数衰减平均，通常用于自适应学习率算法。
-                tinit=20,                           # 训练开始阶段，初始阶段的训练时长或迭代次数。
-                tfinal=1000,                        # nvidi训练结束阶段，最终阶段的训练时长或迭代次数。
-                deltaT=10,                          # 每隔多少训练步骤更新一次压缩率，用于控制压缩率变化的频率。
-                lora_alpha=32,                      # LoRA扩展的秩数，控制了低秩适应中秩的大小，影响模型调整的幅度。
-                lora_dropout=0.05,                  # LoRA层中的dropout比率，用于防止过拟合，增加模型的泛化能力。
-                task_type=TaskType.SEQ_2_SEQ_LM,    # 指定任务类型为序列到序列的语言模型，适用于需要生成序列输出的任务，如文本摘要。
-                inference_mode=False,               # 指定是否为推理模式，False表示当前配置是用于训练。在推理时通常需要改为True。
-                target_modules=target_modules,
-            )       
-        elif args.peft_type =="prefix":
-            from peft import get_peft_model, PrefixEncoder, PrefixTuningConfig
-
-            peft_config = PrefixTuningConfig(
-                peft_type="PREFIX_TUNING",
-                task_type="SEQ_2_SEQ_LM",
-                num_virtual_tokens=20,
-            )
-
-        model = get_peft_model(model, peft_config)
-        model.print_trainable_parameters()
-        # breakpoint()
-    elif args.model_type == 'task_prefix':
-        model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
-
-        
     else:
         model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained) # args.from_pretrained通常是一个字符串，指向预训练模型的存储位置，可以是本地路径或者在线模型库的标识符
    
@@ -172,10 +130,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     if args.model_type == 'task_prefix':
         trainer = TaskPrefixTrainer(**trainer_kwargs)
         trainer.optimizers = optimizers
-
-    elif args.model_type == 'peft':
-        # trainer = AdptTrainer(**trainer_kwargs)
-        pass
 
     elif args.model_type == 'standard':
         trainer_kwargs.pop('alpha')

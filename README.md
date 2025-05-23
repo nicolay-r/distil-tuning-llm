@@ -17,7 +17,7 @@ unzip datasets.zip
 
 ## Args usages
 - `--from_pretrained`: `google/t5-v1_1-small`, `google/t5-v1_1-base`, `google/t5-v1_1-large`, `google/t5-v1_1-xxl`
-- `--dataset`: `medqa_d2n`, `medqa_n2d`
+- `--dataset`: `multiclinsum`
 
 - `--alpha`: Task weight for multi-task training. Loss = alpha * label_prediction_loss + (1 - alpha) * rationale_generation_loss
 - `--model_type`:
@@ -34,9 +34,10 @@ unzip datasets.zip
 
 ## Finetuning
 
-- Distilling step-by-step:
+- Distilling step-by-step. 
+  - Navigate to the `scripts` folder and launch:
 ```
-sh ./script/distill_ft_ds.sh
+./distill_ft_ds.sh
 ```
 
 

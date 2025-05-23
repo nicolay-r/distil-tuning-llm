@@ -1,19 +1,15 @@
 import sys
 sys.path.append("..")  # 添加上层目录到路径中，使得 utils 模块可以被找到
-from utils.data_utils import MEDQADatasetLoader
+from utils.data_utils import MEDMultilingual2025DatasetLoader
 import argparse
-from datasets import DatasetDict, concatenate_datasets
-from transformers import AutoTokenizer
-# from ..utils.data_utils import MEDQADatasetLoader
-from utils.metrics import compute_text_acc, compute_equation_acc, compute_metrics_text, compute_metrics_equation, compute_metrics_text_aux, compute_metrics_equation_aux
+from utils.metrics import compute_metrics_equation
 from utils.train_utils import train_and_evaluate
-import wandb
-from wandb import AlertLevel
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoTokenizer
     
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+
 
 def send_email(subject, message, to_email):
     with open("../app_keys/k.txt",'r') as k:
@@ -38,20 +34,17 @@ def send_email(subject, message, to_email):
 
 
 def run(args):
+
     #### Prepare datasets
-    
-    dataset_loader = MEDQADatasetLoader(args.dataset, args.model_type)
+    dataset_loader = MEDMultilingual2025DatasetLoader(args.dataset)
 
     # 加载数据
     datasets = dataset_loader.load_from_json_rationale()
-    
     
     # 整理数据集的label和rationale
     train_llm_rationales, train_llm_labels = dataset_loader.load_rationale_data(split='train')
     # test_llm_rationales, test_llm_labels = dataset_loader.load_rationale_data(split='test')
     valid_llm_rationales, valid_llm_labels = dataset_loader.load_rationale_data(split='valid')
-
-    
 
     # if args.llm is not None: # 给数据集添加labels,
     datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
@@ -62,7 +55,6 @@ def run(args):
     datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
     datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
 
-
     # if args.llm is not None: # 重命名rationale
     if 'rationale' in datasets['train'].column_names:
         datasets = datasets.remove_columns('rationale')
@@ -70,7 +62,6 @@ def run(args):
     if 'output' in datasets['train'].column_names:
         datasets = datasets.rename_column('output', 'label')
         
-
     #### Prepare datasets Prepare data for training
     tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
     # tokenizer.pad_token = tokenizer.eos_token
@@ -106,13 +97,11 @@ def run(args):
     )
     compute_metrics = compute_metrics_equation(tokenizer)
 
-
     train_and_evaluate(args, args.run, tokenizer, tokenized_datasets, compute_metrics)
 
 
 if __name__ == '__main__':
-    
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, required=True)
     parser.add_argument('--subsample', type=float, default=1.0)
@@ -126,7 +115,6 @@ if __name__ == '__main__':
     parser.add_argument('--run', type=int, default=42)
     parser.add_argument('--from_pretrained', type=str, default='google/t5-v1_1-base')
     parser.add_argument('--label_type', type=str, default='gt')
-    # parser.add_argument('--llm', type=str, default='palm')
     parser.add_argument('--max_input_length', type=int, default=1024)
     parser.add_argument('--grad_steps', type=int, default=1)
     parser.add_argument('--local_rank', type=int, default=-1)
@@ -140,29 +128,11 @@ if __name__ == '__main__':
     parser.add_argument("--deepspeed", type=str, default=None, help="Path to deepspeed config file.")
     parser.add_argument('--weight', type=int, default=1)
     parser.add_argument('--train_epochs', type=int, default=10)
-    
-    
     parser.add_argument('--with_head', action='store_true')
-    
     parser.add_argument('--cos_sim', action='store_true')
-    
     parser.add_argument('--dynamic', action='store_true')
     parser.add_argument('--hierarchical', action='store_true')
-    
 
     args = parser.parse_args()
-    
-    
+
     run(args)
-    
-    # to_email = "rosaliu.567@gmail.com"
-    # send_email('模型训练开始', f'您的模型{args.addi_info}已经开始训练。', to_email)
-    # try:
-    #     run(args)
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型训练完成', f'您的模型{args.addi_info}已经成功训练完成。', to_email)
-    # except Exception as e:
-    #     print(e)
-    #     # to_email = "rosaliu.567@gmail.com"
-    #     send_email('模型训练出错', f'您的模型训练时遇到问题: {e}', to_email)
-       

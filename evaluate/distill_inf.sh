@@ -4,11 +4,8 @@
 TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
 
 OUTPUT_DIR="./results/T5-LARGE"
-# /root/distill-d2n/ckpts/task_prefix/flan-t5-large_dstl_xl/checkpoint-250/pytorch_model.bin
 CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
-# /root/distill-d2n/ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-30
-# /root/distill-d2n/ckpts/task_prefix/flan-t5-large_distill_large_28/checkpoint-10000/special_tokens_map.json
-# /root/distill-d2n/ckpts/task_prefix/flan-t5-large_distill_large/checkpoint-9000/pytorch_model.bin
+
 
 # Notes:
 # - The model will be downloaded from the HuggingFace model hub

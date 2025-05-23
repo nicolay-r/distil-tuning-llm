@@ -23,7 +23,6 @@ from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, get_linear_sc
 from transformers import T5ForConditionalGeneration
 from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
-from utils.data_utils import MEDQADatasetLoader
 from utils.head_utils import T5WithMLPHead
 import torch
 
@@ -139,7 +138,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         num_train_epochs=args.train_epochs,
         report_to = "none",
         remove_unused_columns = False,      # 是否移除未使用的列，默认为False，即保留所有列
-        evaluation_strategy = 'steps',      # 评估策略，这里设置为“steps”，表示按步数进行评估
+        eval_strategy='steps',            # 评估策略，这里设置为“steps”，表示按步数进行评估
         eval_steps=args.eval_steps,         # 每隔多少步进行一次评估
         save_strategy='steps',                 # 保存策略
         save_steps=args.eval_steps,         # 每隔多少步保存一次模型
@@ -160,7 +159,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         load_best_model_at_end=True,
         metric_for_best_model="test_rouge_avg",
         greater_is_better=True,
-        push_to_hub=True,
+        push_to_hub=False,
         # optimizers=(optimizer, scheduler),  # 注意这里传递的是一个元组(optimizer, scheduler)
     )
     # breakpoint()
@@ -216,6 +215,5 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     wandb.watch(model, log = 'gradients')
 
     trainer.train()
-    trainer.push_to_hub()
     wandb.finish()
     

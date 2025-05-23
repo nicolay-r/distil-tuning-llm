@@ -15,13 +15,15 @@
 
 import json
 
-from datasets import Dataset, DatasetDict, load_dataset
+from datasets import load_dataset
 
 
 DATASET_ROOT = 'datasets'
 
-class MEDQADatasetLoader(object):
-    def __init__(self, dataname, model_type):
+
+class MEDMultilingual2025DatasetLoader(object):
+
+    def __init__(self, dataname):
         self.dataset_name = dataname
         self.data_root = DATASET_ROOT
         self.dataset_version = None
@@ -31,36 +33,21 @@ class MEDQADatasetLoader(object):
             'valid': 'valid'
             # 'test': 'test',
         }
-        # self.batch_size = 500
-        # self.train_batch_idxs = range(2)
-        # self.test_batch_idxs = range(1)
-        self.model_type = model_type
 
-    def load_from_json(self):
-        data_files = {
-            'train': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
-            'valid': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_valid.json',
-        }
-        datasets = load_dataset('json', data_files=data_files)       
-
-        return datasets
-
-    
     def load_from_json_rationale(self):
         data_files = {
-            'train': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
-            'valid': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_valid.json',
+            'train': f'../{self.data_root}/{self.dataset_name}/{self.dataset_name}_train.json',
+            'valid': f'../{self.data_root}/{self.dataset_name}/{self.dataset_name}_valid.json',
         }
         # breakpoint()
         datasets = load_dataset('json', data_files=data_files) 
         # breakpoint()
         return datasets
 
-    
     def load_rationale_data(self, split):
         labels = list()
         rationales = list()
-        with open(f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_{split}.json') as f:
+        with open(f'../{self.data_root}/{self.dataset_name}/{self.dataset_name}_{split}.json') as f:
             outputs = json.load(f)
             
         for output in outputs:
@@ -71,40 +58,4 @@ class MEDQADatasetLoader(object):
         # breakpoint()
         return rationales, labels
 
-    def load_from_json_multi(self):
-        data_files_train = {
-            'train': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
-            # 'valid': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_valid.json',
-        }
-        data_files_valid = {
-            # 'train': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_train.json',
-            'valid': f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_valid.json',
-        }
-        datasets_train = load_dataset('json', data_files=data_files_train)
-        datasets_valid = load_dataset('json', data_files=data_files_valid)
-        datasets = DatasetDict({
-            'train': datasets_train['train'],  # or whatever split your datasets_train is under
-            'valid': datasets_valid['valid']  # or whatever split your datasets_valid is under
-        })
-
-        # breakpoint()
-        return datasets
-
-    
-    def load_multi_rationale(self, split):
-        labels = list()
-        rationales = list()
-        with open(f'../{self.data_root}/{self.dataset_name}/{self.model_type}/{self.dataset_name}_{split}.json') as f:
-            outputs = json.load(f)
-        # breakpoint()
-        i = 0
-        for output in outputs:
-            # print(i)
-            rationale = output['rationale']
-            label = output['output']
-            rationales.append(rationale)
-            labels.append(label)
-            i+=1
-        # breakpoint()
-        return rationales, labels
     

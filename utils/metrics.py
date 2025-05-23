@@ -17,7 +17,7 @@ import numpy as np
 import evaluate
 import torch
 import nltk
-from transformers.utils import check_min_version, is_offline_mode, send_example_telemetry
+from transformers.utils import is_offline_mode
 import wandb
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -70,22 +70,6 @@ def compute_metrics_text(tokenizer):
         return {'accuracy': acc}
 
     return compute_metrics
-
-
-def compute_metrics_text_aux(tokenizer):
-    def compute_metrics(eval_pred):
-        predictions, labels = eval_pred
-        decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
-
-        labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
-        decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
-
-        acc = np.mean(np.array(decoded_preds) == np.array(decoded_labels))
-
-        return {'accuracy': acc}
-
-    return compute_metrics
-
 
 
 def compute_metrics_equation(tokenizer):
@@ -221,62 +205,4 @@ def compute_metrics_equation(tokenizer):
         result["mean_reference_len"] = np.mean(reference_lens)
         wandb.log(result)
         return result
-    return compute_metrics
-
-
-
-
-
-def compute_metrics_equation_aux(tokenizer):
-
-    
-    def compute_metrics(eval_pred):
-        predictions, labels = eval_pred
-        # breakpoint()
-        # preds = np.where(predictions[0] != -100,predictions[0],tokenizer.pad_token_id)
-        ps = np.where(predictions != -100,predictions,tokenizer.pad_token_id)
-        decoded_preds = tokenizer.batch_decode(ps, skip_special_tokens=True)
-        
-        ls = np.where(labels != -100, labels, tokenizer.pad_token_id)
-        # preds = np.where(preds != -100,preds,tokenizer.pad_token_id)
-        decoded_labels = tokenizer.batch_decode(ls, skip_special_tokens=True)
-        # breakpoint()
-        # preds = list()
-        # for pred in decoded_preds:    
-        #     preds.append(eval_equation(pred))
-
-        # lbs = list()
-        # for label in decoded_labels:    
-        #     lbs.append(eval_equation(label))
-        # breakpoint()
-        # acc = np.mean(np.array(preds) == np.array(labels))
-        scorers = {
-            'rouge': (
-                evaluate.load('rouge'),
-                {'use_aggregator': False},
-                ['rouge1', 'rouge2', 'rougeL', 'rougeLsum'],
-                ['rouge1', 'rouge2', 'rougeL', 'rougeLsum']
-            ),
-            # 'bert_scorer': (
-            #     evaluate.load('bertscore', device=device),
-            #     {'model_type': 'microsoft/deberta-xlarge-mnli', 'device':device},
-            #     ['precision', 'recall', 'f1'],
-            #     ['bertscore_precision', 'bertscore_recall', 'bertscore_f1']
-            # ),
-            # 'bluert': (
-            #     evaluate.load('bleurt', config_name='BLEURT-20', device=device),
-            #     {},
-            #     ['scores'],
-            #     ['bleurt']
-            # ),
-        }
-        all_scores = {}
-        for name, (scorer, kwargs, keys, save_keys) in scorers.items():
-            scores = scorer.compute(references=decoded_labels, predictions=decoded_preds, **kwargs)
-            for score_key, save_key in zip(keys, save_keys):
-                all_scores[save_key] = scores[score_key]
-        # breakpoint()
-        acc = np.mean(all_scores['rouge1'])
-        return {'accuracy': acc}
-    
     return compute_metrics

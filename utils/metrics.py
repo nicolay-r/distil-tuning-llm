@@ -280,5 +280,3 @@ def compute_metrics_equation_aux(tokenizer):
         return {'accuracy': acc}
     
     return compute_metrics
-    
-    return compute_metrics

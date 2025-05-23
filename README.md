@@ -2,10 +2,7 @@
 
 This is the project of Medical distillation for `dialog2note` task.
 
-This repository represent a code for paper [Enhancing Medical Dialogue Summarization: A MediExtract Distillation Framework](https://www.computer.org/csdl/proceedings-article/bibm/2024/10822640/23oo4I9Ps8E)
-at BIBM-2024.
-
-## Environment Setup
+## Setup
 - Setup Conda environment for finetuing:
 ```
 conda env create -f environment.yml
@@ -16,15 +13,11 @@ cd ./evaluate
 conda env create -n eval python=3.9 -y
 pip install -r requirements.txt   
 ```
-## Dataset preparation
 
-- [MTS-Dialog Dataset](https://github.com/abachaa/MTS-Dialog)
-- [ACI-Bench Dataset](https://github.com/wyim/aci-bench)
-
-<!-- - Extract datasets to `datasets/`:
+## Datasets
 ```
 unzip datasets.zip
-``` -->
+``` 
 
 ## Args usages
 - `--from_pretrained`: `google/t5-v1_1-small`, `google/t5-v1_1-base`, `google/t5-v1_1-large`, `google/t5-v1_1-xxl`
@@ -44,22 +37,12 @@ unzip datasets.zip
 
 
 ## Finetuning
-- Standard finetuning:
-```
-sh ./script/stf_ds.sh
-```
-
 
 - Distilling step-by-step:
 ```
 sh ./script/distill_ft_ds.sh
 ```
 
-
-- Peft distillation:
-```
-sh ./script/adpt_ft_ds.sh
-```
 
 ## Inference
 
@@ -68,14 +51,9 @@ sh ./script/adpt_ft_ds.sh
 sh ./evaluate/distill_inf.sh
 ```
 
-- For Peft distillation models
-```
-sh ./evaluate/adpt_inf.sh
-```
-
 ## Evaluation
 
-For convinience of comparison, we adopt the evaluation methods from [MEDQA 2023 challenge](https://github.com/abachaa/MEDIQA-Chat-2023)
+For convenience of comparison, we adopt the evaluation methods from [MEDQA 2023 challenge](https://github.com/abachaa/MEDIQA-Chat-2023)
 ```
 python eval_sum_medqa23.py --task taskA --fn_eval_data "./test2/10000/generated_predictions_df.csv"
 ```

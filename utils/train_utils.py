@@ -195,23 +195,14 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
 
     # breakpoint()
     if args.model_type == 'task_prefix':
-        if args.cos_sim:
-            trainer = TaskPrefix_COS(**trainer_kwargs)
-        elif args.with_head:
-            trainer = TaskPrefixTrainerWithHead(**trainer_kwargs)
-        elif args.dynamic:
-            trainer = DynamicLossTrainer(**trainer_kwargs)
-        elif args.hierarchical:
-            trainer =TaskPrefix_hierarchical(**trainer_kwargs)
-        else:
-            trainer = TaskPrefixTrainer(**trainer_kwargs)
-            trainer.optimizers = optimizers
+        trainer = TaskPrefixTrainer(**trainer_kwargs)
+        trainer.optimizers = optimizers
     elif args.model_type == 'CoT':
         trainer = CoTTrainer(**trainer_kwargs)
         
     elif args.model_type == 'peft':
         # trainer = AdptTrainer(**trainer_kwargs)
-         trainer = TaskPrefixTrainer(**trainer_kwargs)
+        trainer = TaskPrefixTrainer(**trainer_kwargs)
         
     elif args.model_type == 'standard':
         trainer_kwargs.pop('alpha')

@@ -359,55 +359,6 @@ class TaskPrefix_COS(Seq2SeqTrainer):
         )
 
 
-class CoTTrainer(Seq2SeqTrainer):
-    def __init__(self, alpha, data_collator=None,**kwargs):
-        super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。
-        self.alpha = alpha
-        # self.output_rationale = output_rationale
-        # self.weight = weight
-        self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
-
-
-    
-    def _cot_steps(self, model, inputs):
-        kw_output = model.generate(**inputs['pred'], max_new_tokens=1024)[0]
-        # breakpoint()
-        input_2 = tokenizer.decode(inputs['expl']['input_ids'][0], skip_special_tokens=True)
-        
-        kw_input_ids = tokenizer.batch_encode_plus([f'{input_2}{kw_output}\nSUMMARY\n'],padding=True, return_tensors='pt',truncation=True,max_length= 1024).to(device)
-        # x = tokenizer.batch_encode_plus([f'{kw_input[0]}{kw_output}{kw_input[1]}'], max_length=1024, padding=True, return_tensors='pt')
-        
-        kw_dict = {
-            'input_ids':kw_input_ids["input_ids"],
-            'attention_mask': kw_input_ids['attention_mask'],
-            'labels': inputs['expl']['labels'],
-            'decoder_input_ids': inputs['expl']['decoder_input_ids'],
-        }
-        return kw_dict
-    
-    def compute_loss(self, model, inputs, return_outputs=False):
-        '''better set batch_size = 1'''
-        kw_dict = self._cot_steps(model, inputs)
-        output = model(**kw_dict)
-        loss = output.loss
-        return loss
-
-
-
-    def prediction_step(
-        self,
-        model: nn.Module,
-        inputs: Dict[str, Union[torch.Tensor, Any]],
-        prediction_loss_only: bool,
-        ignore_keys: Optional[List[str]] = None
-    ) -> Tuple[Optional[float], Optional[torch.Tensor], Optional[torch.Tensor]]:
-        kw_dict = self._cot_steps(model, inputs)
-        output = model(**kw_dict)
-        loss = output.loss
-        
-        return (loss, None, None)
-
-      
 class AdptTrainer(Seq2SeqTrainer):
     def __init__(self, alpha, output_rationale, weight, data_collator=None,**kwargs):
         super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。

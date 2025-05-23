@@ -26,7 +26,7 @@ from transformers.trainer_utils import set_seed
 from utils.head_utils import T5WithMLPHead
 import torch
 
-from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, CoTTrainer, TaskPrefixDataCollator_hierarchical
+from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskPrefixDataCollator_hierarchical
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -193,13 +193,11 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     if args.model_type == 'task_prefix':
         trainer = TaskPrefixTrainer(**trainer_kwargs)
         trainer.optimizers = optimizers
-    elif args.model_type == 'CoT':
-        trainer = CoTTrainer(**trainer_kwargs)
-        
+
     elif args.model_type == 'peft':
         # trainer = AdptTrainer(**trainer_kwargs)
-        trainer = TaskPrefixTrainer(**trainer_kwargs)
-        
+        pass
+
     elif args.model_type == 'standard':
         trainer_kwargs.pop('alpha')
         

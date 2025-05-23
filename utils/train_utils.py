@@ -23,10 +23,9 @@ from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, get_linear_sc
 from transformers import T5ForConditionalGeneration
 from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
-from utils.head_utils import T5WithMLPHead
 import torch
 
-from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskPrefixDataCollator_hierarchical
+from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -86,10 +85,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         model.print_trainable_parameters()
         # breakpoint()
     elif args.model_type == 'task_prefix':
-        if args.with_head:
-            model = T5WithMLPHead.from_pretrained(args.from_pretrained).to(device)
-        else:
-            model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
+        model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
 
         
     else:
@@ -157,15 +153,10 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
 
     else:
-        if args.hierarchical:
-            data_collator = TaskPrefixDataCollator_hierarchical(tokenizer=tokenizer, model=model)
-        else:
-            print("model_type: {}".format(args.model_type))
-            # rouge_metric = datasets.load_metric("rouge")
-            data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
+        print("model_type: {}".format(args.model_type))
+        # rouge_metric = datasets.load_metric("rouge")
+        data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
 
-    
-    
     trainer_kwargs = {
         'alpha': args.alpha,
         'model': model,

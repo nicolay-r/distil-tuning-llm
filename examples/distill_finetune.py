@@ -102,10 +102,8 @@ if __name__ == '__main__':
     parser.add_argument("--deepspeed", type=str, default=None, help="Path to deepspeed config file.")
     parser.add_argument('--weight', type=int, default=1)
     parser.add_argument('--train_epochs', type=int, default=10)
-    parser.add_argument('--with_head', action='store_true')
     parser.add_argument('--cos_sim', action='store_true')
     parser.add_argument('--dynamic', action='store_true')
-    parser.add_argument('--hierarchical', action='store_true')
 
     args = parser.parse_args()
 

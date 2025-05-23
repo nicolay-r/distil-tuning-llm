@@ -35,13 +35,4 @@ deepspeed distill_finetune.py \
     --deepspeed $CONFIG_FILE \
     --train_epochs $TRAIN_EPOCHS\
     --max_steps $MAX_STEPS \
-    # 
     # --bf16 \
-    # --dynamic
-    # --peft
-
-    # --cos_sim
-    # --bf16 \
-    # --with_head \
-
-    

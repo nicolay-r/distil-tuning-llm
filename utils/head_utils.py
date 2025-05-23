@@ -3,8 +3,7 @@ import torch.nn as nn
 from transformers import T5ForConditionalGeneration, T5Tokenizer, T5Config
 from torch.nn import CrossEntropyLoss
 from transformers.modeling_outputs import Seq2SeqLMOutput
-from typing import List, Optional, Tuple, Union
-import torch.nn.init as init
+from typing import Optional, Tuple
 
 
 # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -95,19 +94,7 @@ class T5WithMLPHead(T5ForConditionalGeneration):
 
         sequence_output = decoder_outputs[0]
 
-        
-        if with_head:
-        
-           
-            # # Reinitialize weights using Kaiming Initialization
-            # init.kaiming_uniform_(self.mlp[0].weight, mode='fan_in', nonlinearity='relu')
-            # print("Reinitialized Weights:", self.mlp[0].weight.data)
-            breakpoint()
-            # self.mlp.to(self.first_device)
-            lm_logits = self.mlp(sequence_output.float())
-            
-        else:
-            lm_logits = self.lm_head(sequence_output)
+        lm_logits = self.lm_head(sequence_output)
         
         loss = None
         if labels is not None:

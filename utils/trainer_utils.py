@@ -12,18 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from adapters import Seq2SeqAdapterTrainer
 import pandas as pd
 import torch
 from typing import Any, Dict, List, Optional, Tuple, Union
 from torch import nn
 from transformers import DataCollatorForSeq2Seq
 from transformers import Seq2SeqTrainer
-from utils.data_utils import MEDQADatasetLoader
 import wandb
-from transformers import AutoTokenizer
-from utils.head_utils import T5WithMLPHead
-import torch.nn.functional as F
 
 # model_name = "t5-v1_1-base"
 # from_pretrained = "google/{}".format(model_name)

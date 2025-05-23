@@ -19,17 +19,15 @@ import wandb
 import os
 import logging
 import re
-# from adapters import Seq2SeqAdapterTrainer
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, get_linear_schedule_with_warmup
 from transformers import T5ForConditionalGeneration
 from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
 from utils.data_utils import MEDQADatasetLoader
 from utils.head_utils import T5WithMLPHead
-from transformers import AutoModel, AutoTokenizer
 import torch
 
-from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, TaskPrefix_COS, CoTTrainer, AdptTrainer,TaskPrefixTrainerWithHead, DynamicLossTrainer, TaskPrefixDataCollator_hierarchical, TaskPrefix_hierarchical
+from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer, CoTTrainer, TaskPrefixDataCollator_hierarchical
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -105,7 +103,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
             model = T5WithMLPHead.from_pretrained(args.from_pretrained).to(device)
         else:
             model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
-            # model = AutoModel.from_pretrained(args.from_pretrained)
 
         
     else:

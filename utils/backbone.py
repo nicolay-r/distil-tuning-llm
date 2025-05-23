@@ -14,11 +14,10 @@ class DistillBackbone(nn.Module):
 
     def forward(self, **kwargs):
         
-        
         outputs = self.engine(input_ids=input_ids,
-                          attention_mask=attention_mask,
-                          decoder_input_ids=decoder_input_ids,
-                          decoder_attention_mask=decoder_attention_mask)
+                              attention_mask=attention_mask,
+                              decoder_input_ids=decoder_input_ids,
+                              decoder_attention_mask=decoder_attention_mask)
         
         # 取得decoder的最后一个输出作为分类任务的输入
         last_hidden_states = outputs.last_hidden_state[:, -1, :]

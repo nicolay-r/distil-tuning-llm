@@ -1,6 +1,4 @@
-# MeDistill-d2n
-![](https://img.shields.io/badge/Python-3.10-brightgreen.svg)
-
+# MeDistill-d2n-long
 
 This is the project of Medical distillation for `dialog2note` task.
 
@@ -47,12 +45,6 @@ unzip datasets.zip
 sh ./evaluate/distill_inf.sh
 ```
 
-## Evaluation
-
-For convenience of comparison, we adopt the evaluation methods from [MEDQA 2023 challenge](https://github.com/abachaa/MEDIQA-Chat-2023)
-```
-python eval_sum_medqa23.py --task taskA --fn_eval_data "./test2/10000/generated_predictions_df.csv"
-```
 ## Reference
 
 This work could be cited as follows:

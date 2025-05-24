@@ -35,7 +35,6 @@ unzip datasets.zip
 ## Finetuning
 
 - Distilling step-by-step. 
-  - Navigate to the `scripts` folder and launch:
 ```
 ./distill_ft_ds.sh
 ```

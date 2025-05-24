@@ -48,9 +48,6 @@ logger = logging.getLogger(__name__)
 # A list of all multilingual tokenizer which require lang attribute.
 MULTILINGUAL_TOKENIZERS = [MBartTokenizer, MBartTokenizerFast, MBart50Tokenizer, MBart50TokenizerFast]
 
-# Constants for the MEDIQA-Chat @ ACL-ClinicalNLP challenge task
-# A list of valid task names for the MEDIQA-Chat @ ACL-ClinicalNLP
-
 @dataclass
 class ModelArguments:
     """
@@ -110,12 +107,6 @@ class DataTrainingArguments:
 
     lang: Optional[str] = field(default=None, metadata={"help": "Language id for summarization."})
 
-    # dataset_name: Optional[str] = field(
-    #     default=None, metadata={"help": "The name of the dataset to use (via the datasets library)."}
-    # )
-    # dataset_config_name: Optional[str] = field(
-    #     default=None, metadata={"help": "The configuration name of the dataset to use (via the datasets library)."}
-    # )
     text_column: Optional[str] = field(
         default=None,
         metadata={"help": "The name of the column in the datasets containing the full texts (for summarization)."},

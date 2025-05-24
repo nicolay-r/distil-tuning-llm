@@ -1,5 +1,4 @@
 #!/bin/bash
-# Submits our Flan-T5 large based approach for task A
 
 TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
 
@@ -37,5 +36,3 @@ python3 ./run_summarization_old.py "./conf/base.yml" "./conf/taskA.yml" output_d
     # checkpoint_dir="$CKPT_DIR" \
     
 python eval_sum_medqa23.py --task taskA --fn_eval_data $OUTPUT_DIR
-
-# python eval_sum_medqa23.py --task taskA --fn_eval_data ./results/wang_old

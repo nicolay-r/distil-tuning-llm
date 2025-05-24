@@ -17,19 +17,15 @@ def run(args):
     
     # 整理数据集的label和rationale
     train_llm_rationales, train_llm_labels = dataset_loader.load_rationale_data(split='train')
-    # test_llm_rationales, test_llm_labels = dataset_loader.load_rationale_data(split='test')
     valid_llm_rationales, valid_llm_labels = dataset_loader.load_rationale_data(split='valid')
 
     # if args.llm is not None: # 给数据集添加labels,
     datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
-    # datasets['test'] = datasets['test'].add_column('llm_label', test_llm_labels)
     datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
-    # datasets['test'] = datasets['test'].add_column('llm_rationale', test_llm_rationales)
-    
+
     datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
     datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
 
-    # if args.llm is not None: # 重命名rationale
     if 'rationale' in datasets['train'].column_names:
         datasets = datasets.remove_columns('rationale')
     datasets = datasets.rename_column('llm_rationale', 'rationale')
@@ -38,8 +34,7 @@ def run(args):
         
     #### Prepare datasets Prepare data for training
     tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
-    # tokenizer.pad_token = tokenizer.eos_token
-    
+
     def tokenize_function(examples):
         '''
         tokenizer.decode(model_inputs["input_ids"][0], skip_special_tokens=True) : (input from train set)
@@ -53,7 +48,7 @@ def run(args):
         expl_model_inputs = tokenizer(['Extract the key information from the dialogue, Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: ' + text for text in examples['input']], max_length=args.max_input_length, truncation=True)
         model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
         model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
-        # breakpoint()
+
         with tokenizer.as_target_tokenizer():
             label_output_encodings = tokenizer(examples['label'], max_length=args.gen_max_len, truncation=True)
             rationale_output_encodings = tokenizer(examples['rationale'], max_length=args.gen_max_len, truncation=True)

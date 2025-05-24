@@ -1,5 +1,5 @@
 #!/bin/bash
-cd
+
 # Update package list
 apt-get update
 
@@ -26,6 +26,6 @@ touch app_keys/k.txt
 # create conda environments for fine-tuning
 conda env create -f environment.yml
 
-
+# create conda environments for evaluation
 cd evaluate
 conda env create -f environment.yml

@@ -20,9 +20,7 @@ from transformers import DataCollatorForSeq2Seq
 from transformers import Seq2SeqTrainer
 import wandb
 
-# model_name = "t5-v1_1-base"
-# from_pretrained = "google/{}".format(model_name)
-# tokenizer = AutoTokenizer.from_pretrained(from_pretrained)
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
@@ -49,10 +47,8 @@ class TaskPrefixDataCollator(DataCollatorForSeq2Seq):
 
 class TaskPrefixTrainer(Seq2SeqTrainer):
     def __init__(self, alpha, data_collator=None,**kwargs):
-        super().__init__(**kwargs) # 调用了当前类的父类（或超类）的 __init__ 方法。
+        super().__init__(**kwargs)
         self.alpha = alpha
-        # self.output_rationale = output_rationale
-        # self.weight = weight
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
     
     def compute_loss(self, model, inputs, return_outputs=False):
@@ -88,8 +84,8 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
                    'train/loss_pred': pred_outputs.loss, 
                    'train/loss_expl': expl_outputs.loss,
                    'train/pred_accuracy': pred_accuracy.item(),  # Logging prediction accuracy
-                    'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)    
-                    'learning_rate': current_lr,    
+                   'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)
+                   'learning_rate': current_lr,
                    },
                   step=self.state.global_step)
         # breakpoint()

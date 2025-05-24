@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-# You can also adapt this script on your own sequence to sequence task. Pointers for this are left as comments.
-
 import json
 import logging
 import os
@@ -40,11 +38,8 @@ from transformers.utils.versions import require_version
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
 check_min_version("4.27.0.dev0")
-
 require_version("datasets>=1.8.0", "To fix: pip install -r examples/pytorch/summarization/requirements.txt")
-
 logger = logging.getLogger(__name__)
-
 # A list of all multilingual tokenizer which require lang attribute.
 MULTILINGUAL_TOKENIZERS = [MBartTokenizer, MBartTokenizerFast, MBart50Tokenizer, MBart50TokenizerFast]
 
@@ -397,17 +392,9 @@ def main():
     # Set seed before initializing model.
     set_seed(training_args.seed)
 
-
-    data_files = {}
-
-    data_files["test"] = data_args.test_file
-    extension = data_args.test_file.split(".")[-1]
-
-    data_files["test"] = data_args.test_file
-    extension = 'json'
     raw_datasets = load_dataset(
-        extension,
-        data_files=data_files,
+        'json',
+        data_files={"test": data_args.test_file},
         use_auth_token=True if model_args.use_auth_token else None,
     )
     
@@ -431,11 +418,6 @@ def main():
         use_auth_token=True if model_args.use_auth_token else None,
     )
     if model_args.model_type == 'peft':
-        # from peft import PeftModel, PeftConfig
-        # model_dir = model_args.checkpoint_dir
-        # config = PeftConfig.from_pretrained(model_dir)
-        # model = AutoModelForSeq2SeqLM.from_pretrained(config.base_model_name_or_path)
-        # model = PeftModel.from_pretrained(model, model_dir)
         from peft import PeftModel, PeftConfig
         config = PeftConfig.from_pretrained(model_args.checkpoint_dir)
         model = AutoModelForSeq2SeqLM.from_pretrained(model_args.model_name_or_path)
@@ -449,11 +431,6 @@ def main():
             revision=model_args.model_revision,
             use_auth_token=True if model_args.use_auth_token else None,
         )
-        # model_dir = model_args.checkpoint_dir
-        # checkpoint = torch.load(f"{model_dir}pytorch_model.bin", map_location="cpu") #读取本地训练好的chekpoint
-        # model.load_state_dict(checkpoint)
-    
-   
 
     # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
     # on a small vocab and want a smaller embedding size, remove this test.
@@ -494,13 +471,11 @@ def main():
     suffix = data_args.source_suffix if data_args.source_suffix is not None else ""
     suffix = "SUMMARY: "
 
-    
     column_names = raw_datasets["test"].column_names
 
     text_column = "input"
     summary_column = "output"
 
-    
     # Temporarily set max_target_length for training.
     max_target_length = data_args.max_target_length
     padding = "max_length" if data_args.pad_to_max_length else False
@@ -636,4 +611,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

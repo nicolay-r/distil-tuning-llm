@@ -3,9 +3,15 @@
 This is the project of Medical distillation for `dialog2note` task.
 
 ## Setup
-- Using Python 3.10. Setup Conda environment for finetuing:
+- Setup Conda environment for fine-tuning:
 ```
-conda env create -f requirements.txt
+conda env create -f environment.yml
+```
+- Setup Conda environment for evaluation:
+```
+cd ./evaluate
+conda env create -n eval python=3.9 -y
+pip install -r requirements.txt   
 ```
 
 ## Datasets

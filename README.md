@@ -1,8 +1,13 @@
 # MeDistill-d2n-long
 
-This is the project of Medical distillation for `dialog2note` task.
+This repo represent a tiny and **reforged version** of the original [`MeDistil-d2n` framework](https://github.com/Xiaoxiao-Liu/distill-d2n) and the related paper studies.
+
 
 ## Setup
+- Initial setup of the conda / CUDA and other utils:
+```
+./setup_script.sh
+```
 - Setup Conda environment for fine-tuning:
 ```
 conda env create -f environment.yml
@@ -27,7 +32,6 @@ unzip datasets.zip
 - `--model_type`:
   - `standard`: Standard finetuning 
   - `task_prefix`: Distilling step-by-step
-  - `peft`: PEFT methods
 - `--peft_type`: 
     - `lora`: lora tuning 
     - `adalora`: adalora prompt tuning 

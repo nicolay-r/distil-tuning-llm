@@ -20,7 +20,7 @@ import os
 import logging
 import re
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, get_linear_schedule_with_warmup
-from transformers import T5ForConditionalGeneration
+from transformers import AutoModelForSeq2SeqLM
 from transformers import DataCollatorForSeq2Seq
 from transformers.trainer_utils import set_seed
 import torch
@@ -45,9 +45,9 @@ def set_wandb(trainer_kwargs, args):
 def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics):
     set_seed(run)
     if args.model_type == 'task_prefix':
-        model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
+        model = AutoModelForSeq2SeqLM.from_pretrained(args.from_pretrained)
     else:
-        model = T5ForConditionalGeneration.from_pretrained(args.from_pretrained)
+        model = AutoModelForSeq2SeqLM.from_pretrained(args.from_pretrained)
    
     # 整理路径
     config_dir = get_config_dir(args)

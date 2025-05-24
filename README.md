@@ -5,22 +5,22 @@ This repo represent a tiny and **reforged version** of the original [`MeDistil-d
 
 ## Setup
 - Initial setup of the conda / CUDA and other utils:
-```
+```bash
 ./setup_script.sh
 ```
 - Setup Conda environment for fine-tuning:
-```
+```bash
 conda env create -f environment.yml
 ```
 - Setup Conda environment for evaluation:
-```
+```bash
 cd ./evaluate
 conda env create -n eval python=3.9 -y
 pip install -r requirements.txt   
 ```
 
 ## Datasets
-```
+```bash
 unzip datasets.zip
 ``` 
 
@@ -37,7 +37,7 @@ unzip datasets.zip
 ## Finetuning
 
 - Distilling step-by-step. 
-```
+```bash
 ./distill_ft_ds.sh
 ```
 
@@ -45,7 +45,7 @@ unzip datasets.zip
 ## Inference
 
 - For distilling step-by-step models
-```
+```bash
 sh ./evaluate/distill_inf.sh
 ```
 

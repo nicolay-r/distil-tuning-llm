@@ -25,18 +25,13 @@ unzip datasets.zip
 ``` 
 
 ## Args usages
-- `--from_pretrained`: `google/t5-v1_1-small`, `google/t5-v1_1-base`, `google/t5-v1_1-large`, `google/t5-v1_1-xxl`
+- `--from_pretrained`: Model from hugging face that nesting `AutoModelForSeq2SeqLM`
 - `--dataset`: `multiclinsum`
 
 - `--alpha`: Task weight for multi-task training. Loss = alpha * label_prediction_loss + (1 - alpha) * rationale_generation_loss
 - `--model_type`:
   - `standard`: Standard finetuning 
   - `task_prefix`: Distilling step-by-step
-- `--peft_type`: 
-    - `lora`: lora tuning 
-    - `adalora`: adalora prompt tuning 
-    - `multitask`: multitask prompt tuning  
-    - `prefix`: prefix tuning 
 - `--parallelize`: Model parallelism
 
 

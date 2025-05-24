@@ -417,20 +417,14 @@ def main():
         revision=model_args.model_revision,
         use_auth_token=True if model_args.use_auth_token else None,
     )
-    if model_args.model_type == 'peft':
-        from peft import PeftModel, PeftConfig
-        config = PeftConfig.from_pretrained(model_args.checkpoint_dir)
-        model = AutoModelForSeq2SeqLM.from_pretrained(model_args.model_name_or_path)
-        model = PeftModel.from_pretrained(model, model_args.checkpoint_dir)
 
-    else:
-        model = AutoModelForSeq2SeqLM.from_pretrained(
-            model_args.model_name_or_path,
-            from_tf=bool(".ckpt" in model_args.model_name_or_path),
-            config=config,
-            revision=model_args.model_revision,
-            use_auth_token=True if model_args.use_auth_token else None,
-        )
+    model = AutoModelForSeq2SeqLM.from_pretrained(
+        model_args.model_name_or_path,
+        from_tf=bool(".ckpt" in model_args.model_name_or_path),
+        config=config,
+        revision=model_args.model_revision,
+        use_auth_token=True if model_args.use_auth_token else None,
+    )
 
     # We resize the embeddings only when necessary to avoid index errors. If you are creating a model from scratch
     # on a small vocab and want a smaller embedding size, remove this test.

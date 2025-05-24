@@ -32,7 +32,6 @@ dependencies:
     - InstructorEmbedding
     - openai
     - adapters
-    - peft
     - tf-keras
     - huggingface_hub
     - deepspeed==0.12.0

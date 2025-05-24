@@ -1,10 +1,9 @@
 #!/bin/bash
 
+MODEL="google/flan-t5-small"
 TEST_FP="../datasets/medqa_d2n/task_prefix/medqa_d2n_test2.json"  # Provided to the script by the submission system
-
-OUTPUT_DIR="./results/T5-LARGE"
+OUTPUT_DIR="./results/${MODEL}"
 CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
-
 
 # Notes:
 # - The model will be downloaded from the HuggingFace model hub
@@ -17,7 +16,7 @@ CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
 #  Xiaolihai/flan-t5-large_MeDistill_28_rougeAvg_20ep_dropout
 # wanglab/task-a-flan-t5-large-run-2
 python3 ./run_summarization_old.py "./conf/base.yml" "./conf/taskA.yml" output_dir="$OUTPUT_DIR" \
-    model_name_or_path="google/flan-t5-large" \
+    model_name_or_path=MODEL \
     summary_column="dialogue" \
     train_file=null \
     validation_file=null \

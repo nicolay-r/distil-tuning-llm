@@ -27,7 +27,8 @@ unzip datasets.zip
 ## Args usages
 - `--from_pretrained`: Model from hugging face that nesting `AutoModelForSeq2SeqLM`
 - `--dataset`: `multiclinsum`
-- `--alpha`: Task weight for multi-task training. Loss = alpha * label_prediction_loss + (1 - alpha) * rationale_generation_loss
+- `--alpha`: Task weight for multi-task training. 
+  - $Loss = alpha * pred_l + (1 - alpha) * rationale_l$
 - `--model_type`:
   - `standard`: Standard finetuning 
   - `task_prefix`: Distilling step-by-step

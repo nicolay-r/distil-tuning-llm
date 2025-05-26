@@ -14,7 +14,7 @@
 
 
 import json
-
+from os.path import dirname, realpath, join
 from datasets import load_dataset
 
 
@@ -26,7 +26,7 @@ class MultiClinSumDatasetLoader(object):
         self.data_root = join(current_dir, "../datasets/")
 
     def path_to_split(self, split):
-        return f'{self.data_root}/{self.dataset_name}/{self.dataset_name}_{split}.json'
+        return f'{self.data_root}/{self.dataset_name}/{split}.json'
 
     def load_from_json(self):
         data_files = {

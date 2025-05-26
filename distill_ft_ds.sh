@@ -1,10 +1,4 @@
 #!/bin/bash
-# Executes fine-tuning of the Flan-T5 XL model with specialized adapter configuration using DeepSpeed
-
-# Model, dataset, and configuration settings
-MODEL="google/flan-t5-small"
-DATASET="multiclinsum"
-CONFIG_FILE="distill_ft_ds_zero2.json"
 
 # Training parameters
 TRAIN_EPOCHS=10
@@ -20,8 +14,8 @@ ADDITIONAL_INFO="Additional-Notes"
 export DS_SKIP_CUDA_CHECK=1
 
 deepspeed distill_ft.py \
-    --from_pretrained $MODEL \
-    --dataset $DATASET \
+    --from_pretrained "google/flan-t5-small" \
+    --dataset "multiclinsum_en_test" \
     --eval_steps $EVAL_STEPS \
     --batch_size_train $BATCH_SIZE_TRAIN \
     --batch_size_eval $BATCH_SIZE_EVAL \
@@ -30,7 +24,7 @@ deepspeed distill_ft.py \
     --alpha $ALPHA \
     --addi_info $ADDITIONAL_INFO \
     --parallelize \
-    --deepspeed $CONFIG_FILE \
+    --deepspeed "distill_ft_ds_zero2.json" \
     --train_epochs $TRAIN_EPOCHS\
     --max_steps $MAX_STEPS \
     # --bf16 \

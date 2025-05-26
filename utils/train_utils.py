@@ -70,7 +70,10 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         num_training_steps=1201 * args.train_epochs
     )
     optimizers = (optimizer, scheduler)
-      
+
+    kwargs = {}
+    if args.deepspeed is not None:
+        kwargs["deepspeed"] = args.deepspeed
 
     # 设置一些训练中的细节参数 -- step --
     training_args = Seq2SeqTrainingArguments(
@@ -96,13 +99,13 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         bf16=args.bf16,                                     # 是否使用bfloat16进行训练，这可以提高性能
         generation_max_length=args.gen_max_len,             # 生成的最大长度
         prediction_loss_only=False,                         # 是否只预测损失，这里设置为False
-        deepspeed=args.deepspeed,
         save_total_limit=1,
         load_best_model_at_end=True,
         metric_for_best_model="test_rouge_avg",
         greater_is_better=True,
         push_to_hub=False,
-        # optimizers=(optimizer, scheduler),  # 注意这里传递的是一个元组(optimizer, scheduler)
+        # optimizers=(optimizer, scheduler),                # 注意这里传递的是一个元组(optimizer, scheduler)
+        **kwargs
     )
     # breakpoint()
 

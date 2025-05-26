@@ -20,6 +20,11 @@ conda env create -n eval python=3.9 -y
 pip install -r requirements.txt   
 ```
 
+- Download `punkt_tab` for `nltk`
+```bash
+import nltk
+nltk.download('punkt_tab')
+```
 
 ## Finetuning
 

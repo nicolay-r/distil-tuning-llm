@@ -18,36 +18,28 @@ import json
 from datasets import load_dataset
 
 
-DATASET_ROOT = 'datasets'
-
-
-class MEDMultilingual2025DatasetLoader(object):
+class MultiClinSumDatasetLoader(object):
 
     def __init__(self, dataname):
+        current_dir = dirname(realpath(__file__))
         self.dataset_name = dataname
-        self.data_root = DATASET_ROOT
-        self.dataset_version = None
-        self.has_valid = True
-        self.split_map = {
-            'train': 'train',
-            'valid': 'valid'
-            # 'test': 'test',
-        }
+        self.data_root = join(current_dir, "../datasets/")
 
-    def load_from_json_rationale(self):
+    def path_to_split(self, split):
+        return f'{self.data_root}/{self.dataset_name}/{self.dataset_name}_{split}.json'
+
+    def load_from_json(self):
         data_files = {
-            'train': f'../{self.data_root}/{self.dataset_name}/{self.dataset_name}_train.json',
-            'valid': f'../{self.data_root}/{self.dataset_name}/{self.dataset_name}_valid.json',
+            'train': self.path_to_split(split="train"),
+            'valid': self.path_to_split(split="valid"),
         }
-        # breakpoint()
-        datasets = load_dataset('json', data_files=data_files) 
-        # breakpoint()
+        datasets = load_dataset('json', data_files=data_files)
         return datasets
 
     def load_rationale_data(self, split):
         labels = list()
         rationales = list()
-        with open(f'../{self.data_root}/{self.dataset_name}/{self.dataset_name}_{split}.json') as f:
+        with open(self.path_to_split(split)) as f:
             outputs = json.load(f)
             
         for output in outputs:

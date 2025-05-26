@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding=utf-8
-
 import json
 import logging
 import os
@@ -9,7 +6,6 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-
 
 import datasets
 import numpy as np

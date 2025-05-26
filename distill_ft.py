@@ -1,4 +1,4 @@
-from utils.data_utils import MEDMultilingual2025DatasetLoader
+from utils.data_utils import MultiClinSumDatasetLoader
 import argparse
 from utils.metrics import compute_metrics_equation
 from utils.train_utils import train_and_evaluate
@@ -8,10 +8,10 @@ from transformers import AutoTokenizer
 def run(args):
 
     #### Prepare datasets
-    dataset_loader = MEDMultilingual2025DatasetLoader(args.dataset)
+    dataset_loader = MultiClinSumDatasetLoader(args.dataset)
 
     # 加载数据
-    datasets = dataset_loader.load_from_json_rationale()
+    datasets = dataset_loader.load_from_json()
     
     # 整理数据集的label和rationale
     train_llm_rationales, train_llm_labels = dataset_loader.load_rationale_data(split='train')

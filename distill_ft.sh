@@ -1,8 +1,5 @@
 #!/bin/bash
-
-export DS_SKIP_CUDA_CHECK=1
-
-deepspeed distill_ft.py \
+python distill_ft.py \
     --from_pretrained "google/flan-t5-small" \
     --dataset "multiclinsum_en_test" \
     --eval_steps 10 \
@@ -13,7 +10,6 @@ deepspeed distill_ft.py \
     --alpha 0.8 \
     --addi_info "Additional-Notes" \
     --parallelize \
-    --deepspeed "distill_ft_ds_zero2.json" \
     --train_epochs 10 \
     --max_steps 36000 \
     # --bf16 \

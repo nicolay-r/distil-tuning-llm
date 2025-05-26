@@ -33,13 +33,6 @@ def compute_metrics_equation(tokenizer):
         else None,
         # cache_dir=model_args.cache_dir,
     )
-    bertscore = evaluate.load(
-        "bertscore",
-        download_config=datasets.DownloadConfig(cache_dir=model_args.cache_dir, local_files_only=True, use_etag=False)
-        if is_offline_mode()
-        else None,
-        cache_dir="./",
-    )
     def sanitize_text(text: str, lowercase: bool = False) -> str:
         """Cleans text by removing whitespace, newlines and tabs and (optionally) lowercasing."""
         sanitized_text = " ".join(text.strip().split())

@@ -17,7 +17,6 @@ dependencies:
       - evaluate
       - tf-keras
       - wandb
-      - bert-score
       - typer[all]
       - omegaconf
       - InstructorEmbedding

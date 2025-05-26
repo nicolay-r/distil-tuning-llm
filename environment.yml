@@ -25,7 +25,6 @@ dependencies:
     - nltk
     - py7zr
     - evaluate
-    - bert-score
     - git+https://github.com/google-research/bleurt.git
     - typer[all]
     - omegaconf

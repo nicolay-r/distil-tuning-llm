@@ -26,6 +26,7 @@ nltk.download("punkt", quiet=True)
 
 
 def compute_metrics_equation(tokenizer):
+
     rouge = evaluate.load(
         "rouge",
         download_config=datasets.DownloadConfig(cache_dir=model_args.cache_dir, local_files_only=True, use_etag=False)
@@ -33,15 +34,16 @@ def compute_metrics_equation(tokenizer):
         else None,
         # cache_dir=model_args.cache_dir,
     )
-    def sanitize_text(text: str, lowercase: bool = False) -> str:
+
+    def __sanitize_text(text: str, lowercase: bool = False) -> str:
         """Cleans text by removing whitespace, newlines and tabs and (optionally) lowercasing."""
         sanitized_text = " ".join(text.strip().split())
         sanitized_text = sanitized_text.lower() if lowercase else sanitized_text
         return sanitized_text
-    def postprocess_text(preds, labels):
 
-        preds = [sanitize_text(pred) for pred in preds]
-        labels = [sanitize_text(label) for label in labels]
+    def __postprocess_text(preds, labels):
+        preds = [__sanitize_text(pred) for pred in preds]
+        labels = [__sanitize_text(label) for label in labels]
 
         # rougeLSum expects newline after each sentence
         preds = ["\n".join(nltk.sent_tokenize(pred)) for pred in preds]
@@ -59,7 +61,7 @@ def compute_metrics_equation(tokenizer):
         # preds = np.where(preds != -100, preds, tokenizer.pad_token_id)
         decoded_labels = tokenizer.batch_decode(ls, skip_special_tokens=True)
         # Some simple post-processing
-        decoded_preds, decoded_labels = postprocess_text(decoded_preds, decoded_labels)
+        decoded_preds, decoded_labels = __postprocess_text(decoded_preds, decoded_labels)
 
         result = {}
 
@@ -80,4 +82,5 @@ def compute_metrics_equation(tokenizer):
         result["mean_reference_len"] = np.mean(reference_lens)
         wandb.log(result)
         return result
+
     return compute_metrics

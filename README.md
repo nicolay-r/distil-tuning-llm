@@ -19,20 +19,6 @@ conda env create -n eval python=3.9 -y
 pip install -r requirements.txt   
 ```
 
-## Datasets
-```bash
-unzip datasets.zip
-``` 
-
-## Args usages
-- `--from_pretrained`: Model from hugging face that nesting `AutoModelForSeq2SeqLM`
-- `--dataset`: `multiclinsum`
-- `--alpha`: Task weight for multi-task training. 
-  - $Loss = alpha * pred_l + (1 - alpha) * rationale_l$
-- `--model_type`:
-  - `standard`: Standard finetuning 
-  - `task_prefix`: Distilling step-by-step
-- `--parallelize`: Model parallelism
 
 ## Finetuning
 
@@ -41,9 +27,22 @@ unzip datasets.zip
 ./distill_ft_ds.sh
 ```
 
+### Args usages
+- `--from_pretrained`: Model from hugging face that nesting `AutoModelForSeq2SeqLM`
+- `--dataset`: `multiclinsum`
+- `--alpha`: Task weight for multi-task training.
+  - $Loss = alpha * pred_l + (1 - alpha) * rationale_l$
+- `--model_type`:
+  - `standard`: Standard finetuning
+  - `task_prefix`: Distilling step-by-step
+- `--parallelize`: Model parallelism
+
 ## Inference
 
 - For distilling step-by-step models
 ```bash
 sh ./evaluate/distill_inf.sh
 ```
+
+## Datasets
+* [MultiClinSum](https://zenodo.org/records/15463353)

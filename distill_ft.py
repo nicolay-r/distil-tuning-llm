@@ -1,5 +1,3 @@
-import sys
-sys.path.append("..")  # 添加上层目录到路径中，使得 utils 模块可以被找到
 from utils.data_utils import MEDMultilingual2025DatasetLoader
 import argparse
 from utils.metrics import compute_metrics_equation

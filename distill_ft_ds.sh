@@ -4,7 +4,7 @@
 # Model, dataset, and configuration settings
 MODEL="google/flan-t5-small"
 DATASET="multiclinsum"
-CONFIG_FILE="../configs/ds_config_zero2.json"
+CONFIG_FILE="distill_ft_ds_zero2.json"
 
 # Training parameters
 TRAIN_EPOCHS=10
@@ -19,7 +19,7 @@ ADDITIONAL_INFO="Additional-Notes"
 
 export DS_SKIP_CUDA_CHECK=1
 
-deepspeed distill_finetune.py \
+deepspeed distill_ft.py \
     --from_pretrained $MODEL \
     --dataset $DATASET \
     --eval_steps $EVAL_STEPS \

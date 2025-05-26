@@ -1,6 +1,7 @@
 # MeDistill-d2n-long
 
 This repo represent a tiny and **reforged version** of the original [`MeDistil-d2n` framework](https://github.com/Xiaoxiao-Liu/distill-d2n) and the related paper studies.
+This project exploits `rouge_score` and `evaluation` library for summarization specific loss calculations.
 
 
 ## Setup
@@ -46,3 +47,10 @@ sh ./evaluate/distill_inf.sh
 
 ## Datasets
 * [MultiClinSum](https://zenodo.org/records/15463353)
+
+## Known issues
+
+* https://github.com/huggingface/evaluate/issues/609
+  * `!pip install datasets==3.6.0 evaluate==0.4.3 rouge_score`
+* https://github.com/huggingface/transformers/issues/36331
+  * `!pip install transformers==4.45.2` from [this workaround](https://discuss.huggingface.co/t/typeerror-sentencetransformertrainer-compute-loss-got-an-unexpected-keyword-argument-num-items-in-batch/114298/4)

@@ -12,7 +12,7 @@ dependencies:
   - cudatoolkit=11.7 # Use 'cudatoolkit' for the CUDA dependency instead of 'pytorch-cuda'
   - pip
   - pip:
-    # - transformers==4.24.0
+    - transformers<=4.45.2
     - setuptools==69.5.1
     - pydantic==1.10.13
     - datasets>=1.8.0

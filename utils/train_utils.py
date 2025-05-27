@@ -18,7 +18,6 @@ from datetime import datetime
 import wandb
 import os
 import logging
-import re
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, get_linear_schedule_with_warmup
 from transformers import AutoModelForSeq2SeqLM
 from transformers import DataCollatorForSeq2Seq
@@ -29,27 +28,27 @@ from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+
 def get_config_dir(args):
     path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
     return path
 
-def set_wandb(trainer_kwargs, args):
-    # 获取当前时间的时间戳
-    timestamp = time.time()
 
-    # 将时间戳转换为datetime对象
+def set_wandb(trainer_kwargs, args):
+    timestamp = time.time()
     dt_object = datetime.fromtimestamp(timestamp)
-    wandb.init(group="lmflow", project="MeDistill", name=f"fine-tuning-{args.addi_info}-{dt_object}", config=trainer_kwargs)
+    wandb.init(group="lmflow",
+               project="MeDistill",
+               mode="disabled",
+               name=f"fine-tuning-{args.addi_info}-{dt_object}",
+               config=trainer_kwargs)
 
 
 def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics):
     set_seed(run)
-    if args.model_type == 'task_prefix':
-        model = AutoModelForSeq2SeqLM.from_pretrained(args.from_pretrained)
-    else:
-        model = AutoModelForSeq2SeqLM.from_pretrained(args.from_pretrained)
+
+    model = AutoModelForSeq2SeqLM.from_pretrained(args.from_pretrained)
    
-    # 整理路径
     config_dir = get_config_dir(args)
     output_dir = f'../ckpts/{config_dir}'  # for model ckpts
     # logging_dir = f'logs/{config_dir}'  # for training logs
@@ -58,12 +57,9 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     if os.path.exists(output_dir):
         logging.info('Found existing ckpt directory. Deleted the old directory for the latest run.')
         os.removedirs(output_dir)
-    # 路径整理完了
-    
-    # 定义优化器
+
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
     
-    # 定义调度器
     scheduler = get_linear_schedule_with_warmup(
         optimizer,
         num_warmup_steps=500, # 预热步数
@@ -75,7 +71,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     if args.deepspeed is not None:
         kwargs["deepspeed"] = args.deepspeed
 
-    # 设置一些训练中的细节参数 -- step --
     training_args = Seq2SeqTrainingArguments(
         output_dir,                                         # 输出目录，模型和训练日志将被保存在这里
         weight_decay=0.01,
@@ -107,7 +102,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         # optimizers=(optimizer, scheduler),                # 注意这里传递的是一个元组(optimizer, scheduler)
         **kwargs
     )
-    # breakpoint()
 
     if args.model_type == 'standard':
         print("model_type: {}".format(args.model_type))
@@ -135,14 +129,13 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     elif args.model_type == 'standard':
         trainer_kwargs.pop('alpha')
         trainer = Seq2SeqTrainer(**trainer_kwargs)
-        '''解释一下：训练的是T5模型，而Seq2SeqTrainer是用于训练过程的工具。'''
 
     else:
         raise ValueError
     
     set_wandb(trainer_kwargs, args)
 
-    wandb.watch(model, log = 'gradients')
+    wandb.watch(model, log='gradients')
 
     trainer.train()
     wandb.finish()

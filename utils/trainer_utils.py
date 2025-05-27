@@ -24,18 +24,18 @@ import wandb
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-"""T5 Multi-Task by Task Prefix
-""" 
 class TaskPrefixDataCollator(DataCollatorForSeq2Seq):
+
     def __call__(self, features, return_tensors=None):
         features_df = pd.DataFrame(features)
         pred_features = features_df.loc[:, ~features_df.columns.isin(['aux_labels', 'expl_input_ids', 'expl_attention_mask'])].to_dict('records')
         expl_features = features_df.loc[:, ~features_df.columns.isin(['labels', 'input_ids', 'attention_mask'])].rename(
-            columns={'aux_labels': 'labels', 'expl_input_ids': 'input_ids', 'expl_attention_mask': 'attention_mask'}).to_dict('records')
-        # breakpoint()
-        '''
-        tokenizer.decode(expl_features['labels'][1], skip_special_tokens=True)
-        '''
+            columns={
+                'aux_labels': 'labels',
+                'expl_input_ids': 'input_ids',
+                'expl_attention_mask': 'attention_mask'
+            }).to_dict('records')
+
         pred_features = super().__call__(pred_features, return_tensors)
         expl_features = super().__call__(expl_features, return_tensors)
         
@@ -120,4 +120,3 @@ class TaskPrefixTrainer(Seq2SeqTrainer):
             [pred_outputs[1], expl_outputs[1]],
             [pred_outputs[2], expl_outputs[2]],
         )
-

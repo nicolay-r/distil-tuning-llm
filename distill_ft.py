@@ -3,68 +3,71 @@ import argparse
 from utils.metrics import compute_metrics_equation
 from utils.train_utils import train_and_evaluate
 from transformers import AutoTokenizer
-    
+
+
+def tokenize_function(tokenizer, examples):
+    '''
+    tokenizer.decode(model_inputs["input_ids"][0], skip_special_tokens=True) : (input from train set)
+    'predict: Doctor: What brings you back into the clinic today, miss?
+    Patient: I came in for a refill of my blood pressure medicine.
+    Doctor: It looks like Doctor Kumar followed up with you last time regarding your hypertension, osteoarthritis, osteoporosis, hypothyroidism, allergic rhinitis and kidney stones. Have you noticed any changes or do you have any concerns regarding these issues? Patient: No. Doctor: Have you had any fever or chills, cough, congestion, nausea, vomiting, chest pain, chest pressure? Patient: No. Doctor: Great. Also, for our records, how old are you and what race do you identify yourself as? Patient: I am seventy six years old and identify as a white female.'
+    len(model_inputs["input_ids"]) = 1000
+
+    '''
+    model_inputs = tokenizer(
+        [
+            'Summarize the following patient-doctor dialogue. Include all medically relevant information, '
+            'including family history, diagnosis, past medical (and surgical) history, immunizations, '
+            'lab results and known allergies. Dialogue:' + text for text in examples['input']
+        ],
+        max_length=args.max_input_length,
+        truncation=True)
+    expl_model_inputs = tokenizer(
+        [
+            'Extract the key information from the dialogue, Include all medically relevant information, '
+            'including family history, diagnosis, past medical (and surgical) history, immunizations, '
+            'lab results and known allergies. Dialogue: ' + text for text in examples['input']
+        ],
+        max_length=args.max_input_length,
+        truncation=True)
+    model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
+    model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
+
+    with tokenizer.as_target_tokenizer():
+        label_output_encodings = tokenizer(examples['label'], max_length=args.gen_max_len, truncation=True)
+        rationale_output_encodings = tokenizer(examples['rationale'], max_length=args.gen_max_len, truncation=True)
+
+    model_inputs['labels'] = label_output_encodings['input_ids']
+    model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
+
+    return model_inputs
+
 
 def run(args):
 
-    #### Prepare datasets
     dataset_loader = MultiClinSumDatasetLoader(args.dataset)
 
-    # 加载数据
     datasets = dataset_loader.load_from_json()
     
-    # 整理数据集的label和rationale
     train_llm_rationales, train_llm_labels = dataset_loader.load_rationale_data(split='train')
-    valid_llm_rationales, valid_llm_labels = dataset_loader.load_rationale_data(split='valid')
-
-    # if args.llm is not None: # 给数据集添加labels,
     datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
     datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
 
+    valid_llm_rationales, valid_llm_labels = dataset_loader.load_rationale_data(split='valid')
     datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
     datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
 
     if 'rationale' in datasets['train'].column_names:
         datasets = datasets.remove_columns('rationale')
+
     datasets = datasets.rename_column('llm_rationale', 'rationale')
     if 'output' in datasets['train'].column_names:
         datasets = datasets.rename_column('output', 'label')
         
-    #### Prepare datasets Prepare data for training
     tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
 
-    def tokenize_function(examples):
-        '''
-        tokenizer.decode(model_inputs["input_ids"][0], skip_special_tokens=True) : (input from train set)
-        'predict: Doctor: What brings you back into the clinic today, miss? 
-        Patient: I came in for a refill of my blood pressure medicine. 
-        Doctor: It looks like Doctor Kumar followed up with you last time regarding your hypertension, osteoarthritis, osteoporosis, hypothyroidism, allergic rhinitis and kidney stones. Have you noticed any changes or do you have any concerns regarding these issues? Patient: No. Doctor: Have you had any fever or chills, cough, congestion, nausea, vomiting, chest pain, chest pressure? Patient: No. Doctor: Great. Also, for our records, how old are you and what race do you identify yourself as? Patient: I am seventy six years old and identify as a white female.'
-        len(model_inputs["input_ids"]) = 1000
-
-        '''
-        model_inputs = tokenizer(['Summarize the following patient-doctor dialogue. Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue:' + text
-                                  for text in examples['input']],
-                                 max_length=args.max_input_length,
-                                 truncation=True)
-        expl_model_inputs = tokenizer(['Extract the key information from the dialogue, Include all medically relevant information, including family history, diagnosis, past medical (and surgical) history, immunizations, lab results and known allergies. Dialogue: ' + text
-                                       for text in examples['input']],
-                                      max_length=args.max_input_length,
-                                      truncation=True)
-        model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
-        model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
-
-        with tokenizer.as_target_tokenizer():
-            label_output_encodings = tokenizer(examples['label'], max_length=args.gen_max_len, truncation=True)
-            rationale_output_encodings = tokenizer(examples['rationale'], max_length=args.gen_max_len, truncation=True)
-
-        model_inputs['labels'] = label_output_encodings['input_ids']
-        model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
-
-        return model_inputs
-
-    print("这里mei有")
     tokenized_datasets = datasets.map(
-        tokenize_function,
+        lambda examples: tokenize_function(tokenizer=tokenizer, examples=examples),
         remove_columns=['input', 'rationale', 'label', 'llm_label'],
         batched=True
     )

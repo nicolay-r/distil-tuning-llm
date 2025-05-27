@@ -5,15 +5,8 @@ from utils.train_utils import train_and_evaluate
 from transformers import AutoTokenizer
 
 
-def tokenize_function(tokenizer, examples):
-    '''
-    tokenizer.decode(model_inputs["input_ids"][0], skip_special_tokens=True) : (input from train set)
-    'predict: Doctor: What brings you back into the clinic today, miss?
-    Patient: I came in for a refill of my blood pressure medicine.
-    Doctor: It looks like Doctor Kumar followed up with you last time regarding your hypertension, osteoarthritis, osteoporosis, hypothyroidism, allergic rhinitis and kidney stones. Have you noticed any changes or do you have any concerns regarding these issues? Patient: No. Doctor: Have you had any fever or chills, cough, congestion, nausea, vomiting, chest pain, chest pressure? Patient: No. Doctor: Great. Also, for our records, how old are you and what race do you identify yourself as? Patient: I am seventy six years old and identify as a white female.'
-    len(model_inputs["input_ids"]) = 1000
+def wrap_and_tokenize(tokenizer, examples, provide_expl):
 
-    '''
     model_inputs = tokenizer(
         [
             'Summarize the following patient-doctor dialogue. Include all medically relevant information, '
@@ -22,23 +15,27 @@ def tokenize_function(tokenizer, examples):
         ],
         max_length=args.max_input_length,
         truncation=True)
-    expl_model_inputs = tokenizer(
-        [
-            'Extract the key information from the dialogue, Include all medically relevant information, '
-            'including family history, diagnosis, past medical (and surgical) history, immunizations, '
-            'lab results and known allergies. Dialogue: ' + text for text in examples['input']
-        ],
-        max_length=args.max_input_length,
-        truncation=True)
-    model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
-    model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
 
     with tokenizer.as_target_tokenizer():
         label_output_encodings = tokenizer(examples['label'], max_length=args.gen_max_len, truncation=True)
         rationale_output_encodings = tokenizer(examples['rationale'], max_length=args.gen_max_len, truncation=True)
 
     model_inputs['labels'] = label_output_encodings['input_ids']
-    model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
+
+    if provide_expl:
+        expl_model_inputs = tokenizer(
+            [
+                'Extract the key information from the dialogue, Include all medically relevant information, '
+                'including family history, diagnosis, past medical (and surgical) history, immunizations, '
+                'lab results and known allergies. Dialogue: ' + text for text in examples['input']
+            ],
+            max_length=args.max_input_length,
+            truncation=True)
+
+        model_inputs['expl_input_ids'] = expl_model_inputs['input_ids']
+        model_inputs['expl_attention_mask'] = expl_model_inputs['attention_mask']
+
+        model_inputs['aux_labels'] = rationale_output_encodings['input_ids']
 
     return model_inputs
 
@@ -48,14 +45,11 @@ def run(args):
     dataset_loader = MultiClinSumDatasetLoader(args.dataset)
 
     datasets = dataset_loader.load_from_json()
-    
-    train_llm_rationales, train_llm_labels = dataset_loader.load_rationale_data(split='train')
-    datasets['train'] = datasets['train'].add_column('llm_label', train_llm_labels)
-    datasets['train'] = datasets['train'].add_column('llm_rationale', train_llm_rationales)
 
-    valid_llm_rationales, valid_llm_labels = dataset_loader.load_rationale_data(split='valid')
-    datasets['valid'] = datasets['valid'].add_column('llm_label', valid_llm_labels)
-    datasets['valid'] = datasets['valid'].add_column('llm_rationale', valid_llm_rationales)
+    for split in ['train', 'valid']:
+        rationales, labels = dataset_loader.load_rationale_data(split=split)
+        datasets[split] = datasets[split].add_column('llm_label', labels)
+        datasets[split] = datasets[split].add_column('llm_rationale', rationales)
 
     if 'rationale' in datasets['train'].column_names:
         datasets = datasets.remove_columns('rationale')
@@ -67,7 +61,9 @@ def run(args):
     tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
 
     tokenized_datasets = datasets.map(
-        lambda examples: tokenize_function(tokenizer=tokenizer, examples=examples),
+        lambda examples: wrap_and_tokenize(tokenizer=tokenizer,
+                                           examples=examples,
+                                           provide_expl=args.model_type == "task_prefix"),
         remove_columns=['input', 'rationale', 'label', 'llm_label'],
         batched=True
     )
@@ -94,7 +90,7 @@ if __name__ == '__main__':
     parser.add_argument('--max_input_length', type=int, default=1024)
     parser.add_argument('--grad_steps', type=int, default=1)
     parser.add_argument('--local_rank', type=int, default=-1)
-    parser.add_argument('--gen_max_len', type=int, default=512)
+    parser.add_argument('--gen_max_len', type=int, default=128)
     parser.add_argument('--parallelize', action='store_true')
     parser.add_argument('--model_type', type=str, default='task_prefix')
     parser.add_argument('--bf16', action='store_true')

@@ -8,6 +8,7 @@ python distill_ft.py \
     --grad_steps 1 \
     --weight 1 \
     --alpha 0.8 \
+    --model_type "task_prefix" \
     --addi_info "Additional-Notes" \
     --parallelize \
     --train_epochs 10 \

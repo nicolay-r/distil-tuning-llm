@@ -18,9 +18,7 @@ from datetime import datetime
 import wandb
 import os
 import logging
-from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, get_linear_schedule_with_warmup
-from transformers import AutoModelForSeq2SeqLM
-from transformers import DataCollatorForSeq2Seq
+from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling
 from transformers.trainer_utils import set_seed
 import torch
 
@@ -47,36 +45,22 @@ def set_wandb(trainer_kwargs, args):
 def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics):
     set_seed(run)
 
-    model = AutoModelForSeq2SeqLM.from_pretrained(args.from_pretrained)
+    model = AutoModelForCausalLM.from_pretrained(args.from_pretrained)
    
     config_dir = get_config_dir(args)
     output_dir = f'../ckpts/{config_dir}'  # for model ckpts
-    # logging_dir = f'logs/{config_dir}'  # for training logs
     print("output dir: {}".format(output_dir))
    
     if os.path.exists(output_dir):
         logging.info('Found existing ckpt directory. Deleted the old directory for the latest run.')
         os.removedirs(output_dir)
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
-    
-    scheduler = get_linear_schedule_with_warmup(
-        optimizer,
-        num_warmup_steps=500, # 预热步数
-        num_training_steps=1201 * args.train_epochs
-    )
-    optimizers = (optimizer, scheduler)
-
-    kwargs = {}
-    if args.deepspeed is not None:
-        kwargs["deepspeed"] = args.deepspeed
-
-    training_args = Seq2SeqTrainingArguments(
+    training_args = TrainingArguments(
         output_dir,                                         # 输出目录，模型和训练日志将被保存在这里
         weight_decay=0.01,
         eval_delay=1,
         num_train_epochs=args.train_epochs,
-        report_to = "none",
+        report_to="none",
         remove_unused_columns = False,                      # 是否移除未使用的列，默认为False，即保留所有列
         eval_strategy='steps',                              # 评估策略，这里设置为“steps”，表示按步数进行评估
         eval_steps=args.eval_steps,                         # 每隔多少步进行一次评估
@@ -88,27 +72,25 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         gradient_accumulation_steps=args.grad_steps,        # 梯度累积步数，用于实现更大的有效批大小
         per_device_train_batch_size=args.batch_size_train,  # 每个设备上的训练批大小
         per_device_eval_batch_size=args.batch_size_eval,    # 每个设备上的评估批大小
-        predict_with_generate=True,                         # 是否使用生成模式进行预测
         seed=run,                                           # 随机种子，用于确保结果可复现
         local_rank=args.local_rank,                         # 本地排名，用于分布式训练
         bf16=args.bf16,                                     # 是否使用bfloat16进行训练，这可以提高性能
-        generation_max_length=args.gen_max_len,             # 生成的最大长度
         prediction_loss_only=False,                         # 是否只预测损失，这里设置为False
         save_total_limit=1,
         load_best_model_at_end=True,
         metric_for_best_model="test_rouge_avg",
         greater_is_better=True,
         push_to_hub=False,
-        # optimizers=(optimizer, scheduler),                # 注意这里传递的是一个元组(optimizer, scheduler)
-        **kwargs
+        # predict_with_generate=True,                       # 是否使用生成模式进行预测
+        # generation_max_length=args.gen_max_len,           # 生成的最大长度
     )
 
+    print("model_type: {}".format(args.model_type))
+
     if args.model_type == 'standard':
-        print("model_type: {}".format(args.model_type))
-        data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
+        data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
     else:
-        print("model_type: {}".format(args.model_type))
         data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
 
     trainer_kwargs = {
@@ -128,7 +110,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
 
     elif args.model_type == 'standard':
         trainer_kwargs.pop('alpha')
-        trainer = Seq2SeqTrainer(**trainer_kwargs)
+        trainer = Trainer(**trainer_kwargs)
 
     else:
         raise ValueError

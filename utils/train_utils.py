@@ -38,7 +38,7 @@ def set_wandb(trainer_kwargs, args):
     timestamp = time.time()
     dt_object = datetime.fromtimestamp(timestamp)
     wandb.init(group="lmflow",
-               project="MeDistill",
+               project="MeDistill-d2n-long",
                mode="disabled",
                name=f"fine-tuning-{args.addi_info}-{dt_object}",
                config=trainer_kwargs)

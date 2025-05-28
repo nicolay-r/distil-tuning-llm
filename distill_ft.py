@@ -9,9 +9,9 @@ SUMMARIZE_PROMPT = 'Summarize: '
 EXTRACT_PROMPT = 'Extract: '
 
 
-def tokenizer_func(tokenizer, examples, features):
+def tokenizer_func(tokenizer, examples, features, max_length):
     return tokenizer(*[examples[f] for f in features],
-                     max_length=16,
+                     max_length=max_length,
                      padding="max_length",
                      truncation=True)
 
@@ -26,26 +26,33 @@ def run(args):
 
     dataset_loader = MultiClinSumDatasetLoader(args.dataset)
 
+    tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
+
     datasets = dataset_loader.load_from_json()
 
-    datasets = datasets.map(
-        lambda item: {
+    if args.model_type == "standard":
+
+        datasets = datasets.remove_columns("rationale")
+
+        m_func = lambda item: {
+            "input": SUMMARIZE_PROMPT + item["input"],
+        }
+
+        features_to_tokenize = ["input", "output"]
+
+    else:
+        m_func = lambda item: {
             "input": SUMMARIZE_PROMPT + item["input"],
             "expl_input": EXTRACT_PROMPT + item["input"]
         }
-    )
+        features_to_tokenize = ["input", "output", "expl_input", "rationale"]
 
-    tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
-
-    features_to_tokenize = ["input", "output"]
-    if args.model_type == "task_prefix":
-        features_to_tokenize.append("expl_input")
-        features_to_tokenize.append("rationale")
+    datasets = datasets.map(m_func)
 
     tokenized_datasets = datasets.map(
-        lambda e: tokenizer_func(tokenizer, e, features=features_to_tokenize),
+        lambda e: tokenizer_func(tokenizer, e, features=features_to_tokenize, max_length=args.max_input_length),
         batched=True,
-        remove_columns=["input", "expl_input", "output", "rationale"]
+        remove_columns=features_to_tokenize
     )
 
     print(tokenized_datasets["train"][:5])
@@ -63,6 +70,7 @@ if __name__ == '__main__':
     parser.add_argument('--alpha', type=float, default=0.5)
     parser.add_argument('--max_steps', type=int, default=50)
     parser.add_argument('--eval_steps', type=int, default=250)
+    parser.add_argument('--max_input_length', type=int, default=64)
     parser.add_argument('--batch_size_train', type=int, default=64)
     parser.add_argument('--batch_size_eval', type=int, default=64)
     parser.add_argument('--optimizer_name', type=str, default='AdamW')

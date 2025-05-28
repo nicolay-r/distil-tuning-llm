@@ -19,7 +19,8 @@ from os.path import dirname, realpath, join
 import wandb
 import os
 import logging
-from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling
+from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling, \
+    get_linear_schedule_with_warmup
 from transformers.trainer_utils import set_seed
 import torch
 
@@ -83,7 +84,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         metric_for_best_model="test_rouge_avg",
         greater_is_better=True,
         push_to_hub=False,
-        # This paramter is critical due to implementation of the custom Rouge. operation.
+        # This parameter is critical due to implementation of the custom Rouge. operation.
         eval_accumulation_steps=5,
         # predict_with_generate=True,                       # 是否使用生成模式进行预测
         # generation_max_length=args.gen_max_len,           # 生成的最大长度
@@ -95,14 +96,16 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
     else:
-        data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, model=model)
+        data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, mlm=False)
 
     trainer_kwargs = {
         'alpha': args.alpha,
         'model': model,
         'args': training_args,
         'train_dataset': tokenized_datasets["train"],
-        'eval_dataset': {'test': tokenized_datasets["valid"],},
+        'eval_dataset': {
+            'test': tokenized_datasets["valid"]
+        },
         'data_collator': data_collator,
         'tokenizer': tokenizer,
         'compute_metrics': compute_metrics,
@@ -110,15 +113,21 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
 
     if args.model_type == 'task_prefix':
         trainer = TaskPrefixTrainer(**trainer_kwargs)
-        trainer.optimizers = optimizers
 
     elif args.model_type == 'standard':
         trainer_kwargs.pop('alpha')
         trainer = Trainer(**trainer_kwargs)
 
-    else:
-        raise ValueError
-    
+    # Setup optimizer.
+    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
+    scheduler = get_linear_schedule_with_warmup(
+        optimizer,
+        num_warmup_steps=500,
+        num_training_steps=1201 * args.train_epochs
+    )
+    optimizers = (optimizer, scheduler)
+    trainer.optimizers = optimizers
+
     set_wandb(trainer_kwargs, args)
 
     wandb.watch(model, log='gradients')

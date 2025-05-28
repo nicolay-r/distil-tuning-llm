@@ -14,6 +14,7 @@
 
 import time
 from datetime import datetime
+from os.path import dirname, realpath, join
 
 import wandb
 import os
@@ -46,11 +47,12 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     set_seed(run)
 
     model = AutoModelForCausalLM.from_pretrained(args.from_pretrained)
-   
+
     config_dir = get_config_dir(args)
-    output_dir = f'../ckpts/{config_dir}'  # for model ckpts
+
+    current_dir = dirname(realpath(__file__))
+    output_dir = join(current_dir, f'.ckpts/{config_dir}')
     print("output dir: {}".format(output_dir))
-   
     if os.path.exists(output_dir):
         logging.info('Found existing ckpt directory. Deleted the old directory for the latest run.')
         os.removedirs(output_dir)
@@ -101,7 +103,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         'eval_dataset': {'test': tokenized_datasets["valid"],},
         'data_collator': data_collator,
         'tokenizer': tokenizer,
-        'compute_metrics': compute_metrics,  
+        'compute_metrics': compute_metrics,
     }
 
     if args.model_type == 'task_prefix':

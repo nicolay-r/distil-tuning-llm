@@ -35,19 +35,3 @@ class MultiClinSumDatasetLoader(object):
         }
         datasets = load_dataset('json', data_files=data_files)
         return datasets
-
-    def load_rationale_data(self, split):
-        labels = list()
-        rationales = list()
-        with open(self.path_to_split(split)) as f:
-            outputs = json.load(f)
-            
-        for output in outputs:
-            rationale = output['rationale']
-            label = output['output']
-            rationales.append(rationale)
-            labels.append(label)
-        # breakpoint()
-        return rationales, labels
-
-    

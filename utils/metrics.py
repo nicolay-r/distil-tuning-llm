@@ -17,23 +17,17 @@ import numpy as np
 import evaluate
 import torch
 import nltk
-from transformers.utils import is_offline_mode
+from rouge_score import rouge
 import wandb
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 nltk.download("punkt", quiet=True)
 
+rouge = evaluate.load("rouge")
+
 
 def compute_metrics_equation(tokenizer):
-
-    rouge = evaluate.load(
-        "rouge",
-        download_config=datasets.DownloadConfig(cache_dir=model_args.cache_dir, local_files_only=True, use_etag=False)
-        if is_offline_mode()
-        else None,
-        # cache_dir=model_args.cache_dir,
-    )
 
     def __sanitize_text(text: str, lowercase: bool = False) -> str:
         """Cleans text by removing whitespace, newlines and tabs and (optionally) lowercasing."""
@@ -51,26 +45,17 @@ def compute_metrics_equation(tokenizer):
         return preds, labels
     
     def compute_metrics(eval_pred):
-        # breakpoint()
         predictions, labels = eval_pred
-        # breakpoint()
-        ps = np.where(predictions[0] != -100,predictions[0],tokenizer.pad_token_id)
-        decoded_preds = tokenizer.batch_decode(ps, skip_special_tokens=True)
-        
-        ls = np.where(labels[0] != -100, labels[0], tokenizer.pad_token_id)
-        # preds = np.where(preds != -100, preds, tokenizer.pad_token_id)
-        decoded_labels = tokenizer.batch_decode(ls, skip_special_tokens=True)
-        # Some simple post-processing
+
+        decoded_preds = tokenizer.batch_decode(predictions[0], skip_special_tokens=True)
+        decoded_labels = tokenizer.batch_decode(labels[0], skip_special_tokens=True)
         decoded_preds, decoded_labels = __postprocess_text(decoded_preds, decoded_labels)
 
         result = {}
 
-        # breakpoint()
-        # ROUGE
         rouge_results = rouge.compute(predictions=decoded_preds, references=decoded_labels, use_stemmer=True)
         result.update(rouge_results)
 
-        # Compute the arithmetic mean of ROUGE-1, ROUGE-2 and ROUGE-L following: https://arxiv.org/abs/2110.08499
         result["rouge_avg"] = np.mean([result["rouge1"], result["rouge2"], result["rougeL"]]).item()
 
         result = {k: round(v * 100, 4) for k, v in result.items()}

@@ -83,6 +83,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         metric_for_best_model="test_rouge_avg",
         greater_is_better=True,
         push_to_hub=False,
+        # This paramter is critical due to implementation of the custom Rouge. operation.
+        eval_accumulation_steps=5,
         # predict_with_generate=True,                       # 是否使用生成模式进行预测
         # generation_max_length=args.gen_max_len,           # 生成的最大长度
     )

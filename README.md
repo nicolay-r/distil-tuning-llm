@@ -1,7 +1,8 @@
 # MeDistill-d2n-long
 
 This repo represent a tiny and **reforged version** of the original [`MeDistil-d2n` framework](https://github.com/Xiaoxiao-Liu/distill-d2n) and the related paper studies.
-This project exploits `rouge_score` and `evaluation` library for summarization specific loss calculations.
+This project exploits ROUGE-based post-evaluation for summarization specific loss calculations.
+This project is majorly adapted for `QWEN` models.
 
 
 ## Setup
@@ -53,7 +54,12 @@ sh ./evaluate/distill_inf.sh
 ## Datasets
 * [MultiClinSum](https://zenodo.org/records/15463353)
 
-## Known issue**s
+## Dataset Formatting Concepts for LM
+
+* Data formatting for QWEN
+  * https://qwen.readthedocs.io/en/latest/getting_started/concepts.html#control-tokens-chat-template 
+
+## Known issues
 
 * https://github.com/huggingface/evaluate/issues/609
   * `!pip install datasets==3.6.0 evaluate==0.4.3 rouge_score`

@@ -46,7 +46,7 @@ nltk.download('punkt_tab')
 
 - Distilling step-by-step. 
 ```bash
-./distill_ft_ds.sh
+./distill_ft.sh
 ```
 
 ### Args usages

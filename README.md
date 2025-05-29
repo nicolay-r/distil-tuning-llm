@@ -1,14 +1,16 @@
 # Distil-Tuning for Text Summarization with `AutoModelCasualLM`
 
 This repo represent a tiny and **reforged version** of the original [`MeDistil-d2n` framework](https://github.com/Xiaoxiao-Liu/distill-d2n) and the related paper studies.
+The original project has a major limitaiton of `Seq2Seq` trainer dependencies.
+The goal of the project is to bridge the gap with fine-tuning SLM LLM models on long-input context by heavily rely on `decoder` based models with following input [Formatting Concepts](#dataset-formatting-concepts-for-lm).
 
-### This project contributes with:
-1. Replacement of `Seq2SeqTrainer`: `AutoModelCasualLM` models (`Qwen` series in particular).
+### Contribution
+1. ✅ Replacement of `Seq2SeqTrainer`: `AutoModelCasualLM` models (`Qwen` series in particular).
    * Support instruction tuning
-2. Refactoring and narrowind the scope, droppping dependencies.
-3. Switch dependencies to Python 3.10+
+2. ✅ Refactoring and narrowind the scope, droppping dependencies.
+3. ✅ Switch dependencies to `Python 3.10+`
 
-# TODO
+# 🛠️ TODO
 - [x] Narrow scope of the framework.
   - [x] Drop support for DeepSpeed (see [Known Issues](#known-issues))
 - [x] Reforge data preparation concept (Qwen2.5 support) (see [Formatting Concepts](#dataset-formatting-concepts-for-lm))

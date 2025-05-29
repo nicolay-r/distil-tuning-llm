@@ -20,15 +20,19 @@ def asssisant_prompt(instruction, text, summary):
     )
 
 
-def tokenizer_func(tokenizer, prompt, max_length, field_mapping_dict=None):
+def tokenizer_func(tokenizer, max_length):
+    return lambda text: tokenizer(text, max_length=max_length, padding="max_length", truncation=True)
+
+
+def instruction_tokenizer_func(tokenizer_func, prompt, field_mapping_dict=None):
 
     # Tokenize full sequence.
-    tokenized = tokenizer(prompt, max_length=max_length, padding="max_length", truncation=True)
+    tokenized = tokenizer_func(prompt)
 
     # Find where assistant starts to compute label masking.
     assistant_start = prompt.find("<|im_start|>assistant")
     prompt_prefix = prompt[:assistant_start]
-    prefix_ids = tokenizer(prompt_prefix, add_special_tokens=False)["input_ids"]
+    prefix_ids = tokenizer_func(prompt_prefix)["input_ids"]
     prefix_len = len(prefix_ids)
 
     # Create labels
@@ -59,11 +63,12 @@ def run(args):
         }
     )
 
+    tok_func = tokenizer_func(tokenizer, max_length=args.max_input_length)
+
     # Process the input and output fields that are common for both modes.
     tokenized = datasets.map(
-        lambda record: tokenizer_func(tokenizer=tokenizer,
-                                      prompt=record["summarization_task"],
-                                      max_length=args.max_input_length),
+        lambda record: instruction_tokenizer_func(tokenizer_func=tok_func,
+                                                  prompt=record["summarization_task"]),
         remove_columns=["summarization_task"]
     )
 
@@ -78,18 +83,19 @@ def run(args):
         # 2. Map this new input onto "input_ids_expl" and "attention_mask_expl", and "labels_expl.
         tokenized = tokenized.map(
             lambda record: {
-                "rationale_task": asssisant_prompt(instruction=EXTRACT_PROMPT, text=record["input"], summary=record["rationale"])
+                "rationale_task": asssisant_prompt(instruction=EXTRACT_PROMPT,
+                                                   text=record["input"],
+                                                   summary=record["rationale"])
             },
             remove_columns=["input", "output", "rationale"]
         ).map(
-            lambda record: tokenizer_func(tokenizer=tokenizer,
-                                          prompt=record["rationale_task"],
-                                          max_length=args.max_input_length,
-                                          field_mapping_dict={
-                                              "input_ids": "input_ids_expl",
-                                              "attention_mask": "attention_mask_expl",
-                                              "labels": "labels_expl"
-                                          }),
+            lambda record: instruction_tokenizer_func(tokenizer_func=tok_func,
+                                                      prompt=record["rationale_task"],
+                                                      field_mapping_dict={
+                                                          "input_ids": "input_ids_expl",
+                                                          "attention_mask": "attention_mask_expl",
+                                                          "labels": "labels_expl"
+                                                      }),
             remove_columns=["rationale_task"]
         )
 

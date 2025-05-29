@@ -5,13 +5,45 @@ from utils.train_utils import train_and_evaluate
 from transformers import AutoTokenizer
 
 
-SUMMARIZE_PROMPT = 'Summarize: '
-EXTRACT_PROMPT = 'Extract: '
+SUMMARIZE_PROMPT = 'Summarize'
+EXTRACT_PROMPT = 'Extract'
 
 
-# TODO. This function should support the mapping!
-def tokenizer_func(tokenizer, examples, features, max_length):
-    return tokenizer(*[examples[f] for f in features], max_length=max_length, padding="max_length", truncation=True)
+def asssisant_prompt(instruction, text, summary):
+    return (
+        "<|im_start|>user\n"
+        f"{instruction}:\n{text}\n"
+        "<|im_end|>\n"
+        "<|im_start|>assistant\n"
+        f"{summary}\n"
+        "<|im_end|>"
+    )
+
+
+def tokenizer_func(tokenizer, prompt, max_length, field_mapping_dict=None):
+
+    # Tokenize full sequence.
+    tokenized = tokenizer(prompt, max_length=max_length, padding="max_length", truncation=True)
+
+    # Find where assistant starts to compute label masking.
+    assistant_start = prompt.find("<|im_start|>assistant")
+    prompt_prefix = prompt[:assistant_start]
+    prefix_ids = tokenizer(prompt_prefix, add_special_tokens=False)["input_ids"]
+    prefix_len = len(prefix_ids)
+
+    # Create labels
+    labels = tokenized["input_ids"].copy()
+    # Mask prompt part.
+    labels[:prefix_len] = [-100] * prefix_len
+
+    data = {
+        "input_ids": tokenized["input_ids"],
+        "attention_mask": tokenized["attention_mask"],
+        "labels": labels,
+    }
+
+    return data if field_mapping_dict is None else \
+        {new_name: data[origin_name] for origin_name, new_name in field_mapping_dict.items()}
 
 
 def run(args):
@@ -20,41 +52,49 @@ def run(args):
 
     tokenizer = AutoTokenizer.from_pretrained(args.from_pretrained)
 
-    datasets = dataset_loader.load_from_json()
-
-    features_to_tokenize = ["input", "output"]
-
-    if args.model_type == "standard":
-
-        datasets = datasets.remove_columns("rationale")
-
-        m_func = lambda item: {
-            "input": SUMMARIZE_PROMPT + item["input"],
+    # Compose prompts for inputs.
+    datasets = dataset_loader.load_from_json().map(
+        lambda record: {
+            "summarization_task": asssisant_prompt(instruction=SUMMARIZE_PROMPT, text=record["input"], summary=record["output"])
         }
-
-    else:
-        m_func = lambda item: {
-            "input": SUMMARIZE_PROMPT + item["input"],
-            "expl_input": EXTRACT_PROMPT + item["input"]
-        }
-
-        features_to_tokenize += ["expl_input", "rationale"]
-
-    datasets = datasets.map(m_func)
-
-    tokenized_datasets = datasets.map(
-        lambda e: tokenizer_func(tokenizer, e, features=features_to_tokenize, max_length=args.max_input_length),
-        batched=True,
-        remove_columns=features_to_tokenize
     )
 
-    print(features_to_tokenize)
-    print(datasets)
-    print(tokenized_datasets["train"][:5])
-    exit(0)
+    # Process the input and output fields that are common for both modes.
+    tokenized = datasets.map(
+        lambda record: tokenizer_func(tokenizer=tokenizer,
+                                      prompt=record["summarization_task"],
+                                      max_length=args.max_input_length),
+        remove_columns=["summarization_task"]
+    )
+
+    if args.model_type == "standard":
+        # For the standard task we do not support rationale.
+        tokenized = tokenized.remove_columns([
+            "rationale", "input", "output"
+        ])
+
+    if args.model_type == "task_prefix":
+        # 1. Compose new input for explanations and move rationale to output.
+        # 2. Map this new input onto "input_ids_expl" and "attention_mask_expl", and "labels_expl.
+        tokenized = tokenized.map(
+            lambda record: {
+                "rationale_task": asssisant_prompt(instruction=EXTRACT_PROMPT, text=record["input"], summary=record["rationale"])
+            },
+            remove_columns=["input", "output", "rationale"]
+        ).map(
+            lambda record: tokenizer_func(tokenizer=tokenizer,
+                                          prompt=record["rationale_task"],
+                                          max_length=args.max_input_length,
+                                          field_mapping_dict={
+                                              "input_ids": "input_ids_expl",
+                                              "attention_mask": "attention_mask_expl",
+                                              "labels": "labels_expl"
+                                          }),
+            remove_columns=["rationale_task"]
+        )
 
     train_and_evaluate(args=args, run=args.run, tokenizer=tokenizer,
-                       tokenized_datasets=tokenized_datasets,
+                       tokenized_datasets=tokenized.map(batched=True),
                        compute_metrics=compute_metrics_equation(tokenizer))
 
 

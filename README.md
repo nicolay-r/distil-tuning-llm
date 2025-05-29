@@ -78,6 +78,8 @@ sh ./evaluate/distill_inf.sh
 
 ## Known issues
 
+* https://github.com/huggingface/transformers/blob/v4.33.2/examples/pytorch/summarization/run_summarization.py#L657
+  * ROUGE calculation  
 * https://github.com/huggingface/evaluate/issues/609
   * `!pip install datasets==3.6.0 evaluate==0.4.3 rouge_score`
 * https://github.com/huggingface/transformers/issues/36331

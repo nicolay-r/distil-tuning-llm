@@ -72,7 +72,9 @@ sh ./evaluate/distill_inf.sh
 ## Dataset Formatting Concepts for LM
 
 * Data formatting for QWEN
-  * https://qwen.readthedocs.io/en/latest/getting_started/concepts.html#control-tokens-chat-template 
+  * https://qwen.readthedocs.io/en/latest/getting_started/concepts.html#control-tokens-chat-template
+* Fine-tuning setup
+  * https://github.com/QwenLM/Qwen2.5-VL/tree/main/qwen-vl-finetune
 
 ## Known issues
 

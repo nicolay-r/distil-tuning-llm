@@ -49,6 +49,9 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
 
     model = AutoModelForCausalLM.from_pretrained(args.from_pretrained)
 
+    # Set maximum generation length.
+    model.config.max_length = args.gen_max_len
+
     config_dir = get_config_dir(args)
 
     current_dir = dirname(realpath(__file__))
@@ -87,7 +90,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         # This parameter is critical due to implementation of the custom Rouge. operation.
         eval_accumulation_steps=5,
         # predict_with_generate=True,                       # 是否使用生成模式进行预测
-        # generation_max_length=args.gen_max_len,           # 生成的最大长度
     )
 
     print("model_type: {}".format(args.model_type))

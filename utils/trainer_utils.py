@@ -52,16 +52,19 @@ class TaskPrefixTrainer(Trainer):
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
     
     def compute_loss(self, model, inputs, return_outputs=False):
+
         pred_outputs = model(**inputs['pred'])
         expl_outputs = model(**inputs['expl'])
 
         loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
 
+        # TODO. Refactor this into single method.
         pred_labels = inputs['pred']['labels']  # Assuming true labels are here
         pred_preds = torch.argmax(pred_outputs.logits, dim=-1)
         pred_accuracy = (pred_preds == pred_labels).float().mean()
         current_lr = self.optimizer.param_groups[0]["lr"]
 
+        # TODO. Refactor this into single method.
         expl_labels = inputs['expl']['labels']  # Assuming true labels for explanations
         expl_preds = torch.argmax(expl_outputs.logits, dim=-1)
         expl_accuracy = (expl_preds == expl_labels).float().mean()
@@ -94,11 +97,14 @@ class TaskPrefixTrainer(Trainer):
         # breakpoint()
         loss = self.alpha * pred_outputs[0] + (1 - self.alpha) * expl_outputs[0]
 
-        wandb.log({'eval/loss': loss,
-                   'eval/loss_pred': pred_outputs[0], 
-                   'eval/loss_expl': expl_outputs[0]                  
-                   },
-                  step=self.state.global_step)
+        wandb.log(
+            {
+                'eval/loss': loss,
+                'eval/loss_pred': pred_outputs[0],
+                'eval/loss_expl': expl_outputs[0]
+            },
+            step=self.state.global_step)
+
         return (
             loss,
             [pred_outputs[1], expl_outputs[1]],

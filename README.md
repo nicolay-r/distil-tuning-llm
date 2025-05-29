@@ -1,8 +1,21 @@
-# MeDistill-d2n-long
+# Distil-Tuning for Text Summarization with `AutoModelCasualLM`
 
 This repo represent a tiny and **reforged version** of the original [`MeDistil-d2n` framework](https://github.com/Xiaoxiao-Liu/distill-d2n) and the related paper studies.
-This project exploits ROUGE-based post-evaluation for summarization specific loss calculations.
-This project is majorly adapted for `QWEN` models.
+
+### This project contributes with:
+1. Replacement of `Seq2SeqTrainer`: `AutoModelCasualLM` models (`Qwen` series in particular).
+   * Support instruction tuning
+2. Refactoring and narrowind the scope, droppping dependencies.
+3. Switch dependencies to Python 3.10+
+
+# TODO
+- [x] Narrow scope of the framework.
+  - [x] Drop support for DeepSpeed (see [Known Issues](#known-issues))
+- [x] Reforge data preparation concept (Qwen2.5 support) (see [Formatting Concepts](#dataset-formatting-concepts-for-lm))
+- [ ] Reforge evaluation.
+- [ ] Reforge prefix `TaskPrefixTrainer`.
+  - [ ] Sync parameters list with one at data preparation stage
+  - [ ] Reforge list of parameters
 
 
 ## Setup
@@ -35,7 +48,7 @@ nltk.download('punkt_tab')
 ```
 
 ### Args usages
-- `--from_pretrained`: Model from hugging face that nesting `AutoModelForSeq2SeqLM`
+- `--from_pretrained`: Model from hugging face that nesting `AutoModelCasualLM`
 - `--dataset`: `multiclinsum`
 - `--alpha`: Task weight for multi-task training.
   - $Loss = alpha * pred_l + (1 - alpha) * rationale_l$

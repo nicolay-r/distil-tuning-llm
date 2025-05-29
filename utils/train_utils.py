@@ -1,5 +1,5 @@
 # Copyright 2023 The Distilling-step-by-step authors
-
+import shutil
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -56,7 +56,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
     print("output dir: {}".format(output_dir))
     if os.path.exists(output_dir):
         logging.info('Found existing ckpt directory. Deleted the old directory for the latest run.')
-        os.removedirs(output_dir)
+        shutil.rmtree(output_dir)
 
     training_args = TrainingArguments(
         output_dir,                                         # 输出目录，模型和训练日志将被保存在这里
@@ -64,7 +64,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         eval_delay=1,
         num_train_epochs=args.train_epochs,
         report_to="none",
-        remove_unused_columns = False,                      # 是否移除未使用的列，默认为False，即保留所有列
+        remove_unused_columns=False,                        # 是否移除未使用的列，默认为False，即保留所有列
         eval_strategy='steps',                              # 评估策略，这里设置为“steps”，表示按步数进行评估
         eval_steps=args.eval_steps,                         # 每隔多少步进行一次评估
         save_strategy='steps',                              # 保存策略

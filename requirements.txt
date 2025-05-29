@@ -17,4 +17,3 @@ git+https://github.com/google-research/bleurt.git
 omegaconf
 adapters
 huggingface_hub
-deepspeed==0.14.4

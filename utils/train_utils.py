@@ -1,7 +1,7 @@
 import shutil
 import time
 from datetime import datetime
-from os.path import dirname, realpath, join
+from os.path import join
 
 import wandb
 import os
@@ -14,36 +14,33 @@ import torch
 from utils.metrics import compute_metrics_rouge
 from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-
-def get_config_dir(args):
-    path = f'{args.model_type}/{args.from_pretrained.split("/")[1]}_{args.addi_info}'
-    return path
-
 
 def set_wandb(trainer_kwargs, args):
     timestamp = time.time()
     dt_object = datetime.fromtimestamp(timestamp)
     wandb.init(group="lmflow",
-               project="MeDistill-d2n-long",
-               mode="disabled",
+               project="Distill-LM",
+               #mode="disabled",
                name=f"fine-tuning-{args.addi_info}-{dt_object}",
                config=trainer_kwargs)
 
 
-def train_and_evaluate(args, run, tokenizer, tokenized_datasets):
+def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
     set_seed(run)
 
     # Initialize model with the related configuration parameters.
     model = AutoModelForCausalLM.from_pretrained(args.from_pretrained)
     model.generation_config.max_length = args.max_output_length
 
-    config_dir = get_config_dir(args)
+    output_dir = join(
+        root_dir,
+        '.ckpts',
+        args.model_type,
+        args.from_pretrained.split("/")[-1] + "_" + args.addi_info
+    )
 
-    current_dir = dirname(realpath(__file__))
-    output_dir = join(current_dir, f'.ckpts/{config_dir}')
     print("output dir: {}".format(output_dir))
+
     if os.path.exists(output_dir):
         logging.info('Found existing ckpt directory. Deleted the old directory for the latest run.')
         shutil.rmtree(output_dir)
@@ -66,7 +63,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets):
         per_device_train_batch_size=args.batch_size_train,
         per_device_eval_batch_size=args.batch_size_eval,
         seed=run,
-        local_rank=args.local_rank,
         bf16=args.bf16,
         prediction_loss_only=False,
         save_total_limit=1,

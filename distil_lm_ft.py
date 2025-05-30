@@ -1,5 +1,6 @@
 import argparse
 
+from cfg import ROOT_DIR
 from utils.multiclinsum_loader import MultiClinSumDatasetLoader
 from utils.train_utils import train_and_evaluate
 from transformers import AutoTokenizer
@@ -100,7 +101,8 @@ def run(args):
         )
 
     train_and_evaluate(args=args, run=args.seed, tokenizer=tokenizer,
-                       tokenized_datasets=tokenized.map(batched=True))
+                       tokenized_datasets=tokenized.map(batched=True),
+                       root_dir=ROOT_DIR)
 
 
 if __name__ == '__main__':
@@ -120,7 +122,6 @@ if __name__ == '__main__':
     parser.add_argument('--from_pretrained', type=str, default='google/t5-v1_1-base')
     parser.add_argument('--label_type', type=str, default='gt')
     parser.add_argument('--grad_steps', type=int, default=1)
-    parser.add_argument('--local_rank', type=int, default=-1)
     parser.add_argument('--max_output_length', type=int, default=64)
     parser.add_argument('--parallelize', action='store_true')
     parser.add_argument('--model_type', type=str, default='task_prefix', choices=["standard", "task_prefix"])

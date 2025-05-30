@@ -1,6 +1,8 @@
 import json
-from os.path import join, dirname, realpath
+from os.path import join
 from statistics import mean, median
+
+from cfg import ROOT_DIR
 
 
 def analyze_input_lengths_in_chars(json_path, entry_value):
@@ -30,8 +32,16 @@ def analyze_input_lengths_in_chars(json_path, entry_value):
     }
 
 
-current_dir = dirname(realpath(__file__))
-dataset_dir = join(current_dir, "../datasets/multiclinsum_mult/")
+dataset_dir = join(ROOT_DIR, "datasets/multiclinsum_mult/")
+
 for split in ["train", "test", "valid"]:
+
     for entry in ["input", "output"]:
-        print(split + "\t" + entry + "\t", analyze_input_lengths_in_chars(json_path=join(dataset_dir, split + ".json"), entry_value=entry))
+
+        log = "\t".join([
+            split,
+            entry,
+            str(analyze_input_lengths_in_chars(json_path=join(dataset_dir, split + ".json"), entry_value=entry))
+            ])
+
+        print(log)

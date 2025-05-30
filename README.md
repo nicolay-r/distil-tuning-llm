@@ -7,7 +7,7 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
 ### Contribution
 1. ✅ Replacement of `Seq2SeqTrainer`: `AutoModelCasualLM` models (`Qwen` series in particular).
    * Support instruction tuning
-2. ✅ Refactoring and narrowind the scope, droppping dependencies.
+2. ✅ Refactoring and narrowing the scope, dropping dependencies.
 3. ✅ Switch dependencies to `Python 3.10+`
 
 # 🛠️ TODO

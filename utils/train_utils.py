@@ -21,7 +21,7 @@ def set_wandb(trainer_kwargs, args):
     wandb.init(group="lmflow",
                project="Distill-LM",
                #mode="disabled",
-               name=f"fine-tuning-{args.addi_info}-{dt_object}",
+               name=f"fine-tuning-{args.description}-{dt_object}",
                config=trainer_kwargs)
 
 
@@ -36,7 +36,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
         root_dir,
         '.ckpts',
         args.model_type,
-        args.from_pretrained.split("/")[-1] + "_" + args.addi_info
+        args.from_pretrained.split("/")[-1] + "_" + args.description
     )
 
     print("output dir: {}".format(output_dir))
@@ -72,7 +72,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
         push_to_hub=False,
         # IMPORTANT.
         # This parameter is critical due to implementation of the custom Rouge. operation.
-        eval_accumulation_steps=5,
+        eval_accumulation_steps=args.eval_accumulation_steps,
     )
 
     print("model_type: {}".format(args.model_type))

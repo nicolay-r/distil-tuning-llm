@@ -28,6 +28,3 @@ def split_dataset(json_path, train_ratio=0.8, valid_ratio=0.1, test_ratio=0.1, s
     test_data = data[valid_end:]
 
     return train_data, valid_data, test_data
-
-
-    print(f"Dataset split into: {len(train_data)} train, {len(valid_data)} valid, {len(test_data)} test.")

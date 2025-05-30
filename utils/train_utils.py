@@ -102,7 +102,6 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets):
         data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, mlm=False)
 
     trainer_kwargs = {
-        'alpha': args.alpha,
         'model': model,
         'args': training_args,
         'train_dataset': tokenized_datasets["train"],
@@ -114,7 +113,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets):
     }
 
     if args.model_type == 'task_prefix':
-        trainer = TaskPrefixTrainer(**trainer_kwargs)
+        trainer = TaskPrefixTrainer(alpha=args.alpha, **trainer_kwargs)
 
     elif args.model_type == 'standard':
         trainer = Trainer(**trainer_kwargs)

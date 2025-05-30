@@ -28,7 +28,6 @@ python3 ./run_summarization_old.py "./conf/base.yml" "./conf/taskA.yml" output_d
     evaluation_strategy="'no'" \
     load_best_model_at_end=false \
     bertscore_model_type=null \
-    bleurt_checkpoint=null \
     # model_type=task_prefix \
     # checkpoint_dir="$CKPT_DIR" \
     

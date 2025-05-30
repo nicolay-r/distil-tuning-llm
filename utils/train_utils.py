@@ -48,10 +48,9 @@ def set_wandb(trainer_kwargs, args):
 def train_and_evaluate(args, run, tokenizer, tokenized_datasets):
     set_seed(run)
 
+    # Initialize model with the related configuration parameters.
     model = AutoModelForCausalLM.from_pretrained(args.from_pretrained)
-
-    # Set maximum generation length.
-    model.config.max_length = args.max_output_length
+    model.generation_config.max_length = args.max_output_length
 
     config_dir = get_config_dir(args)
 
@@ -85,7 +84,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets):
         prediction_loss_only=False,
         save_total_limit=1,
         load_best_model_at_end=True,
-        metric_for_best_model="test_rouge_avg",
+        metric_for_best_model="eval_rouge_avg",
         greater_is_better=True,
         push_to_hub=False,
         # IMPORTANT.
@@ -105,9 +104,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets):
         'model': model,
         'args': training_args,
         'train_dataset': tokenized_datasets["train"],
-        'eval_dataset': {
-            'test': tokenized_datasets["valid"]
-        },
+        'eval_dataset': tokenized_datasets["valid"],
         'data_collator': data_collator,
         'compute_metrics': lambda eval_preds: compute_metrics_rouge(eval_preds=eval_preds, tokenizer=tokenizer),
     }

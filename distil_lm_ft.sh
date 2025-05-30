@@ -4,6 +4,7 @@ python distil_lm_ft.py \
     --dataset "./datasets/multiclinsum_en_test" \
     --eval_steps 50 \
     --max_input_length 512 \
+    --max_input_length 512 \
     --batch_size_train 2 \
     --batch_size_eval 2 \
     --grad_steps 1 \

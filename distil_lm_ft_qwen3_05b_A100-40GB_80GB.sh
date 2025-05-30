@@ -5,9 +5,9 @@ python distil_lm_ft.py \
     --eval_steps 100 \
     --max_input_length 3078 \
     --max_output_length 762 \
-    --batch_size_train 8 \
-    --batch_size_eval 4 \
-    --eval_accumulation_steps 2 \
+    --batch_size_train 2 \
+    --batch_size_eval 1 \
+    --eval_accumulation_steps 1 \
     --grad_steps 1 \
     --weight 1 \
     --alpha 0.8 \

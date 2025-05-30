@@ -16,6 +16,7 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
 - [x] Reforge data preparation concept (Qwen2.5 support) (see [Formatting Concepts](#dataset-formatting-concepts-for-lm))
 - [x] Refactor evaluation
   - [x] Fixed `Trainer` limitaion on not-exploiting `.generate` call for `predictions`
+- [ ] Dataset cropping
 - [ ] Reforge prefix `TaskPrefixTrainer`.
   - [ ] Sync parameters list with one at data preparation stage
   - [ ] Reforge list of parameters

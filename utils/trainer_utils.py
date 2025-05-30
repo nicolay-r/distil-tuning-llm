@@ -1,17 +1,3 @@
-# Copyright 2023 The Distilling-step-by-step authors
-
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-
-#     https://www.apache.org/licenses/LICENSE-2.0为法国
-
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import pandas as pd
 import torch
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -89,12 +75,8 @@ class TaskPrefixTrainer(Trainer):
         ignore_keys: Optional[List[str]] = None
     ) -> Tuple[Optional[float], Optional[torch.Tensor], Optional[torch.Tensor]]:
         
-        pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False,
-                                               ignore_keys=ignore_keys)
-        # torch.cuda.empty_cache() # 也许可以试一下
-        expl_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False,
-                                               ignore_keys=ignore_keys)
-        # breakpoint()
+        pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False, ignore_keys=ignore_keys)
+        expl_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False, ignore_keys=ignore_keys)
         loss = self.alpha * pred_outputs[0] + (1 - self.alpha) * expl_outputs[0]
 
         wandb.log(

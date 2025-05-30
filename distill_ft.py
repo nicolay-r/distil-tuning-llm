@@ -1,6 +1,5 @@
 from utils.data_utils import MultiClinSumDatasetLoader
 import argparse
-from utils.metrics import compute_metrics_equation
 from utils.train_utils import train_and_evaluate
 from transformers import AutoTokenizer
 
@@ -99,9 +98,8 @@ def run(args):
             remove_columns=["rationale_task"]
         )
 
-    train_and_evaluate(args=args, run=args.run, tokenizer=tokenizer,
-                       tokenized_datasets=tokenized.map(batched=True),
-                       compute_metrics=compute_metrics_equation(tokenizer))
+    train_and_evaluate(args=args, run=args.seed, tokenizer=tokenizer,
+                       tokenized_datasets=tokenized.map(batched=True))
 
 
 if __name__ == '__main__':
@@ -117,12 +115,12 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size_eval', type=int, default=64)
     parser.add_argument('--optimizer_name', type=str, default='AdamW')
     parser.add_argument('--lr', type=float, default=1e-05)
-    parser.add_argument('--run', type=int, default=42)
+    parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--from_pretrained', type=str, default='google/t5-v1_1-base')
     parser.add_argument('--label_type', type=str, default='gt')
     parser.add_argument('--grad_steps', type=int, default=1)
     parser.add_argument('--local_rank', type=int, default=-1)
-    parser.add_argument('--gen_max_len', type=int, default=64)
+    parser.add_argument('--max_output_length', type=int, default=64)
     parser.add_argument('--parallelize', action='store_true')
     parser.add_argument('--model_type', type=str, default='task_prefix', choices=["standard", "task_prefix"])
     parser.add_argument('--bf16', action='store_true')

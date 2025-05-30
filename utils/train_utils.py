@@ -24,6 +24,7 @@ from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataC
 from transformers.trainer_utils import set_seed
 import torch
 
+from utils.metrics import compute_metrics_rouge
 from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -44,13 +45,13 @@ def set_wandb(trainer_kwargs, args):
                config=trainer_kwargs)
 
 
-def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics):
+def train_and_evaluate(args, run, tokenizer, tokenized_datasets):
     set_seed(run)
 
     model = AutoModelForCausalLM.from_pretrained(args.from_pretrained)
 
     # Set maximum generation length.
-    model.config.max_length = args.gen_max_len
+    model.config.max_length = args.max_output_length
 
     config_dir = get_config_dir(args)
 
@@ -62,34 +63,34 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
         shutil.rmtree(output_dir)
 
     training_args = TrainingArguments(
-        output_dir,                                         # 输出目录，模型和训练日志将被保存在这里
+        output_dir,
         weight_decay=0.01,
         eval_delay=1,
         num_train_epochs=args.train_epochs,
         report_to="none",
-        remove_unused_columns=False,                        # 是否移除未使用的列，默认为False，即保留所有列
-        eval_strategy='steps',                              # 评估策略，这里设置为“steps”，表示按步数进行评估
-        eval_steps=args.eval_steps,                         # 每隔多少步进行一次评估
-        save_strategy='steps',                              # 保存策略
-        save_steps=args.eval_steps,                         # 每隔多少步保存一次模型
-        logging_steps=1,                                    # 每隔多少步记录一次日志
-        learning_rate=args.lr,                              # 学习率
+        remove_unused_columns=False,
+        eval_strategy='steps',
+        eval_steps=args.eval_steps,
+        save_strategy='steps',
+        save_steps=args.eval_steps,
+        logging_steps=1,
+        learning_rate=args.lr,
         warmup_steps=500,
-        gradient_accumulation_steps=args.grad_steps,        # 梯度累积步数，用于实现更大的有效批大小
-        per_device_train_batch_size=args.batch_size_train,  # 每个设备上的训练批大小
-        per_device_eval_batch_size=args.batch_size_eval,    # 每个设备上的评估批大小
-        seed=run,                                           # 随机种子，用于确保结果可复现
-        local_rank=args.local_rank,                         # 本地排名，用于分布式训练
-        bf16=args.bf16,                                     # 是否使用bfloat16进行训练，这可以提高性能
-        prediction_loss_only=False,                         # 是否只预测损失，这里设置为False
+        gradient_accumulation_steps=args.grad_steps,
+        per_device_train_batch_size=args.batch_size_train,
+        per_device_eval_batch_size=args.batch_size_eval,
+        seed=run,
+        local_rank=args.local_rank,
+        bf16=args.bf16,
+        prediction_loss_only=False,
         save_total_limit=1,
         load_best_model_at_end=True,
         metric_for_best_model="test_rouge_avg",
         greater_is_better=True,
         push_to_hub=False,
+        # IMPORTANT.
         # This parameter is critical due to implementation of the custom Rouge. operation.
         eval_accumulation_steps=5,
-        # predict_with_generate=True,                       # 是否使用生成模式进行预测
     )
 
     print("model_type: {}".format(args.model_type))
@@ -109,15 +110,13 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, compute_metrics
             'test': tokenized_datasets["valid"]
         },
         'data_collator': data_collator,
-        'tokenizer': tokenizer,
-        'compute_metrics': compute_metrics,
+        'compute_metrics': lambda eval_preds: compute_metrics_rouge(eval_preds=eval_preds, tokenizer=tokenizer),
     }
 
     if args.model_type == 'task_prefix':
         trainer = TaskPrefixTrainer(**trainer_kwargs)
 
     elif args.model_type == 'standard':
-        trainer_kwargs.pop('alpha')
         trainer = Trainer(**trainer_kwargs)
 
     # Setup optimizer.

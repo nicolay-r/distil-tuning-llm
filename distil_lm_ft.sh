@@ -1,7 +1,7 @@
 #!/bin/bash
-python distill_ft.py \
+python distil_lm_ft.py \
     --from_pretrained "Qwen/Qwen2.5-0.5B-Instruct" \
-    --dataset "multiclinsum_en_test" \
+    --dataset "./datasets/multiclinsum_en_test" \
     --eval_steps 50 \
     --max_input_length 512 \
     --batch_size_train 2 \

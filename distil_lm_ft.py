@@ -1,5 +1,6 @@
-from utils.data_utils import MultiClinSumDatasetLoader
 import argparse
+
+from utils.multiclinsum_loader import MultiClinSumDatasetLoader
 from utils.train_utils import train_and_evaluate
 from transformers import AutoTokenizer
 

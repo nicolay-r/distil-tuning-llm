@@ -1,16 +1,18 @@
 import numpy as np
 import evaluate
-import torch
 import nltk
-from rouge_score import rouge
 import wandb
 from transformers import EvalPrediction, AutoTokenizer
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-nltk.download("punkt", quiet=True)
+class RougeSingleton:
+    _instance = None
 
-rouge = evaluate.load("rouge")
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = evaluate.load("rouge")
+        return cls._instance
 
 
 def sanitize_text(text: str, lowercase: bool = False) -> str:
@@ -48,7 +50,9 @@ def compute_metrics_rouge(eval_preds: EvalPrediction, tokenizer: AutoTokenizer):
 
     result = {}
 
-    rouge_results = rouge.compute(predictions=decoded_preds, references=decoded_labels, use_stemmer=True)
+    metric = RougeSingleton.get_instance()
+
+    rouge_results = metric.compute(predictions=decoded_preds, references=decoded_labels, use_stemmer=True)
     result.update(rouge_results)
 
     result["rouge_avg"] = np.mean([result["rouge1"], result["rouge2"], result["rougeL"]]).item()
@@ -61,6 +65,7 @@ def compute_metrics_rouge(eval_preds: EvalPrediction, tokenizer: AutoTokenizer):
     reference_lens = [np.count_nonzero(label != tokenizer.pad_token_id) for label in labels]
     result["mean_generated_len"] = np.mean(generated_lens)
     result["mean_reference_len"] = np.mean(reference_lens)
+
     wandb.log(result)
 
     return result

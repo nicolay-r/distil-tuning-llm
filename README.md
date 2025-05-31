@@ -16,27 +16,12 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
 - [x] Reforge data preparation concept (Qwen2.5 support) (see [Formatting Concepts](#dataset-formatting-concepts-for-lm))
 - [x] Refactor evaluation
   - [x] Fixed `Trainer` limitaion on not-exploiting `.generate` call for `predictions`
-- [ ] Dataset cropping
-- [ ] Reforge prefix `TaskPrefixTrainer`.
-  - [ ] Sync parameters list with one at data preparation stage
+- [x] Dataset cropping
+- [x] Reforge prefix `TaskPrefixTrainer`.
   - [ ] Reforge list of parameters
 
 
 ## Setup
-- Initial setup of the conda / CUDA and other utils:
-```bash
-./setup_script.sh
-```
-- Setup Conda environment for fine-tuning:
-```bash
-conda env create -f environment.yml
-```
-- Setup Conda environment for evaluation:
-```bash
-cd ./evaluate
-conda env create -n eval python=3.9 -y
-pip install -r requirements.txt   
-```
 
 - Download `punkt_tab` for `nltk`
 ```bash

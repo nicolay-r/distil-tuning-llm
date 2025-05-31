@@ -60,7 +60,7 @@ class ModelArguments:
     )
     model_type: str = field(
         default=None,
-        metadata={"help": "adapter or task_prefix"},
+        metadata={"help": "adapter or distill"},
     )
     use_fast_tokenizer: bool = field(
         default=True,

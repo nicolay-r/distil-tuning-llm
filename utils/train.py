@@ -3,16 +3,17 @@ import time
 from datetime import datetime
 from os.path import join
 
+import torch
 import wandb
 import os
 import logging
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling, \
     get_linear_schedule_with_warmup
 from transformers.trainer_utils import set_seed
-import torch
 
+from utils.distill_collator import DistillDataCollator
+from utils.distill_trainer import DistillTrainer
 from utils.metrics import compute_metrics_rouge
-from utils.trainer_utils import TaskPrefixDataCollator, TaskPrefixTrainer
 
 
 def set_wandb(trainer_kwargs, args):
@@ -81,7 +82,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
         data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
     else:
-        data_collator = TaskPrefixDataCollator(tokenizer=tokenizer, mlm=False)
+        data_collator = DistillDataCollator(tokenizer=tokenizer, mlm=False)
 
     trainer_kwargs = {
         'model': model,
@@ -92,11 +93,11 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
         'compute_metrics': lambda eval_preds: compute_metrics_rouge(eval_preds=eval_preds, tokenizer=tokenizer),
     }
 
-    if args.model_type == 'task_prefix':
-        trainer = TaskPrefixTrainer(
+    if args.model_type == 'distill':
+        trainer = DistillTrainer(
             alpha=args.alpha,
-            log_compute_loss_func=lambda data: wandb.log(data, step=self.state.global_step),
-            log_pred_step_func=lambda data: wandb.log(data, step=self.state.global_step),
+            log_compute_loss_func=lambda data: wandb.log(data),
+            log_pred_step_func=lambda data, step: wandb.log(data, step=step),
             **trainer_kwargs
         )
 

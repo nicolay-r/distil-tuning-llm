@@ -1,44 +1,18 @@
-import pandas as pd
 import torch
-from typing import Any, Dict, List, Optional, Tuple, Union
 from torch import nn
-from transformers import DataCollatorForSeq2Seq, Trainer, DataCollatorForLanguageModeling
-import wandb
+from typing import Any, Dict, List, Optional, Tuple, Union
+from transformers import Trainer
 
 
-class TaskPrefixDataCollator(DataCollatorForLanguageModeling):
+class DistillTrainer(Trainer):
 
-    def __call__(self, features, return_tensors=None):
-
-        features_df = pd.DataFrame(features)
-
-        pred_features_df = features_df[['labels', 'input_ids', 'attention_mask']]
-        expl_features_df = features_df[['labels_expl', 'input_ids_expl', 'attention_mask_expl']].rename(
-            columns={
-                "input_ids_expl": "input_ids",
-                "attention_mask_expl": "attention_mask",
-                "labels_expl": "labels"
-        })
-
-        return {
-            'pred': super().__call__(pred_features_df.to_dict('records'), return_tensors),
-            'expl': super().__call__(expl_features_df.to_dict('records'), return_tensors),
-        }
-
-
-class TaskPrefixTrainer(Trainer):
-
-    def __init__(self, alpha, data_collator=None,
-                 log_compute_loss_func=None,
-                 log_pred_step_func=None,
-                 **kwargs):
+    def __init__(self, alpha, log_compute_loss_func=None, log_pred_step_func=None, **kwargs):
         super().__init__(**kwargs)
         self.alpha = alpha
-        self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
         self.log_compute_loss_func = log_compute_loss_func
         self.log_pred_step_func = log_pred_step_func
 
-    def compute_loss(self, model, inputs, return_outputs=False):
+    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
 
         pred_outputs = model(**inputs['pred'])
         expl_outputs = model(**inputs['expl'])
@@ -57,14 +31,15 @@ class TaskPrefixTrainer(Trainer):
 
         if self.log_compute_loss_func is not None:
             self.log_compute_loss_func(
-                {
+                data={
                     'train/loss': loss,
                     'train/loss_pred': pred_outputs.loss,
                     'train/loss_expl': expl_outputs.loss,
                     'train/pred_accuracy': pred_accuracy.item(),  # Logging prediction accuracy
                     'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)
                     'learning_rate': current_lr,
-                }
+                },
+                step = self.state.global_step
             )
 
         return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
@@ -84,7 +59,7 @@ class TaskPrefixTrainer(Trainer):
 
         if self.log_pred_step_func is not None:
             self.log_pred_step_func(
-                {
+                data={
                     'eval/loss': loss,
                     'eval/loss_pred': pred_outputs[0],
                     'eval/loss_expl': expl_outputs[0]

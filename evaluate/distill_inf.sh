@@ -1,9 +1,9 @@
 #!/bin/bash
 
 MODEL="google/flan-t5-small"
-TEST_FP="../datasets/multiclinsum/task_prefix/test.json"  # Provided to the script by the submission system
+TEST_FP="../datasets/multiclinsum/distill/test.json"  # Provided to the script by the submission system
 OUTPUT_DIR="./results/${MODEL}"
-CKPT_DIR="../ckpts/task_prefix/flan-t5-xl_distill_xl_28/checkpoint-37"
+CKPT_DIR="../ckpts/distill/flan-t5-xl_distill_xl_28/checkpoint-37"
 
 # Notes:
 # - The model will be downloaded from the HuggingFace model hub
@@ -28,7 +28,6 @@ python3 ./run_summarization_old.py "./conf/base.yml" "./conf/taskA.yml" output_d
     evaluation_strategy="'no'" \
     load_best_model_at_end=false \
     bertscore_model_type=null \
-    # model_type=task_prefix \
     # checkpoint_dir="$CKPT_DIR" \
     
 python eval_sum_medqa23.py --task taskA --fn_eval_data $OUTPUT_DIR

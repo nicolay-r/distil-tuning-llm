@@ -2,7 +2,7 @@ import argparse
 
 from cfg import ROOT_DIR
 from utils.multiclinsum_loader import MultiClinSumDatasetLoader
-from utils.train_utils import train_and_evaluate
+from utils.train import train_and_evaluate
 from transformers import AutoTokenizer
 
 
@@ -79,7 +79,7 @@ def run(args):
             "rationale", "input", "output"
         ])
 
-    if args.model_type == "task_prefix":
+    if args.model_type == "distill":
         # 1. Compose new input for explanations and move rationale to output.
         # 2. Map this new input onto "input_ids_expl" and "attention_mask_expl", and "labels_expl.
         tokenized = tokenized.map(
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     parser.add_argument('--from_pretrained', type=str, default=None)
     parser.add_argument('--label_type', type=str, default='gt')
     parser.add_argument('--grad_steps', type=int, default=1)
-    parser.add_argument('--model_type', type=str, default='task_prefix', choices=["standard", "task_prefix"])
+    parser.add_argument('--model_type', type=str, default='distill', choices=["standard", "distill"])
     parser.add_argument('--bf16', action='store_true')
     parser.add_argument('--no_log', action='store_true')
     parser.add_argument('--output_rationale', action='store_true')

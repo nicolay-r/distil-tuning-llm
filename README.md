@@ -58,7 +58,7 @@ nltk.download('punkt_tab')
   - $Loss = alpha * pred_l + (1 - alpha) * rationale_l$
 - `--model_type`:
   - `standard`: Standard finetuning
-  - `task_prefix`: Distilling step-by-step
+  - `distill`: Distilling step-by-step
 - `--parallelize`: Model parallelism
 
 ## Inference

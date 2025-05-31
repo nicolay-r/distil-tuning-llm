@@ -8,6 +8,7 @@ python distil_lm_ft.py \
     --batch_size_train 2 \
     --batch_size_eval 1 \
     --eval_accumulation_steps 1 \
+    --lr 1e-05 \
     --grad_steps 1 \
     --weight 1 \
     --alpha 0.8 \

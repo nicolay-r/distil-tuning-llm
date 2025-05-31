@@ -93,7 +93,12 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
     }
 
     if args.model_type == 'task_prefix':
-        trainer = TaskPrefixTrainer(alpha=args.alpha, **trainer_kwargs)
+        trainer = TaskPrefixTrainer(
+            alpha=args.alpha,
+            log_compute_loss_func=lambda data: wandb.log(data, step=self.state.global_step),
+            log_pred_step_func=lambda data: wandb.log(data, step=self.state.global_step),
+            **trainer_kwargs
+        )
 
     elif args.model_type == 'standard':
         trainer = Trainer(**trainer_kwargs)

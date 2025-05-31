@@ -28,11 +28,16 @@ class TaskPrefixDataCollator(DataCollatorForLanguageModeling):
 
 class TaskPrefixTrainer(Trainer):
 
-    def __init__(self, alpha, data_collator=None,**kwargs):
+    def __init__(self, alpha, data_collator=None,
+                 log_compute_loss_func=None,
+                 log_pred_step_func=None,
+                 **kwargs):
         super().__init__(**kwargs)
         self.alpha = alpha
         self.data_collator = data_collator if data_collator is not None else DataCollatorForSeq2Seq()
-    
+        self.log_compute_loss_func = log_compute_loss_func
+        self.log_pred_step_func = log_pred_step_func
+
     def compute_loss(self, model, inputs, return_outputs=False):
 
         pred_outputs = model(**inputs['pred'])
@@ -42,25 +47,25 @@ class TaskPrefixTrainer(Trainer):
 
         current_lr = self.optimizer.param_groups[0]["lr"]
 
-        # TODO. Refactor this into single method.
         pred_labels = inputs['pred']['labels']  # Assuming true labels are here
         pred_preds = torch.argmax(pred_outputs.logits, dim=-1)
         pred_accuracy = (pred_preds == pred_labels).float().mean()
 
-        # TODO. Refactor this into single method.
         expl_labels = inputs['expl']['labels']  # Assuming true labels for explanations
         expl_preds = torch.argmax(expl_outputs.logits, dim=-1)
         expl_accuracy = (expl_preds == expl_labels).float().mean()
 
-        wandb.log({
-                'train/loss': loss,
-                'train/loss_pred': pred_outputs.loss,
-                'train/loss_expl': expl_outputs.loss,
-                'train/pred_accuracy': pred_accuracy.item(),  # Logging prediction accuracy
-                'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)
-                'learning_rate': current_lr,
-                },
-                step=self.state.global_step)
+        if self.log_compute_loss_func is not None:
+            self.log_compute_loss_func(
+                {
+                    'train/loss': loss,
+                    'train/loss_pred': pred_outputs.loss,
+                    'train/loss_expl': expl_outputs.loss,
+                    'train/pred_accuracy': pred_accuracy.item(),  # Logging prediction accuracy
+                    'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)
+                    'learning_rate': current_lr,
+                }
+            )
 
         return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
 
@@ -74,15 +79,18 @@ class TaskPrefixTrainer(Trainer):
         
         pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False, ignore_keys=ignore_keys)
         expl_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False, ignore_keys=ignore_keys)
+
         loss = self.alpha * pred_outputs[0] + (1 - self.alpha) * expl_outputs[0]
 
-        wandb.log(
-            {
-                'eval/loss': loss,
-                'eval/loss_pred': pred_outputs[0],
-                'eval/loss_expl': expl_outputs[0]
-            },
-            step=self.state.global_step)
+        if self.log_pred_step_func is not None:
+            self.log_pred_step_func(
+                {
+                    'eval/loss': loss,
+                    'eval/loss_pred': pred_outputs[0],
+                    'eval/loss_expl': expl_outputs[0]
+                },
+                step=self.state.global_step
+            )
 
         return (
             loss,

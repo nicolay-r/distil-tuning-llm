@@ -6,27 +6,23 @@ from transformers import DataCollatorForSeq2Seq, Trainer, DataCollatorForLanguag
 import wandb
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-
 class TaskPrefixDataCollator(DataCollatorForLanguageModeling):
 
     def __call__(self, features, return_tensors=None):
-        features_df = pd.DataFrame(features)
-        pred_features = features_df.loc[:, ~features_df.columns.isin(['aux_labels', 'expl_input_ids', 'expl_attention_mask'])].to_dict('records')
-        expl_features = features_df.loc[:, ~features_df.columns.isin(['labels', 'input_ids', 'attention_mask'])].rename(
-            columns={
-                'aux_labels': 'labels',
-                'expl_input_ids': 'input_ids',
-                'expl_attention_mask': 'attention_mask'
-            }).to_dict('records')
 
-        pred_features = super().__call__(pred_features, return_tensors)
-        expl_features = super().__call__(expl_features, return_tensors)
-        
+        features_df = pd.DataFrame(features)
+
+        pred_features_df = features_df[['labels', 'input_ids', 'attention_mask']]
+        expl_features_df = features_df[['labels_expl', 'input_ids_expl', 'attention_mask_expl']].rename(
+            columns={
+                "input_ids_expl": "input_ids",
+                "attention_mask_expl": "attention_mask",
+                "labels_expl": "labels"
+        })
+
         return {
-            'pred': pred_features,
-            'expl': expl_features,
+            'pred': super().__call__(pred_features_df.to_dict('records'), return_tensors),
+            'expl': super().__call__(expl_features_df.to_dict('records'), return_tensors),
         }
 
 
@@ -44,11 +40,12 @@ class TaskPrefixTrainer(Trainer):
 
         loss = self.alpha * pred_outputs.loss + (1. - self.alpha) * expl_outputs.loss
 
+        current_lr = self.optimizer.param_groups[0]["lr"]
+
         # TODO. Refactor this into single method.
         pred_labels = inputs['pred']['labels']  # Assuming true labels are here
         pred_preds = torch.argmax(pred_outputs.logits, dim=-1)
         pred_accuracy = (pred_preds == pred_labels).float().mean()
-        current_lr = self.optimizer.param_groups[0]["lr"]
 
         # TODO. Refactor this into single method.
         expl_labels = inputs['expl']['labels']  # Assuming true labels for explanations

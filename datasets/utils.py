@@ -1,5 +1,29 @@
 import json
 import random
+from os.path import dirname, realpath
+
+DATASETS_DIR = dirname(realpath(__file__))
+
+
+def load_data(json_path):
+    with open(json_path, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+def json_write(dict_iter, filepath):
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write('[')
+        first = True
+        for item in dict_iter:
+            if not first:
+                f.write(',\n')
+            else:
+                first = False
+            json.dump(item, f)
+        f.write(']')
+
+def json_save_list(valid_data, filepath):
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(valid_data, f, indent=2)
 
 
 def split_dataset(json_path, train_ratio=0.8, valid_ratio=0.1, test_ratio=0.1, seed=42):
@@ -10,8 +34,7 @@ def split_dataset(json_path, train_ratio=0.8, valid_ratio=0.1, test_ratio=0.1, s
         raise ValueError(f"Ratios must sum to 1.0. Got: {total}")
 
     # Load data
-    with open(json_path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+    data = load_data(json_path)
 
     # Shuffle data
     rng = random.Random(seed)

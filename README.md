@@ -15,8 +15,9 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
   - [x] Drop support for DeepSpeed (see [Known Issues](#known-issues))
 - [x] Reforge data preparation concept (Qwen2.5 support) (see [Formatting Concepts](#dataset-formatting-concepts-for-lm))
 - [x] Refactor evaluation
-  - [x] Fixed `Trainer` limitaion on not-exploiting `.generate` call for `predictions`
+  - [x] Fixed `Trainer` limitation on not-exploiting `.generate` call for `predictions`
 - [x] Dataset cropping
+- [x] Support rationale annotation using third-party API hosting (OpenRouter)
 - [x] Reforge prefix `TaskPrefixTrainer`.
   - [ ] Reforge list of parameters
 

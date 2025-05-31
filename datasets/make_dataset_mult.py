@@ -1,13 +1,13 @@
-import json
 import os
-from os.path import join, dirname, realpath
-from utils import split_dataset
+from os.path import join
 
+from utils import split_dataset, DATASETS_DIR, json_save_list
 
 #############################################
 # Initial parameters for setting up datasets.
 #############################################
-dataset_name = "multiclinsum"
+input_dataset_name = "multiclinsum_rationale"
+output_dataset_name = "multiclinsum_rationale_mult"
 input_files = [
     "multiclinsum_gs_en.json",
     "multiclinsum_gs_es.json",
@@ -25,13 +25,10 @@ train_data = []
 valid_data = []
 test_data = []
 
-# Loop over each file and perform the split
-current_dir = dirname(realpath(__file__))
-
 for filename in input_files:
 
     train, valid, test = split_dataset(
-        json_path=join(current_dir, dataset_name, filename),
+        json_path=join(DATASETS_DIR, input_dataset_name, filename),
         train_ratio=train_ratio,
         valid_ratio=valid_ratio,
         test_ratio=test_ratio
@@ -48,15 +45,9 @@ for data in [train_data, valid_data, test_data]:
         item["output"] = item["output"][:output_max_length]
         item["rationale"] = item["rationale"][:output_max_length]
 
-
-output_dir = "multiclinsum_mult"
-
 # Make sure the output base directory exists
-os.makedirs(output_dir, exist_ok=True)
+os.makedirs(output_dataset_name, exist_ok=True)
 
-with open(f"{output_dir}/train.json", 'w', encoding='utf-8') as f:
-    json.dump(train_data, f, indent=2)
-with open(f"{output_dir}/valid.json", 'w', encoding='utf-8') as f:
-    json.dump(valid_data, f, indent=2)
-with open(f"{output_dir}/test.json", 'w', encoding='utf-8') as f:
-    json.dump(test_data, f, indent=2)
+json_save_list(train_data, filepath=join(DATASETS_DIR, output_dataset_name, "train.json"))
+json_save_list(valid_data, filepath=join(DATASETS_DIR, output_dataset_name, "valid.json"))
+json_save_list(test_data, filepath=join(DATASETS_DIR, output_dataset_name, "test.json"))

@@ -1,0 +1,39 @@
+from os.path import join
+
+from datasets.utils import load_data, json_write, DATASETS_DIR
+from bulk_chain.core.utils import dynamic_init
+from bulk_chain.api import iter_content
+
+
+input_dataset_name = "multiclinsum"
+output_dataset_name = "multiclinsum_rationale"
+input_files = [
+    "multiclinsum_gs_en.json",
+    "multiclinsum_gs_es.json",
+    "multiclinsum_gs_fr.json",
+    "multiclinsum_gs_pt.json"
+]
+
+
+for filename in input_files:
+
+    content_it = iter_content(
+        schema={
+            "rationale": "TEXT OF THE PROMPT GOES HERE."
+        },
+        llm=dynamic_init(class_filepath="open_router.py", class_name="OpenRouter")(
+            api_token="<API-KEY>",
+            model_name="qwen/qwen-2.5-72b-instruct"
+        ),
+        attempts=100,
+        infer_mode="batch_async",
+        return_mode="record",
+        input_dicts_it=load_data(
+            json_path=join(DATASETS_DIR, input_dataset_name, filename)
+        ),
+    )
+
+    json_write(
+        dict_iter=content_it,
+        filepath=join(DATASETS_DIR, output_dataset_name, filename)
+    )

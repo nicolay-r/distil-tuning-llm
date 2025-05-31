@@ -15,8 +15,9 @@ input_files = [
 
 # Split ratios
 train_ratio = 0.8
-valid_ratio = 0.1
-test_ratio = 0.1
+# We make validation ratio too small due to unknown memory leakage on resource consumption during evaluation.
+valid_ratio = 0.01
+test_ratio = 0.19
 
 train_data = []
 valid_data = []

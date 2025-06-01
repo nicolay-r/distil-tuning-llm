@@ -26,10 +26,10 @@ for filename in input_files:
         },
         llm=dynamic_init(class_filepath="open_router.py", class_name="OpenRouter")(
             api_token="<API-KEY>",
-            model_name="qwen/qwen-2.5-72b-instruct"
+            model_name="qwen/qwen2.5-vl-72b-instruct"
         ),
         attempts=100,
-        infer_mode="batch_async",
+        infer_mode="single",
         return_mode="record",
         input_dicts_it=load_data(
             json_path=join(DATASETS_DIR, input_dataset_name, filename)

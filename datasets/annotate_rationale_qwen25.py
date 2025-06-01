@@ -1,6 +1,7 @@
 import os
 from os.path import join
 
+from datasets.keys import API_KEY
 from datasets.utils import load_data, json_write, DATASETS_DIR, EXTRACT_PROMPT
 from bulk_chain.core.utils import dynamic_init
 from bulk_chain.api import iter_content
@@ -21,11 +22,11 @@ for filename in input_files:
     content_it = iter_content(
         schema={
             "schema": [
-                {"prompt": EXTRACT_PROMPT, "out": "rationale"}
+                {"prompt": EXTRACT_PROMPT + ": {input}", "out": "rationale"}
             ]
         },
         llm=dynamic_init(class_filepath="open_router.py", class_name="OpenRouter")(
-            api_token="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",
+            api_token=API_KEY,
             model_name="qwen/qwen2.5-vl-72b-instruct"
         ),
         attempts=100,

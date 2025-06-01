@@ -4,6 +4,8 @@ from os.path import dirname, realpath
 
 DATASETS_DIR = dirname(realpath(__file__))
 
+EXTRACT_PROMPT = 'Extract the key information from clinical text'
+
 
 def load_data(json_path):
     with open(json_path, 'r', encoding='utf-8') as f:

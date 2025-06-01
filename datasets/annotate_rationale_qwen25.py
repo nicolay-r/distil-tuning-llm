@@ -1,9 +1,9 @@
+import os
 from os.path import join
 
-from datasets.utils import load_data, json_write, DATASETS_DIR
+from datasets.utils import load_data, json_write, DATASETS_DIR, EXTRACT_PROMPT
 from bulk_chain.core.utils import dynamic_init
 from bulk_chain.api import iter_content
-
 
 input_dataset_name = "multiclinsum"
 output_dataset_name = "multiclinsum_rationale"
@@ -14,12 +14,15 @@ input_files = [
     "multiclinsum_gs_pt.json"
 ]
 
+os.makedirs(join(DATASETS_DIR, output_dataset_name), exist_ok=True)
 
 for filename in input_files:
 
     content_it = iter_content(
         schema={
-            "rationale": "TEXT OF THE PROMPT GOES HERE."
+            "schema": [
+                {"prompt": EXTRACT_PROMPT, "out": "rationale"}
+            ]
         },
         llm=dynamic_init(class_filepath="open_router.py", class_name="OpenRouter")(
             api_token="<API-KEY>",

@@ -24,21 +24,11 @@ class OpenRouter(BaseLM):
                 "messages": [
                     {
                         "role": "user",
-                        # TODO. Fix this.
-                        "content": {
-                             "type": "text",
-                             "text": prompt
-                         },
+                        "content": prompt,
                     }
                 ],
-                # TODO. Fix this.
-                "provider": {
-                    "sort": "price"
-                },
             })
         )
-
-        print(response)
 
         content_dict = json.loads(response.content)
         return content_dict['choices'][0]['message']['content'].strip()

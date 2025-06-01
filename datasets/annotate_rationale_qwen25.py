@@ -32,7 +32,7 @@ for filename in input_files:
         },
         llm=dynamic_init(class_filepath="open_router.py", class_name="OpenRouter")(
             api_token=API_KEY,
-            model_name="qwen/qwen2.5-vl-72b-instruct"
+            model_name="qwen/qwen2.5-72b-instruct"
         ),
         attempts=100,
         infer_mode="single",

@@ -25,7 +25,7 @@ for filename in input_files:
             ]
         },
         llm=dynamic_init(class_filepath="open_router.py", class_name="OpenRouter")(
-            api_token="<API-KEY>",
+            api_token="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",
             model_name="qwen/qwen2.5-vl-72b-instruct"
         ),
         attempts=100,
@@ -33,7 +33,7 @@ for filename in input_files:
         return_mode="record",
         input_dicts_it=load_data(
             json_path=join(DATASETS_DIR, input_dataset_name, filename)
-        ),
+        )[:1],
     )
 
     json_write(

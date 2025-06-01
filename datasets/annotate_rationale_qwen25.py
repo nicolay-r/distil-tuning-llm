@@ -17,6 +17,11 @@ input_files = [
 
 os.makedirs(join(DATASETS_DIR, output_dataset_name), exist_ok=True)
 
+def rm_col(x, c):
+    for i in x:
+        del i[c]
+    return x
+
 for filename in input_files:
 
     content_it = iter_content(
@@ -32,8 +37,9 @@ for filename in input_files:
         attempts=100,
         infer_mode="single",
         return_mode="record",
-        input_dicts_it=load_data(
-            json_path=join(DATASETS_DIR, input_dataset_name, filename)
+        input_dicts_it=rm_col(
+            x=load_data(json_path=join(DATASETS_DIR, input_dataset_name, filename)),
+            c="rationale"
         )[:1],
     )
 

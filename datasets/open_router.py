@@ -13,9 +13,6 @@ class OpenRouter(BaseLM):
 
     def ask(self, prompt):
 
-        # TODO. Why it is not a text?
-        print(prompt["prompt"])
-
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={
@@ -30,7 +27,7 @@ class OpenRouter(BaseLM):
                         # TODO. Fix this.
                         "content": {
                              "type": "text",
-                             "text": prompt["prompt"]
+                             "text": prompt
                          },
                     }
                 ],

@@ -14,6 +14,12 @@ class DistillTrainer(Trainer):
 
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
 
+        # This is for the case when we launch ordinary compute loss for the prediction step.
+        if 'pred' not in inputs and 'expl' not in inputs:
+            return super().compute_loss(model, inputs,
+                                        return_outputs=return_outputs,
+                                        num_items_in_batch=num_items_in_batch)
+
         pred_outputs = model(**inputs['pred'])
         expl_outputs = model(**inputs['expl'])
 

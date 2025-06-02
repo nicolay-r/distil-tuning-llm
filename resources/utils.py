@@ -1,6 +1,8 @@
 import json
+import os
 import random
-from os.path import dirname, realpath
+from os import listdir
+from os.path import join, isfile
 
 EXTRACT_PROMPT = 'Extract the key information from clinical text'
 
@@ -32,6 +34,29 @@ def drop_column(data, column_name):
     for i in data:
         del i[column_name]
     return data
+
+
+def iter_text_files(folder_path, encoding="utf-8"):
+    for filename in listdir(folder_path):
+        filepath = join(folder_path, filename)
+        if not isfile(filepath):
+            continue
+        try:
+            with open(filepath, 'r', encoding=encoding) as f:
+                yield filename, f.read()
+        except (UnicodeDecodeError, OSError):
+            continue
+
+
+def write_text_files(file_iter, folder_path, encoding="utf-8"):
+    os.makedirs(folder_path, exist_ok=True)
+    for filename, content in file_iter:
+        filepath = os.path.join(folder_path, filename)
+        try:
+            with open(filepath, 'w', encoding=encoding) as f:
+                f.write(content)
+        except OSError as e:
+            print(f"Error writing to {filepath}: {e}")
 
 
 def split_dataset(json_path, train_ratio=0.8, valid_ratio=0.1, test_ratio=0.1, seed=42):

@@ -21,19 +21,16 @@ submissions = {
     3: "nicolay-r/qwen25-05b-multiclinsum-distil"
 }
 
-subtasts = [
+subtasks = [
    "multiclinsum_test_en",
    "multiclinsum_test_es",
    "multiclinsum_test_fr",
    "multiclinsum_test_pt",
 ]
 
-for i in range(len(submissions)):
+for run_id in submissions.items():
 
-    run_id = i + 1
-    model_name = submissions[run_id]
-
-    for dataset_name in subtasts:
+    for dataset_name in subtasks:
 
         lang = dataset_name.split('_')[-1]
 
@@ -46,7 +43,7 @@ for i in range(len(submissions)):
             schema={"schema": [{"prompt": SUMMARIZE_PROMPT_LOCALE[lang] + ": {text}", "out": "summary"}]},
             llm=dynamic_init(class_filepath="providers/huggingface_qwen.py", class_name="Qwen2")(
                 api_token=HF_API_KEY,
-                model_name=model_name,
+                model_name=submissions[run_id],
                 temp=0.1,
                 max_new_tokens=1024,
                 device='cuda'

@@ -45,7 +45,7 @@ class DistillTrainer(Trainer):
                     'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)
                     'learning_rate': current_lr,
                 },
-                step = self.state.global_step
+                step=self.state.global_step
             )
 
         return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
@@ -58,8 +58,14 @@ class DistillTrainer(Trainer):
         ignore_keys: Optional[List[str]] = None
     ) -> Tuple[Optional[float], Optional[torch.Tensor], Optional[torch.Tensor]]:
         
-        pred_outputs = super().prediction_step(model, inputs['pred'], prediction_loss_only=False, ignore_keys=ignore_keys)
-        expl_outputs = super().prediction_step(model, inputs['expl'], prediction_loss_only=False, ignore_keys=ignore_keys)
+        pred_outputs = super().prediction_step(model,
+                                               inputs=inputs['pred'],
+                                               prediction_loss_only=False,
+                                               ignore_keys=ignore_keys)
+        expl_outputs = super().prediction_step(model,
+                                               inputs=inputs['expl'],
+                                               prediction_loss_only=False,
+                                               ignore_keys=ignore_keys)
 
         loss = self.alpha * pred_outputs[0] + (1 - self.alpha) * expl_outputs[0]
 

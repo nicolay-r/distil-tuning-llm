@@ -16,6 +16,6 @@ python distil_lm_ft.py \
     --description "distill-3K-07K" \
     --hub_model_id "nicolay-r/qwen25-05b-multiclinsum-distil" \
     --parallelize \
-    --train_epochs 10 \
-    --max_steps 36000 \
+    --train_epochs 3 \
+    --save_and_eval_steps 250 \
     --bf16

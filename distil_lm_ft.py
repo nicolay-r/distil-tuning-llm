@@ -1,7 +1,7 @@
 import argparse
 
 from cfg import ROOT_DIR
-from datasets.utils import EXTRACT_PROMPT
+from resources.utils import EXTRACT_PROMPT
 from utils.multiclinsum_loader import MultiClinSumDatasetLoader
 from utils.train import train_and_evaluate
 from transformers import AutoTokenizer

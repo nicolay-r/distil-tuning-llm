@@ -24,11 +24,7 @@ tgt_fp_func = lambda filename: load_data(json_path=join(DATASET_DIR, output_data
 for filename in input_files:
 
     content_it = iter_content(
-        schema={
-            "schema": [
-                {"prompt": EXTRACT_PROMPT + ": {input}", "out": "rationale"}
-            ]
-        },
+        schema={"schema": [{"prompt": EXTRACT_PROMPT + ": {input}", "out": "rationale"}]},
         llm=dynamic_init(class_filepath="providers/open_router.py", class_name="OpenRouter")(
             api_token=OPENROUTER_API_KEY,
             model_name="qwen/qwen2.5-72b-instruct"
@@ -36,10 +32,7 @@ for filename in input_files:
         attempts=100,
         infer_mode="single",
         return_mode="record",
-        input_dicts_it=drop_column(
-            data=src_fp_func(filename),
-            column_name="rationale"
-        ),
+        input_dicts_it=drop_column(data=src_fp_func(filename), column_name="rationale"),
     )
 
     json_write(

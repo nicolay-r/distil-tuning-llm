@@ -1,3 +1,5 @@
+import gc
+
 import numpy as np
 import evaluate
 import nltk
@@ -65,6 +67,10 @@ def compute_metrics_rouge(eval_preds: EvalPrediction, tokenizer: AutoTokenizer):
     reference_lens = [np.count_nonzero(label != tokenizer.pad_token_id) for label in labels]
     result["mean_generated_len"] = np.mean(generated_lens)
     result["mean_reference_len"] = np.mean(reference_lens)
+
+    del decoded_preds, decoded_labels
+    del preds, labels
+    gc.collect()
 
     wandb.log(result)
 

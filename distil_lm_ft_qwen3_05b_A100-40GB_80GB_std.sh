@@ -4,7 +4,7 @@ python distil_lm_ft.py \
     --dataset "./resources/multiclinsum_rationale_mult" \
     --max_input_length 3078 \
     --max_output_length 762 \
-    --batch_size_train 2 \
+    --batch_size_train 1 \
     --batch_size_eval 1 \
     --eval_accumulation_steps 1 \
     --lr 1e-05 \

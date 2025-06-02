@@ -1,8 +1,8 @@
 import os
 from os.path import join
 
-from datasets.keys import API_KEY
-from datasets.utils import load_data, json_write, DATASETS_DIR, EXTRACT_PROMPT
+from keys import API_KEY
+from utils import load_data, json_write, DATASETS_DIR, EXTRACT_PROMPT
 from bulk_chain.core.utils import dynamic_init
 from bulk_chain.api import iter_content
 

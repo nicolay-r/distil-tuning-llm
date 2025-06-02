@@ -50,7 +50,6 @@ nltk.download('punkt_tab')
 - `--model_type`:
   - `standard`: Standard finetuning
   - `distill`: Distilling step-by-step
-- `--parallelize`: Model parallelism
 
 ## Inference
 

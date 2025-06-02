@@ -48,7 +48,7 @@ def run(args):
                     api_token=HF_API_KEY,
                     model_name=model_name,
                     temp=0.1,
-                    max_new_tokens=1024,
+                    max_new_tokens=args.max_tokens,
                     device=args.device
                 ),
                 infer_mode="batch",
@@ -72,6 +72,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--device', type=str, default="cuda")
     parser.add_argument('--output_dir', type=str, default=".")
+    parser.add_argument('--max_tokens', type=int, default=512)
 
     args = parser.parse_args()
 

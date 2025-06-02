@@ -30,7 +30,7 @@ subtasks = [
 
 def run(args):
 
-    dataset_name = args.subtask_name
+    dataset_name = args.subtask
 
     lang = dataset_name.split('_')[-1]
 

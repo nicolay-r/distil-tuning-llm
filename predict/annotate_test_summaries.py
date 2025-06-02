@@ -48,6 +48,7 @@ def run(args):
                     api_token=HF_API_KEY,
                     model_name=model_name,
                     temp=0.1,
+                    use_bf16=True,
                     max_new_tokens=args.max_tokens,
                     device=args.device
                 ),

@@ -2,7 +2,7 @@
 python distil_lm_ft.py \
     --from_pretrained "Qwen/Qwen2.5-0.5B-Instruct" \
     --dataset "./datasets/multiclinsum_mult" \
-    --eval_steps 100 \
+    --save_and_eval_steps 100 \
     --max_input_length 3078 \
     --max_output_length 762 \
     --batch_size_train 2 \
@@ -14,6 +14,7 @@ python distil_lm_ft.py \
     --alpha 0.8 \
     --model_type "distill" \
     --description "distill-3K-07K" \
+    --hub_model_id "nicolay-r/qwen25-05b-multiclinsum-distil" \
     --parallelize \
     --train_epochs 10 \
     --max_steps 36000 \

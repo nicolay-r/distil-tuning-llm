@@ -3,12 +3,10 @@ import time
 from datetime import datetime
 from os.path import join
 
-import torch
 import wandb
 import os
 import logging
-from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling, \
-    get_linear_schedule_with_warmup
+from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling
 from transformers.trainer_utils import set_seed
 
 from utils.distill_collator import DistillDataCollator
@@ -48,32 +46,50 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
 
     training_args = TrainingArguments(
         output_dir,
-        weight_decay=0.01,
-        eval_delay=1,
+        seed=run,
+        ######################################################################################################
+        # Scheduler:
+        # According to: https://github.com/QwenLM/Qwen2.5-VL/tree/main/qwen-vl-finetune
+        ######################################################################################################
         num_train_epochs=args.train_epochs,
-        report_to="none",
-        remove_unused_columns=False,
-        eval_strategy='steps',
-        eval_steps=args.eval_steps,
-        save_strategy='steps',
-        save_steps=args.eval_steps,
-        logging_steps=1,
+        lr_scheduler_type="cosine",
+        warmup_ration=0.03,
+        weight_decay=0.01,
         learning_rate=args.lr,
-        warmup_steps=500,
+        optim="adamw_torch",
+        #######################################################################################################
+        # Memory
+        #######################################################################################################
         gradient_accumulation_steps=args.grad_steps,
         per_device_train_batch_size=args.batch_size_train,
         per_device_eval_batch_size=args.batch_size_eval,
-        seed=run,
         bf16=args.bf16,
-        prediction_loss_only=False,
-        save_total_limit=1,
-        load_best_model_at_end=True,
+        remove_unused_columns=False,
+        #######################################################################################################
+        # Logging
+        #######################################################################################################
+        save_total_limit=1,                             # When save_total_limit = 1 and load_best_model_at_end
+        load_best_model_at_end=True,                    # it is possible that two checkpoints are saved:
+                                                        # the last one and the best one (if they are different).
+        logging_steps=10,
+        report_to="none",
+        #######################################################################################################
+        # Evaluation.
+        #######################################################################################################
         metric_for_best_model="eval_rouge_avg",
+        eval_delay=1,                                           # We don't want to start with evaluation.
+        eval_strategy='steps',
+        eval_steps=args.save_and_eval_steps,
+        eval_accumulation_steps=args.eval_accumulation_steps,   # This parameter is critical due to
+                                                                # implementation of the custom Rouge. operation.
         greater_is_better=True,
-        push_to_hub=False,
-        # IMPORTANT.
-        # This parameter is critical due to implementation of the custom Rouge. operation.
-        eval_accumulation_steps=args.eval_accumulation_steps,
+        #######################################################################################################
+        # Model saving.
+        #######################################################################################################
+        save_steps=args.save_and_eval_steps,
+        save_strategy='steps',
+        push_to_hub=args.hub_model_id is not None,
+        hub_model_id=args.hub_model_id,                         # Repo name.
     )
 
     print("model_type: {}".format(args.model_type))
@@ -100,19 +116,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
             log_pred_step_func=lambda data, step: wandb.log(data, step=step),
             **trainer_kwargs
         )
-
     elif args.model_type == 'standard':
         trainer = Trainer(**trainer_kwargs)
-
-    # Setup optimizer.
-    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
-    scheduler = get_linear_schedule_with_warmup(
-        optimizer,
-        num_warmup_steps=500,
-        num_training_steps=1201 * args.train_epochs
-    )
-    optimizers = (optimizer, scheduler)
-    trainer.optimizers = optimizers
 
     set_wandb(trainer_kwargs, args)
 

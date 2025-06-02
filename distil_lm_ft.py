@@ -112,7 +112,7 @@ if __name__ == '__main__':
     parser.add_argument('--subsample', type=float, default=1.0)
     parser.add_argument('--alpha', type=float, default=0.5)
     parser.add_argument('--max_steps', type=int, default=50)
-    parser.add_argument('--eval_steps', type=int, default=250)
+    parser.add_argument('--save_and_eval_steps', type=int, default=None)
     parser.add_argument('--eval_accumulation_steps', type=int, default=1)
     parser.add_argument('--max_input_length', type=int, default=64)
     parser.add_argument('--max_output_length', type=int, default=64)
@@ -134,6 +134,7 @@ if __name__ == '__main__':
     parser.add_argument('--parallelize', action='store_true')
     parser.add_argument('--cos_sim', action='store_true')
     parser.add_argument('--dynamic', action='store_true')
+    parser.add_argument('--model_hub_id', type=str, default=None)
 
     args = parser.parse_args()
 

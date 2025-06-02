@@ -1,7 +1,8 @@
 # Distil-Tuning for LM
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1TXGaz39o73nBucEQw12gbad7Tw11j2Ol?usp=sharing)
 
 This repo represent a tiny and **reforged version** of the original [`MeDistil-d2n` framework](https://github.com/Xiaoxiao-Liu/distill-d2n) and the related paper studies.
-The original project has a major limitaiton of `Seq2Seq` trainer dependencies.
+The original project has a major limitation of `Seq2Seq` trainer dependencies.
 The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`AutoModelCasualLM`) on long-input context by heavily rely on `decoder` based models with following input [Formatting Concepts](#dataset-formatting-concepts-for-lm).
 
 ### Contribution
@@ -19,7 +20,7 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
 - [x] Dataset cropping
 - [x] Support rationale annotation using third-party API hosting (OpenRouter)
 - [x] Reforge prefix `TaskPrefixTrainer`.
-  - [ ] Reforge list of parameters
+  - [x] Reforge list of parameters
 
 
 ## Setup
@@ -61,6 +62,7 @@ sh ./evaluate/distill_inf.sh
 ## Datasets
 * [MultiClinSum](https://zenodo.org/records/15463353)
 
+
 ## Dataset Formatting Concepts for LM
 
 * Data formatting for QWEN
@@ -68,12 +70,8 @@ sh ./evaluate/distill_inf.sh
 * Fine-tuning setup
   * https://github.com/QwenLM/Qwen2.5-VL/tree/main/qwen-vl-finetune
 
-## Known issues
 
-* https://github.com/huggingface/transformers/blob/v4.33.2/examples/pytorch/summarization/run_summarization.py#L657
-  * ROUGE calculation  
-* https://github.com/huggingface/evaluate/issues/609
-  * `!pip install datasets==3.6.0 evaluate==0.4.3`
-* https://github.com/huggingface/transformers/issues/36331
-  * `!pip install transformers==4.45.2` from [this workaround](https://discuss.huggingface.co/t/typeerror-sentencetransformertrainer-compute-loss-got-an-unexpected-keyword-argument-num-items-in-batch/114298/4)
-* https://discuss.huggingface.co/t/cuda-out-of-memory-when-using-trainer-with-compute-metrics/2941
+## References
+
+* bulk-chain: https://github.com/nicolay-r/bulk-chain
+  * Annotation and test-set inference. 

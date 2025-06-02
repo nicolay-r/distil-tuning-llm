@@ -1,7 +1,7 @@
 #!/bin/bash
 python distil_lm_ft.py \
     --from_pretrained "Qwen/Qwen2.5-0.5B-Instruct" \
-    --dataset "./datasets/multiclinsum_mult" \
+    --dataset "./datasets/multiclinsum_rationale_mult" \
     --save_and_eval_steps 100 \
     --max_input_length 3078 \
     --max_output_length 762 \

@@ -134,7 +134,7 @@ if __name__ == '__main__':
     parser.add_argument('--parallelize', action='store_true')
     parser.add_argument('--cos_sim', action='store_true')
     parser.add_argument('--dynamic', action='store_true')
-    parser.add_argument('--model_hub_id', type=str, default=None)
+    parser.add_argument('--hub_model_id', type=str, default=None)
 
     args = parser.parse_args()
 

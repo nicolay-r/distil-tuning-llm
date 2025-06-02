@@ -79,8 +79,4 @@ class DistillTrainer(Trainer):
                 step=self.state.global_step
             )
 
-        return (
-            loss,
-            [pred_outputs[1], expl_outputs[1]],
-            [pred_outputs[2], expl_outputs[2]],
-        )
+        return (loss, pred_outputs[1], pred_outputs[2])

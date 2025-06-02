@@ -6,8 +6,7 @@ from os.path import join
 import wandb
 import os
 import logging
-from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling, \
-    AutoTokenizer
+from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling
 from transformers.trainer_utils import set_seed
 
 from utils.distill_collator import DistillDataCollator
@@ -95,11 +94,10 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
 
     print("model_type: {}".format(args.model_type))
 
-    if args.model_type == 'standard':
-        data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
-
-    else:
+    if args.model_type == 'distill':
         data_collator = DistillDataCollator(tokenizer=tokenizer, mlm=False)
+    elif args.model_type == 'standard':
+        data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
     trainer_kwargs = {
         'model': model,
@@ -111,12 +109,10 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
     }
 
     if args.model_type == 'distill':
-        trainer = DistillTrainer(
-            alpha=args.alpha,
-            log_compute_loss_func=lambda data, step: wandb.log(data, step=step),
-            log_pred_step_func=lambda data, step: wandb.log(data, step=step),
-            **trainer_kwargs
-        )
+        trainer = DistillTrainer(alpha=args.alpha,
+                                 log_compute_loss_func=lambda data, step: wandb.log(data, step=step),
+                                 log_pred_step_func=lambda data, step: wandb.log(data, step=step),
+                                 **trainer_kwargs)
     elif args.model_type == 'standard':
         trainer = Trainer(**trainer_kwargs)
 

@@ -7,7 +7,7 @@ from utils.train import train_and_evaluate
 from transformers import AutoTokenizer
 
 
-def asssisant_prompt(instruction, text, summary):
+def assistant_prompt(instruction, text, summary):
     return (
         "<|im_start|>user\n"
         f"{instruction}:\n{text}\n"
@@ -57,7 +57,7 @@ def run(args):
     # Compose prompts for inputs.
     datasets = dataset_loader.load_from_json().map(
         lambda record: {
-            "summarization_task": asssisant_prompt(instruction=SUMMARIZE_PROMPT, text=record["input"], summary=record["output"])
+            "summarization_task": assistant_prompt(instruction=SUMMARIZE_PROMPT, text=record["input"], summary=record["output"])
         }
     )
 
@@ -81,7 +81,7 @@ def run(args):
         # 2. Map this new input onto "input_ids_expl" and "attention_mask_expl", and "labels_expl.
         tokenized = tokenized.map(
             lambda record: {
-                "rationale_task": asssisant_prompt(instruction=EXTRACT_PROMPT,
+                "rationale_task": assistant_prompt(instruction=EXTRACT_PROMPT,
                                                    text=record["input"],
                                                    summary=record["rationale"])
             },

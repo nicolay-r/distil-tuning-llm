@@ -2,8 +2,6 @@ import json
 import random
 from os.path import dirname, realpath
 
-DATASETS_DIR = dirname(realpath(__file__))
-
 EXTRACT_PROMPT = 'Extract the key information from clinical text'
 
 

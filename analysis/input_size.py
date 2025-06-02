@@ -2,7 +2,7 @@ import json
 from os.path import join
 from statistics import mean, median
 
-from cfg import ROOT_DIR
+from cfg import DATASET_DIR
 
 
 def analyze_input_lengths_in_chars(json_path, entry_value):
@@ -32,7 +32,7 @@ def analyze_input_lengths_in_chars(json_path, entry_value):
     }
 
 
-dataset_dir = join(ROOT_DIR, "resources/multiclinsum_mult/")
+dataset_dir = join(DATASET_DIR, "multiclinsum_rationale_mult/")
 
 for split in ["train", "test", "valid"]:
 

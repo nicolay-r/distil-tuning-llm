@@ -1,10 +1,12 @@
 import os
 from os.path import join
 
-from keys import API_KEY
-from utils import load_data, json_write, DATASETS_DIR, EXTRACT_PROMPT, drop_column
+from cfg import DATASET_DIR
+from predict.keys import OPENROUTER_API_KEY
 from bulk_chain.core.utils import dynamic_init
 from bulk_chain.api import iter_content
+
+from resources.utils import EXTRACT_PROMPT, load_data, drop_column, json_write
 
 input_dataset_name = "multiclinsum"
 output_dataset_name = "multiclinsum_rationale"
@@ -15,7 +17,9 @@ input_files = [
     "multiclinsum_gs_pt.json"
 ]
 
-os.makedirs(join(DATASETS_DIR, output_dataset_name), exist_ok=True)
+os.makedirs(join(DATASET_DIR, output_dataset_name), exist_ok=True)
+src_fp_func = lambda filename: load_data(json_path=join(DATASET_DIR, input_dataset_name, filename))
+tgt_fp_func = lambda filename: load_data(json_path=join(DATASET_DIR, output_dataset_name, filename))
 
 for filename in input_files:
 
@@ -25,20 +29,20 @@ for filename in input_files:
                 {"prompt": EXTRACT_PROMPT + ": {input}", "out": "rationale"}
             ]
         },
-        llm=dynamic_init(class_filepath="open_router.py", class_name="OpenRouter")(
-            api_token=API_KEY,
+        llm=dynamic_init(class_filepath="providers/open_router.py", class_name="OpenRouter")(
+            api_token=OPENROUTER_API_KEY,
             model_name="qwen/qwen2.5-72b-instruct"
         ),
         attempts=100,
         infer_mode="single",
         return_mode="record",
         input_dicts_it=drop_column(
-            data=load_data(json_path=join(DATASETS_DIR, input_dataset_name, filename)),
+            data=src_fp_func(filename),
             column_name="rationale"
         ),
     )
 
     json_write(
         dict_iter=content_it,
-        filepath=join(DATASETS_DIR, output_dataset_name, filename)
+        filepath=tgt_fp_func(filename)
     )

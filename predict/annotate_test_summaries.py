@@ -31,7 +31,7 @@ def run(args):
        "multiclinsum_test_pt",
     ]
 
-    for run_id in submissions.items():
+    for run_id, model_name in submissions.items():
 
         for dataset_name in subtasks:
 
@@ -46,7 +46,7 @@ def run(args):
                 schema={"schema": [{"prompt": SUMMARIZE_PROMPT_LOCALE[lang] + ": {text}", "out": "summary"}]},
                 llm=dynamic_init(class_filepath="providers/huggingface_qwen.py", class_name="Qwen2")(
                     api_token=HF_API_KEY,
-                    model_name=submissions[run_id],
+                    model_name=model_name,
                     temp=0.1,
                     max_new_tokens=1024,
                     device=args.device

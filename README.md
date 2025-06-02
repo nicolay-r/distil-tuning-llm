@@ -24,6 +24,10 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
 
 ## Setup
 
+```bash
+pip install -r requirements.txt
+```
+
 - Download `punkt_tab` for `nltk`
 ```bash
 import nltk

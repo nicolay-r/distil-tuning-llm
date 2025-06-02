@@ -11,6 +11,7 @@ def load_data(json_path):
     with open(json_path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
+
 def json_write(dict_iter, filepath):
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write('[')
@@ -22,6 +23,7 @@ def json_write(dict_iter, filepath):
                 first = False
             json.dump(item, f)
         f.write(']')
+
 
 def json_save_list(valid_data, filepath):
     with open(filepath, 'w', encoding='utf-8') as f:

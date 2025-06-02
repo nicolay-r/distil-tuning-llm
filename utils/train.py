@@ -53,7 +53,7 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
         ######################################################################################################
         num_train_epochs=args.train_epochs,
         lr_scheduler_type="cosine",
-        warmup_ration=0.03,
+        warmup_ratio=0.03,
         weight_decay=0.01,
         learning_rate=args.lr,
         optim="adamw_torch",

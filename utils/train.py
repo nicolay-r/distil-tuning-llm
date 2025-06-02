@@ -6,7 +6,8 @@ from os.path import join
 import wandb
 import os
 import logging
-from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling
+from transformers import AutoModelForCausalLM, TrainingArguments, Trainer, DataCollatorForLanguageModeling, \
+    AutoTokenizer
 from transformers.trainer_utils import set_seed
 
 from utils.distill_collator import DistillDataCollator
@@ -125,4 +126,8 @@ def train_and_evaluate(args, run, tokenizer, tokenized_datasets, root_dir):
 
     trainer.train()
     wandb.finish()
+
+    # Additionally push the original tokenizer into the hub.
+    if args.hub_model_id is not None:
+        tokenizer.push_to_hub(args.hub_model_id)
     

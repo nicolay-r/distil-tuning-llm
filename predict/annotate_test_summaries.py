@@ -61,7 +61,7 @@ def run(args):
             write_text_files(
                 file_iter=map(
                     lambda r: (basename(r["filepath"]).split('.')[-2] + "_sum.txt", r["summary"]),
-                    tqdm(content_it, desc=f"{run_id}-{subtasks}", total=len(input_dicts))
+                    tqdm(content_it, desc=f"{run_id}-{dataset_name}", total=len(input_dicts))
                 ),
                 folder_path=join(args.output_dir, "submissions", f"{team_name}_multiclinsum_{lang}_run_{run_id}")
             )

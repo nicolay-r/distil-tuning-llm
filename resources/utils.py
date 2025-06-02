@@ -21,7 +21,7 @@ def json_write(dict_iter, filepath):
                 f.write(',\n')
             else:
                 first = False
-            json.dump(item, f)
+            json.dump(item, f, indent=2)
         f.write(']')
 
 

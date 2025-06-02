@@ -1,3 +1,5 @@
+import gc
+
 import torch
 from torch import nn
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -78,5 +80,8 @@ class DistillTrainer(Trainer):
                 },
                 step=self.state.global_step
             )
+
+        del expl_outputs
+        gc.collect()
 
         return (loss, pred_outputs[1], pred_outputs[2])

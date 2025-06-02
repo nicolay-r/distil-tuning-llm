@@ -32,7 +32,7 @@ def analyze_input_lengths_in_chars(json_path, entry_value):
     }
 
 
-dataset_dir = join(ROOT_DIR, "datasets/multiclinsum_mult/")
+dataset_dir = join(ROOT_DIR, "resources/multiclinsum_mult/")
 
 for split in ["train", "test", "valid"]:
 

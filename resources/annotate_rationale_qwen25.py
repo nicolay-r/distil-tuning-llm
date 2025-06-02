@@ -2,7 +2,7 @@ import os
 from os.path import join
 
 from keys import API_KEY
-from utils import load_data, json_write, DATASETS_DIR, EXTRACT_PROMPT
+from utils import load_data, json_write, DATASETS_DIR, EXTRACT_PROMPT, drop_column
 from bulk_chain.core.utils import dynamic_init
 from bulk_chain.api import iter_content
 
@@ -16,11 +16,6 @@ input_files = [
 ]
 
 os.makedirs(join(DATASETS_DIR, output_dataset_name), exist_ok=True)
-
-def rm_col(x, c):
-    for i in x:
-        del i[c]
-    return x
 
 for filename in input_files:
 
@@ -37,10 +32,10 @@ for filename in input_files:
         attempts=100,
         infer_mode="single",
         return_mode="record",
-        input_dicts_it=rm_col(
-            x=load_data(json_path=join(DATASETS_DIR, input_dataset_name, filename)),
-            c="rationale"
-        )[:1],
+        input_dicts_it=drop_column(
+            data=load_data(json_path=join(DATASETS_DIR, input_dataset_name, filename)),
+            column_name="rationale"
+        ),
     )
 
     json_write(

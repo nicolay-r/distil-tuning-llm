@@ -30,6 +30,12 @@ def json_save_list(valid_data, filepath):
         json.dump(valid_data, f, indent=2)
 
 
+def drop_column(data, column_name):
+    for i in data:
+        del i[column_name]
+    return data
+
+
 def split_dataset(json_path, train_ratio=0.8, valid_ratio=0.1, test_ratio=0.1, seed=42):
 
     # Check ratio sum

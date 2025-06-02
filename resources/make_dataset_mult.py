@@ -1,7 +1,7 @@
 import os
 from os.path import join
 
-from utils import split_dataset, DATASETS_DIR, json_save_list
+from utils import split_dataset, DATASETS_DIR, json_save_list, drop_column
 
 #############################################
 # Initial parameters for setting up datasets.
@@ -38,7 +38,12 @@ for filename in input_files:
     valid_data += valid
     test_data += test
 
+# Remove non utilized strings.
+drop_column(train_data, column_name="rationale_prompt")
+drop_column(valid_data, column_name="rationale_prompt")
+drop_column(test_data, column_name="rationale_prompt")
 
+# Crop data.
 for data in [train_data, valid_data, test_data]:
     for item in data:
         item["input"] = item["input"][:input_max_length]

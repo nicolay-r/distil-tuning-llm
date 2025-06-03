@@ -36,13 +36,22 @@ def drop_column(data, column_name):
     return data
 
 
-def iter_text_files(folder_path, encoding="utf-8"):
+def iter_text_files(folder_path, encoding="utf-8", skip_if_exists_in=None,
+                    fmt_filename_func=lambda fp: fp):
     for filename in listdir(folder_path):
-        filepath = join(folder_path, filename)
-        if not isfile(filepath):
+        source_path = join(folder_path, filename)
+
+        if not os.path.isfile(source_path):
             continue
+
+        if skip_if_exists_in:
+            target_path = os.path.join(skip_if_exists_in, fmt_filename_func(filename))
+            if os.path.exists(target_path):
+                print("OK [SKIP]", target_path)
+                continue
+
         try:
-            with open(filepath, 'r', encoding=encoding) as f:
+            with open(source_path, 'r', encoding=encoding) as f:
                 yield filename, f.read()
         except (UnicodeDecodeError, OSError):
             continue

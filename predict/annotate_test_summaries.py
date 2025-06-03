@@ -28,15 +28,22 @@ subtasks = [
 ]
 
 
+def fmt_filepath_summary(filepath):
+    return basename(filepath).split('.')[-2] + "_sum.txt"
+
+
 def run(args):
 
     dataset_name = args.subtask
-
     lang = dataset_name.split('_')[-1]
+
+    target_dir = join(args.output_dir, "submissions", f"{args.team_name}_multiclinsum_{lang}_run_{args.run_id}")
 
     input_dicts = list(map(
         lambda r: {"filepath": r[0], "text": r[1]},
-        iter_text_files(folder_path=join(DATASET_DIR, dataset_name))
+        iter_text_files(folder_path=join(DATASET_DIR, dataset_name),
+                        skip_if_exists_in=target_dir,
+                        fmt_filename_func=lambda filepath: fmt_filepath_summary(filepath))
     ))
 
     content_it = iter_content(
@@ -60,7 +67,7 @@ def run(args):
             lambda r: (basename(r["filepath"]).split('.')[-2] + "_sum.txt", r["summary"]),
             tqdm(content_it, desc=f"{args.run_id}-{dataset_name}", total=len(input_dicts))
         ),
-        folder_path=join(args.output_dir, "submissions", f"{args.team_name}_multiclinsum_{lang}_run_{args.run_id}")
+        folder_path=target_dir
     )
         
 if __name__ == '__main__':

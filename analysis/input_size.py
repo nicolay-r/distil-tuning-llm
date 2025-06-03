@@ -32,16 +32,31 @@ def analyze_input_lengths_in_chars(json_path, entry_value):
     }
 
 
-dataset_dir = join(DATASET_DIR, "multiclinsum_rationale_mult/")
+dataset_name = "multiclinsum_rationale"
 
-for split in ["train", "test", "valid"]:
+datasets_meta = {
+    "multiclinsum": {
+        "splits": ["multiclinsum_gs_en", "multiclinsum_gs_es", "multiclinsum_gs_fr", "multiclinsum_gs_pt"],
+        "cols": ["input", "output"]
+    },
+    "multiclinsum_rationale": {
+        "splits": ["multiclinsum_gs_en", "multiclinsum_gs_es", "multiclinsum_gs_fr", "multiclinsum_gs_pt"],
+        "cols": ["rationale"]
+    },
+    "multiclinsum_rationale_mult": {
+        "splits": ["train", "test", "valid"],
+        "cols": ["input", "output", "rationale"]
+    }
+}
 
-    for entry in ["input", "output"]:
+for split in datasets_meta[dataset_name]["splits"]:
+
+    for entry in datasets_meta[dataset_name]["cols"]:
 
         log = "\t".join([
             split,
             entry,
-            str(analyze_input_lengths_in_chars(json_path=join(dataset_dir, split + ".json"), entry_value=entry))
+            str(analyze_input_lengths_in_chars(json_path=join(DATASET_DIR, dataset_name, split + ".json"), entry_value=entry))
             ])
 
         print(log)

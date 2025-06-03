@@ -42,12 +42,6 @@ nltk.download('punkt_tab')
 # Finetuning
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1TXGaz39o73nBucEQw12gbad7Tw11j2Ol?usp=sharing)
 
-The pretrained models are publicly available:
-| Model 🤗         | Link                                               |
-|------------------|----------------------------------------------------|
-| `nicolay-r/qwen25-05b-multiclinsum-distil`       | [download](https://huggingface.co/nicolay-r/qwen25-05b-multiclinsum-distil)       |
-| `nicolay-r/qwen25-05b-multiclinsum-standard`       | [download](https://huggingface.co/nicolay-r/qwen25-05b-multiclinsum-standard)   |
-
 Manual Training:
 
 ```bash
@@ -61,6 +55,12 @@ List of the parameters
 - `--model_type`:
   - `standard`: Standard finetuning (baseline)
   - `distill`: Distilling step-by-step
+
+The pretrained models are publicly available:
+| Model 🤗         | Link                                               |
+|------------------|----------------------------------------------------|
+| `nicolay-r/qwen25-05b-multiclinsum-distil`       | [model-card](https://huggingface.co/nicolay-r/qwen25-05b-multiclinsum-distil)       |
+| `nicolay-r/qwen25-05b-multiclinsum-standard`       | [model-card](https://huggingface.co/nicolay-r/qwen25-05b-multiclinsum-standard)   |
 
 # Inference
 

@@ -52,7 +52,7 @@ Manual Training:
 
 List of the parameters
 - `--from_pretrained`: Model from hugging face that nesting `AutoModelCasualLM`
-- `--dataset`: `multiclinsum` (see [downloading script](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/download_dataset.sh) and [post-processing](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/make_dataset_mult.py)
+- `--dataset`: `multiclinsum` (see [downloading script](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/download_dataset.sh) and [post-processing](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/make_dataset_mult.py))
 - `--alpha`: Task weight for multi-task training.
   - $Loss = alpha * pred_l + (1 - alpha) * rationale_l$
 - `--model_type`:

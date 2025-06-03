@@ -64,7 +64,7 @@ def run(args):
 
     write_text_files(
         file_iter=map(
-            lambda r: (basename(r["filepath"]).split('.')[-2] + "_sum.txt", r["summary"]),
+            lambda r: (fmt_filepath_summary(r["filepath"]), r["summary"]),
             tqdm(content_it, desc=f"{args.run_id}-{dataset_name}", total=len(input_dicts))
         ),
         folder_path=target_dir

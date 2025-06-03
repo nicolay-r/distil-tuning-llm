@@ -12,7 +12,7 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
 2. ✅ Refactoring and narrowing the scope, dropping dependencies.
 3. ✅ Switch dependencies to `Python 3.10+`
 
-# 🛠️ TODO
+### 🛠️ TODO
 - [x] Narrow scope of the framework. We don not support DeepSpeed by default
 - [x] Reforge data preparation concept (Qwen2.5 support) (see [Formatting Concepts](#input-formatting-concepts))
 - [x] Refactor evaluation
@@ -25,7 +25,7 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
   - Caused by this piece: https://github.com/nicolay-r/distill-d2n-long/blob/07871555069ef07a8149e51b36ba6381dad4b423/utils/distill_trainer.py#L84 
 
 
-## Setup
+# Setup
 
 * The complete list of dependencies
 
@@ -39,7 +39,7 @@ import nltk
 nltk.download('punkt_tab')
 ```
 
-## Finetuning
+# Finetuning
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1TXGaz39o73nBucEQw12gbad7Tw11j2Ol?usp=sharing)
 
 ```bash
@@ -54,7 +54,7 @@ List of the parameters
   - `standard`: Standard finetuning (baseline)
   - `distill`: Distilling step-by-step
 
-## Inference
+# Inference
 
 We use [`bulk-chain` project](https://github.com/nicolay-r/bulk-chain) to infer:
 * `rationale` prompts, necessary for distill-based fine-tuning [[using this script].](https://github.com/nicolay-r/distill-d2n-long/blob/main/predict/annotate_train_rationale.py)

@@ -81,7 +81,4 @@ class DistillTrainer(Trainer):
                 step=self.state.global_step
             )
 
-        del expl_outputs
-        gc.collect()
-
         return (loss, pred_outputs[1], pred_outputs[2])

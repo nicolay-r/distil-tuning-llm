@@ -48,7 +48,7 @@ Manual Training:
 ./distill_ft.sh --from_pretrained "AutoModelCasualLM-from-HF" --dataset "multiclinsum" --model_type "distill"
 ```
 
-> **NOTE**: We use the following processing 
+> **NOTE**: We use the following [post-processing](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/make_dataset_mult.py) script for dataset preparation. 
 
 List of the parameters
 - `--from_pretrained`: Model from hugging face that nesting `AutoModelCasualLM`

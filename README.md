@@ -1,4 +1,5 @@
 # Distil-Tuning for LM
+![](https://img.shields.io/badge/Python-3.10+-brightgreen.svg)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1TXGaz39o73nBucEQw12gbad7Tw11j2Ol?usp=sharing)
 
 This repo represent a tiny and **reforged version** of the original [`MeDistil-d2n` framework](https://github.com/Xiaoxiao-Liu/distill-d2n) and the related paper studies.
@@ -12,18 +13,21 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
 3. ✅ Switch dependencies to `Python 3.10+`
 
 # 🛠️ TODO
-- [x] Narrow scope of the framework.
-  - [x] Drop support for DeepSpeed (see [Known Issues](#known-issues))
-- [x] Reforge data preparation concept (Qwen2.5 support) (see [Formatting Concepts](#dataset-formatting-concepts-for-lm))
+- [x] Narrow scope of the framework. We don not support DeepSpeed by default
+- [x] Reforge data preparation concept (Qwen2.5 support) (see [Formatting Concepts](#input-formatting-concepts))
 - [x] Refactor evaluation
   - [x] Fixed `Trainer` limitation on not-exploiting `.generate` call for `predictions`
 - [x] Dataset cropping
 - [x] Support rationale annotation using third-party API hosting (OpenRouter)
 - [x] Reforge prefix `TaskPrefixTrainer`.
   - [x] Reforge list of parameters
+- [ ] ‼️**Memory leakage on evaluation**
+  - Caused by this piece: https://github.com/nicolay-r/distill-d2n-long/blob/07871555069ef07a8149e51b36ba6381dad4b423/utils/distill_trainer.py#L84 
 
 
 ## Setup
+
+* The complete list of dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -36,39 +40,35 @@ nltk.download('punkt_tab')
 ```
 
 ## Finetuning
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1TXGaz39o73nBucEQw12gbad7Tw11j2Ol?usp=sharing)
 
-- Distilling step-by-step. 
 ```bash
-./distill_ft.sh
+./distill_ft.sh --from_pretrained "AutoModelCasualLM-from-HF" --dataset "multiclinsum" --model_type "distill"
 ```
-
-### Args usages
+List of the parameters
 - `--from_pretrained`: Model from hugging face that nesting `AutoModelCasualLM`
 - `--dataset`: `multiclinsum`
 - `--alpha`: Task weight for multi-task training.
   - $Loss = alpha * pred_l + (1 - alpha) * rationale_l$
 - `--model_type`:
-  - `standard`: Standard finetuning
+  - `standard`: Standard finetuning (baseline)
   - `distill`: Distilling step-by-step
 
 ## Inference
 
-- For distilling step-by-step models
-```bash
-sh ./evaluate/distill_inf.sh
-```
+We use [`bulk-chain` project](https://github.com/nicolay-r/bulk-chain) to infer:
+* `rationale` prompts, necessary for distill-based fine-tuning [[using this script].](https://github.com/nicolay-r/distill-d2n-long/blob/main/predict/annotate_train_rationale.py)
+* Test data for competition submissions [[using this script]](https://github.com/nicolay-r/distill-d2n-long/blob/main/predict/annotate_test_summaries.py)
 
-## Datasets
+# Datasets
 * [MultiClinSum](https://zenodo.org/records/15463353)
 
-
-## Dataset Formatting Concepts for LM
+## Input formatting concepts
 
 * Data formatting for QWEN
   * https://qwen.readthedocs.io/en/latest/getting_started/concepts.html#control-tokens-chat-template
 * Fine-tuning setup
   * https://github.com/QwenLM/Qwen2.5-VL/tree/main/qwen-vl-finetune
-
 
 ## References
 

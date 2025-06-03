@@ -47,9 +47,12 @@ Manual Training:
 ```bash
 ./distill_ft.sh --from_pretrained "AutoModelCasualLM-from-HF" --dataset "multiclinsum" --model_type "distill"
 ```
+
+> **NOTE**: We use the following processing 
+
 List of the parameters
 - `--from_pretrained`: Model from hugging face that nesting `AutoModelCasualLM`
-- `--dataset`: `multiclinsum`
+- `--dataset`: `multiclinsum` (see [downloading script](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/download_dataset.sh) and [post-processing](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/make_dataset_mult.py)
 - `--alpha`: Task weight for multi-task training.
   - $Loss = alpha * pred_l + (1 - alpha) * rationale_l$
 - `--model_type`:
@@ -70,6 +73,7 @@ We use [`bulk-chain` project](https://github.com/nicolay-r/bulk-chain) to infer:
 
 # Datasets
 * [MultiClinSum](https://zenodo.org/records/15463353)
+  * Use the [following script](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/download_dataset.sh) for downloading datasets. 
 
 ## Input formatting concepts
 

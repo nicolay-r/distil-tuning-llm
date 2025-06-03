@@ -12,7 +12,7 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
 2. ✅ Refactoring and narrowing the scope, dropping dependencies.
 3. ✅ Switch dependencies to `Python 3.10+`
 
-### 🛠️ TODO
+### 🛠️ Changeset
 - [x] Narrow scope of the framework. We don not support DeepSpeed by default
 - [x] Reforge data preparation concept (Qwen2.5 support) (see [Formatting Concepts](#input-formatting-concepts))
 - [x] Refactor evaluation
@@ -72,9 +72,12 @@ We use [`bulk-chain` project](https://github.com/nicolay-r/bulk-chain) to infer:
 * Test data for competition submissions [[using this script]](https://github.com/nicolay-r/distill-d2n-long/blob/main/predict/annotate_test_summaries.py)
 
 # Datasets
-* [MultiClinSum](https://zenodo.org/records/15463353)
-  * Use the [following script](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/download_dataset.sh) for downloading datasets. 
-
+* **MultiClinSum**
+  * We use the [following script](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/download_dataset.sh) for downloading datasets.
+  * **Web**: https://temu.bsc.es/multiclinsum 
+  * **Data**: https://zenodo.org/records/15463353
+  * **BioASQ**: http://bioasq.org/ 
+   
 ## Input formatting concepts
 
 * Data formatting for QWEN

@@ -36,8 +36,8 @@ def drop_column(data, column_name):
     return data
 
 
-def iter_text_files(folder_path, encoding="utf-8", skip_if_exists_in=None,
-                    fmt_filename_func=lambda fp: fp):
+def iter_text_files(folder_path, encoding="utf-8", max_content_length=None,
+                    skip_if_exists_in=None, fmt_filename_func=lambda fp: fp):
     for filename in listdir(folder_path):
         source_path = join(folder_path, filename)
 
@@ -52,7 +52,12 @@ def iter_text_files(folder_path, encoding="utf-8", skip_if_exists_in=None,
 
         try:
             with open(source_path, 'r', encoding=encoding) as f:
-                yield filename, f.read()
+                content = f.read()
+
+                if max_content_length is not None:
+                    content = content[:max_content_length]
+
+                yield filename, content
         except (UnicodeDecodeError, OSError):
             continue
 

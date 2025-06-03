@@ -43,6 +43,7 @@ def run(args):
         lambda r: {"filepath": r[0], "text": r[1]},
         iter_text_files(folder_path=join(DATASET_DIR, dataset_name),
                         skip_if_exists_in=target_dir,
+                        max_content_length=args.max_input_length,
                         fmt_filename_func=lambda filepath: fmt_filepath_summary(filepath))
     ))
 
@@ -75,6 +76,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--team_name', type=str, default="bu_team")
+    parser.add_argument('--max_input_length', type=int, default=None)
     parser.add_argument('--batch_size', type=int, default=1)
     parser.add_argument('--subtask', type=str, default=None, choices=subtasks)
     parser.add_argument('--run_id', type=int, default=None)

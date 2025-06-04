@@ -34,7 +34,7 @@ def fmt_filepath_summary(filepath):
 
 def run(args, input_dicts, lang):
     return iter_content(
-        schema={"schema": [{"prompt": SUMMARIZE_PROMPT_LOCALE[lang] + ": {text}", "out": "summary"}]},
+        schema={"schema": [{"prompt": SUMMARIZE_PROMPT_LOCALE[lang] + ": {input}", "out": "summary"}]},
         llm=dynamic_init(class_filepath="providers/huggingface_qwen.py", class_name="Qwen2")(
             api_token=HF_API_KEY,
             model_name=submissions[args.run_id],
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     lang = args.subtask.split('_')[-1]
     target_dir = join(args.output_dir, "submissions", f"{args.team_name}_multiclinsum_{lang}_run_{args.run_id}")
     input_dicts = list(map(
-        lambda r: {"filepath": r[0], "text": r[1]},
+        lambda r: {"filepath": r[0], "input": r[1]},
         iter_text_files(folder_path=join(DATASET_DIR, args.subtask),
                         skip_if_exists_in=target_dir,
                         max_content_length=args.max_input_length,

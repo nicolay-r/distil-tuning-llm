@@ -32,22 +32,8 @@ def fmt_filepath_summary(filepath):
     return basename(filepath).split('.')[-2] + "_sum.txt"
 
 
-def run(args):
-
-    dataset_name = args.subtask
-    lang = dataset_name.split('_')[-1]
-
-    target_dir = join(args.output_dir, "submissions", f"{args.team_name}_multiclinsum_{lang}_run_{args.run_id}")
-
-    input_dicts = list(map(
-        lambda r: {"filepath": r[0], "text": r[1]},
-        iter_text_files(folder_path=join(DATASET_DIR, dataset_name),
-                        skip_if_exists_in=target_dir,
-                        max_content_length=args.max_input_length,
-                        fmt_filename_func=lambda filepath: fmt_filepath_summary(filepath))
-    ))
-
-    content_it = iter_content(
+def run(args, input_dicts, lang):
+    return iter_content(
         schema={"schema": [{"prompt": SUMMARIZE_PROMPT_LOCALE[lang] + ": {text}", "out": "summary"}]},
         llm=dynamic_init(class_filepath="providers/huggingface_qwen.py", class_name="Qwen2")(
             api_token=HF_API_KEY,
@@ -61,14 +47,6 @@ def run(args):
         batch_size=args.batch_size,
         return_mode="record",
         input_dicts_it=input_dicts,
-    )
-
-    write_text_files(
-        file_iter=map(
-            lambda r: (fmt_filepath_summary(r["filepath"]), r["summary"]),
-            tqdm(content_it, desc=f"{args.run_id}-{dataset_name}", total=len(input_dicts))
-        ),
-        folder_path=target_dir
     )
 
         
@@ -87,4 +65,22 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    run(args)
+    lang = args.subtask.split('_')[-1]
+    target_dir = join(args.output_dir, "submissions", f"{args.team_name}_multiclinsum_{lang}_run_{args.run_id}")
+    input_dicts = list(map(
+        lambda r: {"filepath": r[0], "text": r[1]},
+        iter_text_files(folder_path=join(DATASET_DIR, args.subtask),
+                        skip_if_exists_in=target_dir,
+                        max_content_length=args.max_input_length,
+                        fmt_filename_func=lambda filepath: fmt_filepath_summary(filepath))
+    ))
+
+    content_it = run(args, input_dicts=input_dicts, target_dir=target_dir, lang=lang)
+
+    write_text_files(
+        file_iter=map(
+            lambda r: (fmt_filepath_summary(r["filepath"]), r["summary"]),
+            tqdm(content_it, desc=f"{args.run_id}-{args.subtask}", total=len(input_dicts))
+        ),
+        folder_path=target_dir
+    )

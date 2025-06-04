@@ -2,7 +2,7 @@ import json
 import os
 import random
 from os import listdir
-from os.path import join, isfile
+from os.path import join, isfile, dirname
 
 EXTRACT_PROMPT = 'Extract the key information from clinical text'
 
@@ -13,6 +13,7 @@ def load_data(json_path):
 
 
 def json_write(dict_iter, filepath):
+    os.makedirs(dirname(filepath), exist_ok=True)
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write('[')
         first = True
@@ -41,7 +42,7 @@ def iter_text_files(folder_path, encoding="utf-8", max_content_length=None,
     for filename in listdir(folder_path):
         source_path = join(folder_path, filename)
 
-        if not os.path.isfile(source_path):
+        if not isfile(source_path):
             continue
 
         if skip_if_exists_in:

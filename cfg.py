@@ -12,3 +12,5 @@ SUMMARIZE_PROMPT_LOCALE = {
     "es": "Resumir el texto clínico",
     "fr": "Résumer le texte clinique"
 }
+
+

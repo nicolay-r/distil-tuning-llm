@@ -45,7 +45,7 @@ nltk.download('punkt_tab')
 Manual Training:
 
 ```bash
-./distill_ft.sh --from_pretrained "AutoModelCasualLM-from-HF" --dataset "multiclinsum" --model_type "distill"
+./distill_ft_qwen25_test.sh --from_pretrained "AutoModelCasualLM-from-HF" --dataset "multiclinsum" --model_type "distill"
 ```
 
 > **NOTE**: We use the following [post-processing](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/make_dataset_mult.py) script for dataset preparation. 

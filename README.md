@@ -69,7 +69,7 @@ The pretrained models are publicly available:
 
 We use [`bulk-chain` project](https://github.com/nicolay-r/bulk-chain) to infer:
 * `rationale` prompts, necessary for distill-based fine-tuning [[using this script].](https://github.com/nicolay-r/distill-d2n-long/blob/main/predict/annotate_train_rationale.py)
-* Test data for competition submissions [[using this script]](https://github.com/nicolay-r/distill-d2n-long/blob/main/predict/annotate_test_summaries.py)
+* Test data for competition submissions [[using this script]](https://github.com/nicolay-r/distill-d2n-long/blob/main/predict/annotate_test_official.py)
 
 # Datasets
 * **MultiClinSum**

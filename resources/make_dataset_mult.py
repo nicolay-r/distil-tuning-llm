@@ -65,4 +65,4 @@ json_save_list(valid_data, filepath=join(DATASET_DIR, output_dataset_name, "vali
 
 # For the test data we consider different processing.
 for filename, data in test_data.items():
-    json_save_list(test_data, filepath=join(DATASET_DIR, output_dataset_name, f"test_{filename}"))
+    json_save_list(test_data, filepath=join(DATASET_DIR, output_dataset_name, f"test_{filename.split('_')[-1]}"))

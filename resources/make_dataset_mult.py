@@ -26,7 +26,7 @@ test_ratio = 0.19
 
 train_data = []
 valid_data = []
-test_data = []
+test_data = {}      # We do not merge test data.
 
 for filename in input_files:
 
@@ -39,23 +39,30 @@ for filename in input_files:
 
     train_data += train
     valid_data += valid
-    test_data += test
+
+    # For the test data we consider separated statistic.
+    test_data[filename] = test
 
 # Remove non utilized strings.
 drop_column(train_data, column_name="rationale_prompt")
 drop_column(valid_data, column_name="rationale_prompt")
-drop_column(test_data, column_name="rationale_prompt")
+# For test data we perform this operation individually for each subtask.
+for data in test_data.values():
+    drop_column(data, column_name="rationale_prompt")
+    drop_column(data, column_name="rationale")             # For the test data we also dropping `rationale`.
 
 # Crop data.
-for data in [train_data, valid_data, test_data]:
+for data in [train_data, valid_data]:
     for item in data:
         item["input"] = item["input"][:input_max_length]
         item["output"] = item["output"][:output_max_length]
-        item["rationale"] = item["rationale"][:output_max_length]
 
 # Make sure the output base directory exists
 os.makedirs(output_dataset_name, exist_ok=True)
 
 json_save_list(train_data, filepath=join(DATASET_DIR, output_dataset_name, "train.json"))
 json_save_list(valid_data, filepath=join(DATASET_DIR, output_dataset_name, "valid.json"))
-json_save_list(test_data, filepath=join(DATASET_DIR, output_dataset_name, "test.json"))
+
+# For the test data we consider different processing.
+for filename, data in test_data.items():
+    json_save_list(test_data, filepath=join(DATASET_DIR, output_dataset_name, f"test_{filename}"))

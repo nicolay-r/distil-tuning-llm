@@ -1,4 +1,7 @@
 import sys
+
+from tqdm import tqdm
+
 sys.path.append("..")
 
 import argparse
@@ -36,4 +39,5 @@ if __name__ == '__main__':
 
     content_it = run(args, input_dicts=input_dicts, lang=lang)
 
-    json_write(dict_iter=content_it, filepath=join(target_dir, 'preds.json'))
+    json_write(dict_iter=tqdm(content_it, desc=f"{args.run_id}-{args.subtask}", total=len(input_dicts)),
+               filepath=join(target_dir, 'preds.json'))

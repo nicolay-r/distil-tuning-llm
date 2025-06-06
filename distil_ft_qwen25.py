@@ -22,16 +22,6 @@ from utils.distill_trainer import DistillTrainer
 from utils.metrics import compute_metrics_rouge
 
 
-def set_wandb(trainer_kwargs, description):
-    timestamp = time.time()
-    dt_object = datetime.fromtimestamp(timestamp)
-    wandb.init(group="lmflow",
-               project="Distill-LM",
-               #mode="disabled",
-               name=f"fine-tuning-{description}-{dt_object}",
-               config=trainer_kwargs)
-
-
 def train_and_evaluate(args, tokenizer, tokenized_datasets):
     """ This is the main code for training and evaluation.
     """
@@ -79,7 +69,7 @@ def train_and_evaluate(args, tokenizer, tokenized_datasets):
         #######################################################################################################
         save_total_limit=1,  # When save_total_limit = 1 and load_best_model_at_end
         load_best_model_at_end=True,  # it is possible that two checkpoints are saved:
-        # the last one and the best one (if they are different).
+                                      # the last one and the best one (if they are different).
         logging_steps=10,
         report_to="none",
         #######################################################################################################
@@ -90,7 +80,7 @@ def train_and_evaluate(args, tokenizer, tokenized_datasets):
         eval_strategy='steps',
         eval_steps=args.save_and_eval_steps,
         eval_accumulation_steps=args.eval_accumulation_steps,  # This parameter is critical due to
-        # implementation of the custom Rouge. operation.
+                                                               # implementation of the custom Rouge operation.
         greater_is_better=True,
         #######################################################################################################
         # Model saving.
@@ -125,7 +115,11 @@ def train_and_evaluate(args, tokenizer, tokenized_datasets):
     elif args.model_type == 'standard':
         trainer = Trainer(**trainer_kwargs)
 
-    set_wandb(trainer_kwargs=trainer_kwargs, description=args.description)
+    wandb.init(group="lmflow",
+               project="Distill-LM",
+               #mode="disabled",
+               name=f"fine-tuning-{args.description}-{datetime.fromtimestamp(time.time())}",
+               config=trainer_kwargs)
 
     wandb.watch(model, log='gradients')
 

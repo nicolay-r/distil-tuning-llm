@@ -22,7 +22,7 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
 - [x] Reforge prefix `TaskPrefixTrainer`.
   - [x] Reforge list of parameters
 - [ ] ‼️**Memory leakage on evaluation**
-  - Caused by this piece: https://github.com/nicolay-r/distill-d2n-long/blob/07871555069ef07a8149e51b36ba6381dad4b423/utils/distill_trainer.py#L84 
+  - Caused by this piece: https://github.com/nicolay-r/distill-tuning-llm/blob/07871555069ef07a8149e51b36ba6381dad4b423/utils/distill_trainer.py#L84 
 
 
 # Setup
@@ -48,11 +48,11 @@ Manual Training:
 ./distill_ft_qwen25_test.sh --from_pretrained "AutoModelCasualLM-from-HF" --dataset "multiclinsum" --model_type "distill"
 ```
 
-> **NOTE**: We use the following [post-processing](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/make_dataset_mult.py) script for dataset preparation. 
+> **NOTE**: We use the following [post-processing](https://github.com/nicolay-r/distill-tuning-llm/blob/main/resources/make_dataset_mult.py) script for dataset preparation. 
 
 List of the parameters
 - `--from_pretrained`: Model from hugging face that nesting `AutoModelCasualLM`
-- `--dataset`: `multiclinsum` (see [downloading script](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/download_dataset.sh) and [post-processing](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/make_dataset_mult.py))
+- `--dataset`: `multiclinsum` (see [downloading script](https://github.com/nicolay-r/distill-tuning-llm/blob/main/resources/download_dataset.sh) and [post-processing](https://github.com/nicolay-r/distill-tuning-llm/blob/main/resources/make_dataset_mult.py))
 - `--alpha`: Task weight for multi-task training.
   - $Loss = alpha * pred_l + (1 - alpha) * rationale_l$
 - `--model_type`:
@@ -68,12 +68,12 @@ The pretrained models are publicly available:
 # Inference
 
 We use [`bulk-chain` project](https://github.com/nicolay-r/bulk-chain) to infer:
-* `rationale` prompts, necessary for distill-based fine-tuning [[using this script].](https://github.com/nicolay-r/distill-d2n-long/blob/main/predict/annotate_train_rationale.py)
-* Test data for competition submissions [[using this script]](https://github.com/nicolay-r/distill-d2n-long/blob/main/predict/annotate_test_official.py)
+* `rationale` prompts, necessary for distill-based fine-tuning [[using this script].](https://github.com/nicolay-r/distill-tuning-llm/blob/main/predict/annotate_train_rationale.py)
+* Test data for competition submissions [[using this script]](https://github.com/nicolay-r/distill-tuning-llm/blob/main/predict/annotate_test_official.py)
 
 # Datasets
 * **MultiClinSum**
-  * We use the [following script](https://github.com/nicolay-r/distill-d2n-long/blob/main/resources/download_dataset.sh) for downloading datasets.
+  * We use the [following script](https://github.com/nicolay-r/distill-tuning-llm/blob/main/resources/download_dataset.sh) for downloading datasets.
   * **Web**: https://temu.bsc.es/multiclinsum 
   * **Data**: https://zenodo.org/records/15463353
   * **BioASQ**: http://bioasq.org/ 

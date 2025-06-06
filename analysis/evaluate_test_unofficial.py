@@ -12,10 +12,13 @@ from resources.utils import load_data
 
 
 def avg(obj):
-    return {k:float(np.mean(v)) for k, v in obj.items()}
+    return {
+        k:round(float(np.mean(v)), 4)
+        for k, v in obj.items()
+    }
 
 
-def do_evaluate(references: List[str], predictions: List[str], device, desc=None):
+def do_evaluate(references: List[str], predictions: List[str], args, desc=None):
     """ This is a non-official evaluator for the results.
     """
 
@@ -27,10 +30,10 @@ def do_evaluate(references: List[str], predictions: List[str], device, desc=None
             ['rouge1', 'rouge2', 'rougeL', 'rougeLsum']
         ),
         'bert_scorer': (
-            evaluate.load('bertscore', device=device),
+            evaluate.load('bertscore', device=args.device),
             {
-                'model_type': 'microsoft/deberta-xlarge-mnli',
-                'device': device,
+                'model_type': args.bertscore_model,
+                'device': args.device,
                 'batch_size': 2,
                 'use_fast_tokenizer': True,
             },
@@ -38,7 +41,7 @@ def do_evaluate(references: List[str], predictions: List[str], device, desc=None
             ['bertscore_precision', 'bertscore_recall', 'bertscore_f1']
         ),
         'bluert': (
-            evaluate.load('bleurt', config_name='BLEURT-20', device=device),
+            evaluate.load('bleurt', config_name='BLEURT-20', device=args.device),
             {},
             ['scores'],
             ['bleurt']
@@ -60,6 +63,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--run_id', type=int, default=1, choices=list(MULTICLINSUM_SUBMISSIONS.keys()))
     parser.add_argument('--subtask', type=str, default="test_en", choices=SUBTASKS_UNOFFICIAL)
+    parser.add_argument('--bertscore_model', type=str, default="distilbert-base-uncased")
     parser.add_argument('--device', type=str, default="cuda")
 
     args = parser.parse_args()
@@ -75,8 +79,9 @@ if __name__ == '__main__':
     all_scores_avg = do_evaluate(
         references=[item["output"] for item in data],
         predictions=[item["summary"] for item in data],
-        device=args.device,
+        args=args,
         desc=f"Evaluate for {eval_src_filepath}-{args.run_id}"
     )
 
+    print(f"{eval_src_filepath}-{args.run_id}")
     print(json.dumps(all_scores_avg, indent=4))

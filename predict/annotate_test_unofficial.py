@@ -1,22 +1,14 @@
 import sys
-
-from tqdm import tqdm
-
 sys.path.append("..")
 
 import argparse
-from os.path import join
-
 from cfg import DATASET_DIR
+from tqdm import tqdm
+from predict.cfg_multiclinsum import SUBTASKS_UNOFFICIAL, MULTICLINSUM_SUBMISSIONS
+from os.path import join
 from predict.annotate_test_official import run
 from resources.utils import json_write, load_data
 
-subtasks = [
-    "test_en",
-    "test_es",
-    "test_fr",
-    "test_pt",
-]
 
 if __name__ == '__main__':
 
@@ -25,8 +17,8 @@ if __name__ == '__main__':
     parser.add_argument('--team_name', type=str, default="bu_team")
     parser.add_argument('--max_input_length', type=int, default=None)
     parser.add_argument('--batch_size', type=int, default=1)
-    parser.add_argument('--subtask', type=str, default=None, choices=subtasks)
-    parser.add_argument('--run_id', type=int, default=None)
+    parser.add_argument('--subtask', type=str, default=None, choices=SUBTASKS_UNOFFICIAL)
+    parser.add_argument('--run_id', type=int, default=None, choices=list(MULTICLINSUM_SUBMISSIONS.keys()))
     parser.add_argument('--device', type=str, default="cuda")
     parser.add_argument('--output_dir', type=str, default=".")
     parser.add_argument('--max_tokens', type=int, default=512)

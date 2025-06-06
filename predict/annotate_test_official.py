@@ -1,31 +1,16 @@
-import argparse
 import sys
-
-from tqdm import tqdm
-
 sys.path.append("..")
 
+import argparse
+from tqdm import tqdm
 from os.path import join, basename
 from bulk_chain.api import iter_content
 from bulk_chain.core.utils import dynamic_init
 from resources.utils import iter_text_files, write_text_files
 
 from cfg import DATASET_DIR, SUMMARIZE_PROMPT_LOCALE
+from cfg_multiclinsum import MULTICLINSUM_SUBMISSIONS, SUBTASKS_OFFICIAL
 from keys import HF_API_KEY
-
-
-submissions = {
-    1: "Qwen/Qwen2.5-0.5B-Instruct",
-    2: "nicolay-r/qwen25-05b-multiclinsum-standard",
-    3: "nicolay-r/qwen25-05b-multiclinsum-distil"
-}
-
-subtasks = [
-    "multiclinsum_test_en",
-    "multiclinsum_test_es",
-    "multiclinsum_test_fr",
-    "multiclinsum_test_pt",
-]
 
 
 def fmt_filepath_summary(filepath):
@@ -37,7 +22,7 @@ def run(args, input_dicts, lang):
         schema={"schema": [{"prompt": SUMMARIZE_PROMPT_LOCALE[lang] + ": {input}", "out": "summary"}]},
         llm=dynamic_init(class_filepath="providers/huggingface_qwen.py", class_name="Qwen2")(
             api_token=HF_API_KEY,
-            model_name=submissions[args.run_id],
+            model_name=MULTICLINSUM_SUBMISSIONS[args.run_id],
             temp=0.1,
             use_bf16=True,
             max_new_tokens=args.max_tokens,
@@ -57,8 +42,8 @@ if __name__ == '__main__':
     parser.add_argument('--team_name', type=str, default="bu_team")
     parser.add_argument('--max_input_length', type=int, default=None)
     parser.add_argument('--batch_size', type=int, default=1)
-    parser.add_argument('--subtask', type=str, default=None, choices=subtasks)
-    parser.add_argument('--run_id', type=int, default=None)
+    parser.add_argument('--subtask', type=str, default=None, choices=SUBTASKS_OFFICIAL)
+    parser.add_argument('--run_id', type=int, default=None, choices=list(MULTICLINSUM_SUBMISSIONS.keys()))
     parser.add_argument('--device', type=str, default="cuda")
     parser.add_argument('--output_dir', type=str, default=".")
     parser.add_argument('--max_tokens', type=int, default=512)

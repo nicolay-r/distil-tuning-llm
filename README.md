@@ -1,4 +1,4 @@
-# Distil-Tuning for LM
+# Distil-Tuning for Decoder-Based Transformers
 ![](https://img.shields.io/badge/Python-3.10+-brightgreen.svg)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1TXGaz39o73nBucEQw12gbad7Tw11j2Ol?usp=sharing)
 

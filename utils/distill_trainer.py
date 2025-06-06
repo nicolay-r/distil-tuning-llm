@@ -1,5 +1,3 @@
-import gc
-
 import torch
 from torch import nn
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -47,7 +45,6 @@ class DistillTrainer(Trainer):
                     'train/expl_accuracy': expl_accuracy.item(),  # Logging explanation accuracy (if applicable)
                     'learning_rate': current_lr,
                 },
-                step=self.state.global_step
             )
 
         return (loss, {'pred': pred_outputs, 'expl': expl_outputs}) if return_outputs else loss
@@ -78,7 +75,6 @@ class DistillTrainer(Trainer):
                     'eval/loss_pred': pred_outputs[0],
                     'eval/loss_expl': expl_outputs[0]
                 },
-                step=self.state.global_step
             )
 
         return (loss, pred_outputs[1], pred_outputs[2])

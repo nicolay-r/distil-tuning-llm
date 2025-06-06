@@ -119,8 +119,8 @@ def train_and_evaluate(args, tokenizer, tokenized_datasets):
 
     if args.model_type == 'distill':
         trainer = DistillTrainer(alpha=args.alpha,
-                                 log_compute_loss_func=lambda data, step: wandb.log(data, step=step),
-                                 log_pred_step_func=lambda data, step: wandb.log(data, step=step),
+                                 log_compute_loss_func=lambda data: wandb.log(data),
+                                 log_pred_step_func=lambda data: wandb.log(data),
                                  **trainer_kwargs)
     elif args.model_type == 'standard':
         trainer = Trainer(**trainer_kwargs)

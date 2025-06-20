@@ -6,7 +6,7 @@ This repo represent a tiny and **reforged version** of the original [`MeDistil-d
 The original project has a major limitation of `Seq2Seq` trainer dependencies.
 The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`AutoModelCasualLM`) on long-input context by heavily rely on `decoder` based models with following input [Formatting Concepts](#dataset-formatting-concepts-for-lm).
 
-![BioASQ-v3-scaled](https://github.com/user-attachments/assets/190f4957-3a1d-4933-adbf-e3329e67f7f1)
+![BioASQ-v4](https://github.com/user-attachments/assets/9dcd3be4-3150-435e-9729-98ad5c7065e9)
 
 ### Contribution
 1. ✅ Replacement of `Seq2SeqTrainer`: `AutoModelCasualLM` models (`Qwen` series in particular).

@@ -2,11 +2,17 @@
 ![](https://img.shields.io/badge/Python-3.10+-brightgreen.svg)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1TXGaz39o73nBucEQw12gbad7Tw11j2Ol?usp=sharing)
 
+> **Update 13'th July 2025**: Added [video review on youtube](https://youtu.be/uOAiUvLghuE)
+
 This repo represent a tiny and **reforged version** of the original [`MeDistil-d2n` framework](https://github.com/Xiaoxiao-Liu/distill-d2n) and the related paper studies for the [BioASQ workshop](https://bioasq.org/) on multilingual clinical texts summarization.
 The original project has a major limitation of `Seq2Seq` trainer dependencies.
 The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`AutoModelCasualLM`) on long-input context by heavily rely on `decoder` based models with following input [Formatting Concepts](#dataset-formatting-concepts-for-lm).
 
 ![BioASQ-v4](https://github.com/user-attachments/assets/9dcd3be4-3150-435e-9729-98ad5c7065e9)
+
+### Video
+
+[![](https://markdown-videos-api.jorgenkh.no/youtube/uOAiUvLghuE)](https://youtu.be/uOAiUvLghuE)
 
 ### Contribution
 1. ✅ Replacement of `Seq2SeqTrainer`: `AutoModelCasualLM` models (`Qwen` series in particular).

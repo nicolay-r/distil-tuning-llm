@@ -12,7 +12,12 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
 
 ### Video
 
+
+<div align="center">
+
 [![](https://markdown-videos-api.jorgenkh.no/youtube/uOAiUvLghuE)](https://youtu.be/uOAiUvLghuE)
+
+</div>
 
 ### Contribution
 1. ✅ Replacement of `Seq2SeqTrainer`: `AutoModelCasualLM` models (`Qwen` series in particular).

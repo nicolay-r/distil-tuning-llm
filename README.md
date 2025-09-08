@@ -2,7 +2,9 @@
 ![](https://img.shields.io/badge/Python-3.10+-brightgreen.svg)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1TXGaz39o73nBucEQw12gbad7Tw11j2Ol?usp=sharing)
 
-> **Update 13'th July 2025**: Added [video review on youtube](https://youtu.be/uOAiUvLghuE)
+> 🗒️ **Update 08'th September 2025**: The [poster has just become avaiable](poster-bioasq2025.pdf)
+> 
+> 🎬 **Update 13'th July 2025**: Added [video review on youtube](https://youtu.be/uOAiUvLghuE)
 
 This repo represent a tiny and **reforged version** of the original [`MeDistil-d2n` framework](https://github.com/Xiaoxiao-Liu/distill-d2n) and the related paper studies for the [BioASQ workshop](https://bioasq.org/) on multilingual clinical texts summarization.
 The original project has a major limitation of `Seq2Seq` trainer dependencies.

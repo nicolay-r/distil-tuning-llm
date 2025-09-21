@@ -1,6 +1,7 @@
 # Distil-Tuning for Decoder-Based Transformers
 ![](https://img.shields.io/badge/Python-3.10+-brightgreen.svg)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1TXGaz39o73nBucEQw12gbad7Tw11j2Ol?usp=sharing)
+[![twitter](https://img.shields.io/twitter/url/https/shields.io.svg?style=social)](https://x.com/nicolayr_/status/1965734109180813810)
 
 > 🗒️ **Update 08'th September 2025**: The [poster has just become avaiable](poster-bioasq2025.pdf)
 > 
@@ -82,25 +83,37 @@ The pretrained models are publicly available:
 
 # Inference
 
-We use [`bulk-chain` project](https://github.com/nicolay-r/bulk-chain) to infer:
-* `rationale` prompts, necessary for distill-based fine-tuning [[using this script].](https://github.com/nicolay-r/distill-tuning-llm/blob/main/predict/annotate_train_rationale.py)
-* Test data for competition submissions [[using this script]](https://github.com/nicolay-r/distill-tuning-llm/blob/main/predict/annotate_test_official.py)
+> We use [`bulk-chain` project](https://github.com/nicolay-r/bulk-chain) to infer:
+> * `rationale` prompts, necessary for distill-based fine-tuning [[using this script].](https://github.com/nicolay-r/distill-tuning-llm/blob/main/predict/annotate_train_rationale.py)
+> * Test data for competition submissions [[using this script]](https://github.com/nicolay-r/distill-tuning-llm/blob/main/predict/annotate_test_official.py)
 
 # Datasets
-* **MultiClinSum**
+* **MultiClinSum-2025**
   * We use the [following script](https://github.com/nicolay-r/distill-tuning-llm/blob/main/resources/download_dataset.sh) for downloading datasets.
   * **Web**: https://temu.bsc.es/multiclinsum 
   * **Data**: https://zenodo.org/records/15463353
   * **BioASQ**: http://bioasq.org/ 
    
-## Input formatting concepts
+## Input Formatting
 
 * Data formatting for QWEN
   * https://qwen.readthedocs.io/en/latest/getting_started/concepts.html#control-tokens-chat-template
 * Fine-tuning setup
   * https://github.com/QwenLM/Qwen2.5-VL/tree/main/qwen-vl-finetune
 
-## References
+# References
 
-* bulk-chain: https://github.com/nicolay-r/bulk-chain
-  * Annotation and test-set inference. 
+```
+@inproceedings{rusnachenko2025decoder,
+  title     = {Using Decoder-Based Distillation for Enhancing Multilingual Clinical Case Report Summarization},
+  author    = {Rusnachenko, Nicolay and Liu, Xiaoxiao and Chang, Jian and Zhang, Jian Jun},
+  booktitle = {Working Notes of CLEF 2025 -- Conference and Labs of the Evaluation Forum, BioASQ 2025},
+  year      = {2025},
+  address   = {Madrid, Spain},
+  month     = sep,
+  publisher = {CEUR-WS.org},
+  series    = {CEUR Workshop Proceedings},
+  volume    = {},
+  pages     = {},
+}
+```

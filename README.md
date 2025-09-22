@@ -28,19 +28,6 @@ The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`A
 2. ✅ Refactoring and narrowing the scope, dropping dependencies.
 3. ✅ Switch dependencies to `Python 3.10+`
 
-### 🛠️ Changeset
-- [x] Narrow scope of the framework. We don not support DeepSpeed by default
-- [x] Reforge data preparation concept (Qwen2.5 support) (see [Formatting Concepts](#input-formatting-concepts))
-- [x] Refactor evaluation
-  - [x] Fixed `Trainer` limitation on not-exploiting `.generate` call for `predictions`
-- [x] Dataset cropping
-- [x] Support rationale annotation using third-party API hosting (OpenRouter)
-- [x] Reforge prefix `TaskPrefixTrainer`.
-  - [x] Reforge list of parameters
-- [ ] ‼️**Memory leakage on evaluation**
-  - Caused by this piece: https://github.com/nicolay-r/distill-tuning-llm/blob/07871555069ef07a8149e51b36ba6381dad4b423/utils/distill_trainer.py#L84 
-
-
 # Setup
 
 * The complete list of dependencies

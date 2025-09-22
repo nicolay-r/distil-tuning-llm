@@ -3,6 +3,7 @@
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1TXGaz39o73nBucEQw12gbad7Tw11j2Ol?usp=sharing)
 [![twitter](https://img.shields.io/twitter/url/https/shields.io.svg?style=social)](https://x.com/nicolayr_/status/1965734109180813810)
 
+> 🛠️ **Update 22'nd September 2025**: Fixed OOM bug in metrics. The initial version of the project is [available here](https://github.com/nicolay-r/distil-tuning-llm/releases/edit/distil-tuning-llm-1.0)
 > 🗒️ **Update 08'th September 2025**: The [poster has just become avaiable](poster-bioasq2025.pdf)
 > 
 > 🎬 **Update 13'th July 2025**: Added [video review on youtube](https://youtu.be/uOAiUvLghuE)

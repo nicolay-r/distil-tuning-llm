@@ -7,7 +7,6 @@ python distil_lm_qwen25.py \
     --max_output_length 512 \
     --batch_size_train 1 \
     --batch_size_eval 1 \
-    --eval_accumulation_steps 1 \
     --lr 1e-05 \
     --grad_steps 1 \
     --alpha 0.8 \

@@ -80,8 +80,6 @@ def train_and_evaluate(args, tokenizer, tokenized_datasets):
         eval_delay=1,  # We don't want to start with evaluation.
         eval_strategy='steps',
         eval_steps=args.save_and_eval_steps,
-        eval_accumulation_steps=args.eval_accumulation_steps,  # This parameter is critical due to
-                                                               # implementation of the custom Rouge operation.
         greater_is_better=True,
         #######################################################################################################
         # Model saving.
@@ -236,7 +234,6 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, required=True)
     parser.add_argument('--alpha', type=float, default=0.5)
     parser.add_argument('--save_and_eval_steps', type=int, default=None)
-    parser.add_argument('--eval_accumulation_steps', type=int, default=1)
     parser.add_argument('--max_input_length', type=int, default=64)
     parser.add_argument('--max_output_length', type=int, default=64)
     parser.add_argument('--batch_size_train', type=int, default=64)

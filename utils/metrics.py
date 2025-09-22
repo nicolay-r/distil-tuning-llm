@@ -35,12 +35,9 @@ def postprocess_text(preds, labels):
 
 
 def compute_metrics_rouge(eval_preds: EvalPrediction, tokenizer: AutoTokenizer):
-
-    # IMPORTANT:
-    # The original Trainer instance does not perform .generate() call, which is important for MLM
-    # Therefore, we expected to have `logits` as predictions from CLMs.
-    # Those logits should be converted into tokens by selecting the likely one.
-    preds = np.argmax(eval_preds.predictions, axis=-1)
+    # See https://github.com/nicolay-r/distil-tuning-llm/issues/1
+    # For more details on `preds` initialization.
+    preds = eval_preds.predictions[0]
     labels = eval_preds.label_ids
 
     preds = np.where(preds != -100, preds, tokenizer.pad_token_id)
@@ -54,7 +51,9 @@ def compute_metrics_rouge(eval_preds: EvalPrediction, tokenizer: AutoTokenizer):
 
     metric = RougeSingleton.get_instance()
 
-    rouge_results = metric.compute(predictions=decoded_preds, references=decoded_labels, use_stemmer=True)
+    rouge_results = metric.compute(predictions=decoded_preds,
+                                   references=decoded_labels,
+                                   use_stemmer=True)
     result.update(rouge_results)
 
     result["rouge_avg"] = np.mean([result["rouge1"], result["rouge2"], result["rougeL"]]).item()

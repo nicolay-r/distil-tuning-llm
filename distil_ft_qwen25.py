@@ -20,6 +20,7 @@ from transformers.trainer_utils import set_seed
 from utils.distill_collator import DistillDataCollator
 from utils.distill_trainer import DistillTrainer
 from utils.metrics import compute_metrics_rouge
+from utils.preprocess_logits import preprocess_logits_for_metrics
 
 
 def train_and_evaluate(args, tokenizer, tokenized_datasets):
@@ -105,6 +106,7 @@ def train_and_evaluate(args, tokenizer, tokenized_datasets):
         'eval_dataset': tokenized_datasets["valid"],
         'data_collator': data_collator,
         'compute_metrics': lambda eval_preds: compute_metrics_rouge(eval_preds=eval_preds, tokenizer=tokenizer),
+        'preprocess_logits_for_metrics': preprocess_logits_for_metrics,
     }
 
     if args.model_type == 'distill':

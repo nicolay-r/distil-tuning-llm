@@ -9,7 +9,7 @@
 > 
 > 🎬 **Update 13'th July 2025**: Added [video review on youtube](https://youtu.be/uOAiUvLghuE)
 
-This repo represent a tiny and **reforged version** of the original [`MeDistil-d2n` framework](https://github.com/Xiaoxiao-Liu/distill-d2n) and the related paper studies for the [BioASQ workshop](https://bioasq.org/) on multilingual clinical texts summarization.
+This repo represent a tiny and **reforged version** of the original [`MeDistil-d2n` framework](https://github.com/Xiaoxiao-Liu/distill-d2n) and the related paper ["Using Decoder-Based Distillation for Enhancing Multilingual Clinical Case Report Summarization"](https://ceur-ws.org/Vol-4038/paper_39.pdf) studies for the [BioASQ workshop](https://bioasq.org/) on multilingual clinical texts summarization.
 The original project has a major limitation of `Seq2Seq` trainer dependencies.
 The goal of the project is to bridge the gap with fine-tuning SLM LLM models (`AutoModelCasualLM`) on long-input context by heavily rely on `decoder` based models with following input [Formatting Concepts](#dataset-formatting-concepts-for-lm).
 

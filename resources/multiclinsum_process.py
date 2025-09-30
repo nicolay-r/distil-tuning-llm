@@ -64,13 +64,15 @@ if crop_cfg["enabled"]:
             item["input"] = item["input"][:input_max_length]
             item["output"] = item["output"][:output_max_length]
 
+output_dir = join(DATASET_DIR, output_dataset_name)
+
 # Make sure the output base directory exists
-os.makedirs(output_dataset_name, exist_ok=True)
+os.makedirs(output_dir, exist_ok=True)
 
 # Writing training and validation data.
 for split, data in data_by_type.items():
-    json_save_list(data, filepath=join(DATASET_DIR, output_dataset_name, f"{split}.json"))
+    json_save_list(data, filepath=join(output_dir, f"{split}.json"))
 
 # For the test data we consider different processing.
 for filename, data in test_data.items():
-    json_save_list(data, filepath=join(DATASET_DIR, output_dataset_name, f"test_{filename.split('_')[-1]}"))
+    json_save_list(data, filepath=join(output_dir, f"test_{filename.split('_')[-1]}"))

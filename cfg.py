@@ -2,7 +2,8 @@ from os.path import dirname, realpath, join
 
 
 ROOT_DIR = dirname(realpath(__file__))
-DATASET_DIR = join(ROOT_DIR, "resources")
+RESOURCES_DIR = join(ROOT_DIR, "resources")
+DATASET_DIR = join(RESOURCES_DIR, "multiclinsum2025")
 
 SUMMARIZE_PROMPT = 'Summarize clinical text'
 

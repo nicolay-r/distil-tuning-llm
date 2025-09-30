@@ -1,7 +1,7 @@
 #!/bin/bash
 python distil_lm_qwen25.py \
     --from_pretrained "Qwen/Qwen2.5-0.5B-Instruct" \
-    --dataset "./resources/multiclinsum_rationale_mult" \
+    --dataset "./resources/multiclinsum2025/multiclinsum_rationale_mult" \
     --save_and_eval_steps 100 \
     --max_input_length 1000 \
     --max_output_length 512 \

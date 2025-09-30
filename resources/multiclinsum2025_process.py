@@ -8,7 +8,7 @@ from utils import split_dataset, json_save_list, drop_column, load_data
 
 
 # Load configuration
-config = load_data(json_path="cfg_multiclinsum2025.json")
+config = load_data(json_path="multiclinsum2025_config.json")
 
 data_cfg = config["dataset_config"]
 processing_cfg = config["processing_config"]

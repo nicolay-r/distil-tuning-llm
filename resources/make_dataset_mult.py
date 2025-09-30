@@ -2,39 +2,36 @@ import sys
 sys.path.append("..")
 
 import os
-from os.path import join
 from cfg import DATASET_DIR
-from utils import split_dataset, json_save_list, drop_column
+from os.path import join
+from utils import split_dataset, json_save_list, drop_column, load_data
 
-#############################################
-# Initial parameters for setting up datasets.
-#############################################
-input_dataset_name = "multiclinsum_rationale"
-output_dataset_name = "multiclinsum_rationale_mult"
-input_files = [
-    "multiclinsum_gs_en.json",
-    "multiclinsum_gs_es.json",
-    "multiclinsum_gs_fr.json",
-    "multiclinsum_gs_pt.json"
-]
-input_max_length = 2560
-output_max_length = 512
-train_ratio = 0.8
-# We make validation ratio too small due to unknown memory leakage on resource consumption during evaluation.
-valid_ratio = 0.01
-test_ratio = 0.19
+
+# Load configuration
+config = load_data(json_path="cfg_multiclinsum2025.json")
+
+data_cfg = config["dataset_config"]
+
+# Extract parameters from config
+output_dataset_name = data_cfg["output_dataset_name"]
+input_max_length = data_cfg["input_max_length"]
+output_max_length = data_cfg["output_max_length"]
 
 train_data = []
 valid_data = []
 test_data = {}      # We do not merge test data.
+data_by_type = {
+    "train": train_data,
+    "valid": valid_data
+}
 
-for filename in input_files:
+for filename in data_cfg["input_files"]:
 
     train, valid, test = split_dataset(
-        json_path=join(DATASET_DIR, input_dataset_name, filename),
-        train_ratio=train_ratio,
-        valid_ratio=valid_ratio,
-        test_ratio=test_ratio
+        json_path=join(DATASET_DIR, data_cfg["input_dataset_name"], filename),
+        train_ratio=data_cfg["train_ratio"],
+        valid_ratio=data_cfg["valid_ratio"],
+        test_ratio=data_cfg["test_ratio"]
     )
 
     train_data += train
@@ -49,13 +46,15 @@ drop_column(valid_data, column_name="rationale_prompt")
 # For test data we perform this operation individually for each subtask.
 for data in test_data.values():
     drop_column(data, column_name="rationale_prompt")
-    drop_column(data, column_name="rationale")             # For the test data we also dropping `rationale`.
+    drop_column(data, column_name="rationale")             # For the test data we're also dropping `rationale`.
 
-# Crop data.
-for data in [train_data, valid_data]:
-    for item in data:
-        item["input"] = item["input"][:input_max_length]
-        item["output"] = item["output"][:output_max_length]
+# Crop data based on config.
+crop_cfg = config["processing_config"]["crop_data"]
+if crop_cfg["enabled"]:
+    for data_type in crop_cfg["apply_to"]:
+        for item in data_by_type[data_type]:
+            item["input"] = item["input"][:input_max_length]
+            item["output"] = item["output"][:output_max_length]
 
 # Make sure the output base directory exists
 os.makedirs(output_dataset_name, exist_ok=True)

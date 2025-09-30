@@ -11,6 +11,7 @@ from utils import split_dataset, json_save_list, drop_column, load_data
 config = load_data(json_path="cfg_multiclinsum2025.json")
 
 data_cfg = config["dataset_config"]
+processing_cfg = config["processing_config"]
 
 # Extract parameters from config
 output_dataset_name = data_cfg["output_dataset_name"]
@@ -40,16 +41,23 @@ for filename in data_cfg["input_files"]:
     # For the test data we consider separated statistic.
     test_data[filename] = test
 
-# Remove non utilized strings.
-drop_column(train_data, column_name="rationale_prompt")
-drop_column(valid_data, column_name="rationale_prompt")
-# For test data we perform this operation individually for each subtask.
-for data in test_data.values():
-    drop_column(data, column_name="rationale_prompt")
-    drop_column(data, column_name="rationale")             # For the test data we're also dropping `rationale`.
+# Remove non utilized strings based on config
+drop_columns_cfg = processing_cfg["drop_columns"]
+
+# Drop columns.
+for data_type in ["train", "valid"]:
+    if data_type in drop_columns_cfg:
+        for column_name in drop_columns_cfg[data_type]:
+            drop_column(data_by_type[data_type], column_name=column_name)
+
+# Drop columns for test data (handled individually for each subtask)
+if "test" in drop_columns_cfg:
+    for data in test_data.values():
+        for column_name in drop_columns_cfg["test"]:
+            drop_column(data, column_name=column_name)
 
 # Crop data based on config.
-crop_cfg = config["processing_config"]["crop_data"]
+crop_cfg = processing_cfg["crop_data"]
 if crop_cfg["enabled"]:
     for data_type in crop_cfg["apply_to"]:
         for item in data_by_type[data_type]:
@@ -59,8 +67,9 @@ if crop_cfg["enabled"]:
 # Make sure the output base directory exists
 os.makedirs(output_dataset_name, exist_ok=True)
 
-json_save_list(train_data, filepath=join(DATASET_DIR, output_dataset_name, "train.json"))
-json_save_list(valid_data, filepath=join(DATASET_DIR, output_dataset_name, "valid.json"))
+# Writing training and validation data.
+for split, data in data_by_type.items():
+    json_save_list(data, filepath=join(DATASET_DIR, output_dataset_name, f"{split}.json"))
 
 # For the test data we consider different processing.
 for filename, data in test_data.items():

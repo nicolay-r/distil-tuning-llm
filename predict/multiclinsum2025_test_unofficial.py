@@ -6,8 +6,8 @@ from cfg import DATASET_DIR
 from tqdm import tqdm
 from predict.cfg_multiclinsum import SUBTASKS_UNOFFICIAL, MULTICLINSUM_SUBMISSIONS
 from os.path import join
-from predict.annotate_test_official import run
 from resources.utils import json_write, load_data
+from utils import infer_summary
 
 
 if __name__ == '__main__':
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     target_dir = join(args.output_dir, "submissions", f"{args.subtask}_{args.run_id}")
     input_dicts = load_data(json_path=join(DATASET_DIR, "multiclinsum_rationale_mult", f"{args.subtask}.json"))
 
-    content_it = run(args, input_dicts=input_dicts, lang=lang)
+    content_it = infer_summary(args, input_dicts=input_dicts, lang=lang)
 
     json_write(dict_iter=tqdm(content_it, desc=f"{args.run_id}-{args.subtask}", total=len(input_dicts)),
                filepath=join(target_dir, 'preds.json'))

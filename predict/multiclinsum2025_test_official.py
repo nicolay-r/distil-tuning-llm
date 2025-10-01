@@ -4,35 +4,15 @@ sys.path.append("..")
 import argparse
 from tqdm import tqdm
 from os.path import join, basename
-from bulk_chain.api import iter_content
-from bulk_chain.core.utils import dynamic_init
 from resources.utils import iter_text_files, write_text_files
+from utils import infer_summary
 
-from cfg import DATASET_DIR, SUMMARIZE_PROMPT_LOCALE
+from cfg import DATASET_DIR
 from cfg_multiclinsum import MULTICLINSUM_SUBMISSIONS, SUBTASKS_OFFICIAL
-from keys import HF_API_KEY
 
 
 def fmt_filepath_summary(filepath):
     return basename(filepath).split('.')[-2] + "_sum.txt"
-
-
-def run(args, input_dicts, lang):
-    return iter_content(
-        schema={"schema": [{"prompt": SUMMARIZE_PROMPT_LOCALE[lang] + ": {input}", "out": "summary"}]},
-        llm=dynamic_init(class_filepath="providers/huggingface_qwen.py", class_name="Qwen2")(
-            api_token=HF_API_KEY,
-            model_name=MULTICLINSUM_SUBMISSIONS[args.run_id],
-            temp=0.1,
-            use_bf16=True,
-            max_new_tokens=args.max_tokens,
-            device=args.device
-        ),
-        infer_mode="batch",
-        batch_size=args.batch_size,
-        return_mode="record",
-        input_dicts_it=input_dicts,
-    )
 
         
 if __name__ == '__main__':
@@ -60,7 +40,7 @@ if __name__ == '__main__':
                         fmt_filename_func=lambda filepath: fmt_filepath_summary(filepath))
     ))
 
-    content_it = run(args, input_dicts=input_dicts, target_dir=target_dir, lang=lang)
+    content_it = infer_summary(args, input_dicts=input_dicts, target_dir=target_dir, lang=lang)
 
     write_text_files(
         file_iter=map(

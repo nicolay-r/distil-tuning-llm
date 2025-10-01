@@ -8,15 +8,11 @@ from utils import split_dataset, json_save_list, drop_column, load_data
 
 
 # Load configuration
-config = load_data(json_path="multiclinsum2025_config.json")
-
-data_cfg = config["dataset_config"]
+config = load_data(json_path="multiclinsum2025_step2_config.json")
+dataset_config = config["dataset_config"]
+split_config = config["split_config"]
 processing_cfg = config["processing_config"]
-
-# Extract parameters from config
-output_dataset_name = data_cfg["output_dataset_name"]
-input_max_length = data_cfg["input_max_length"]
-output_max_length = data_cfg["output_max_length"]
+crop_config = processing_cfg["crop_data"]
 
 train_data = []
 valid_data = []
@@ -26,13 +22,13 @@ data_by_type = {
     "valid": valid_data
 }
 
-for filename in data_cfg["input_files"]:
+for filename in load_data("multiclinsum2025.json")["input_files"]:
 
     train, valid, test = split_dataset(
-        json_path=join(DATASET_DIR, data_cfg["input_dataset_name"], filename),
-        train_ratio=data_cfg["train_ratio"],
-        valid_ratio=data_cfg["valid_ratio"],
-        test_ratio=data_cfg["test_ratio"]
+        json_path=join(DATASET_DIR, dataset_config["input_dataset_name"], filename),
+        train_ratio=split_config["train_ratio"],
+        valid_ratio=split_config["valid_ratio"],
+        test_ratio=split_config["test_ratio"]
     )
 
     train_data += train
@@ -57,14 +53,15 @@ if "test" in drop_columns_cfg:
             drop_column(data, column_name=column_name)
 
 # Crop data based on config.
-crop_cfg = processing_cfg["crop_data"]
-if crop_cfg["enabled"]:
-    for data_type in crop_cfg["apply_to"]:
+input_max_length = crop_config["input_max_length"]
+output_max_length = crop_config["output_max_length"]
+if crop_config["enabled"]:
+    for data_type in crop_config["apply_to"]:
         for item in data_by_type[data_type]:
             item["input"] = item["input"][:input_max_length]
             item["output"] = item["output"][:output_max_length]
 
-output_dir = join(DATASET_DIR, output_dataset_name)
+output_dir = join(DATASET_DIR, dataset_config["output_dataset_name"])
 
 # Make sure the output base directory exists
 os.makedirs(output_dir, exist_ok=True)

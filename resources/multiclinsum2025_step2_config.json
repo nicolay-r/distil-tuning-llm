@@ -1,15 +1,9 @@
 {
   "dataset_config": {
     "input_dataset_name": "multiclinsum_rationale",
-    "output_dataset_name": "multiclinsum_rationale_mult",
-    "input_files": [
-      "multiclinsum_gs_en.json",
-      "multiclinsum_gs_es.json",
-      "multiclinsum_gs_fr.json",
-      "multiclinsum_gs_pt.json"
-    ],
-    "input_max_length": 2560,
-    "output_max_length": 512,
+    "output_dataset_name": "multiclinsum_rationale_mult"
+  },
+  "split_config": {
     "train_ratio": 0.8,
     "valid_ratio": 0.01,
     "test_ratio": 0.19
@@ -22,6 +16,8 @@
     },
     "crop_data": {
       "enabled": true,
+      "input_max_length": 2560,
+      "output_max_length": 512,
       "apply_to": ["train", "valid"]
     }
   }

@@ -8,30 +8,31 @@ from bulk_chain.api import iter_content
 
 from resources.utils import EXTRACT_PROMPT, load_data, drop_column, json_write
 
-input_dataset_name = "multiclinsum"
-output_dataset_name = "multiclinsum_rationale"
-input_files = [
-    "multiclinsum_gs_en.json",
-    "multiclinsum_gs_es.json",
-    "multiclinsum_gs_fr.json",
-    "multiclinsum_gs_pt.json"
-]
+
+# Loading config.
+config = load_data("multiclinsum2025_step1_config.json")
+dataset_config = config["dataset_config"]
+llm_config = config["llm_config"]
+processing_config = config["processing_config"]
+
+input_dataset_name = dataset_config["input_dataset_name"]
+output_dataset_name = dataset_config["output_dataset_name"]
 
 os.makedirs(join(DATASET_DIR, output_dataset_name), exist_ok=True)
 src_fp_func = lambda filename: load_data(json_path=join(DATASET_DIR, input_dataset_name, filename))
-tgt_fp_func = lambda filename: load_data(json_path=join(DATASET_DIR, output_dataset_name, filename))
+tgt_fp_func = lambda filename: join(DATASET_DIR, output_dataset_name, filename)
 
-for filename in input_files:
+for filename in load_data("multiclinsum2025.json")["input_files"]:
 
     content_it = iter_content(
         schema={"schema": [{"prompt": EXTRACT_PROMPT + ": {input}", "out": "rationale"}]},
-        llm=dynamic_init(class_filepath="providers/open_router.py", class_name="OpenRouter")(
+        llm=dynamic_init(class_filepath=llm_config["provider_file"], class_name=llm_config["class_name"])(
             api_token=OPENROUTER_API_KEY,
-            model_name="qwen/qwen2.5-72b-instruct"
+            model_name=llm_config["model_name"]
         ),
-        attempts=100,
-        infer_mode="single",
-        return_mode="record",
+        attempts=processing_config["attempts"],
+        infer_mode=processing_config["infer_mode"],
+        return_mode=processing_config["return_mode"],
         input_dicts_it=drop_column(data=src_fp_func(filename), column_name="rationale"),
     )
 

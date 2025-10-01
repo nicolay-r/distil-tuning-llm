@@ -1,0 +1,18 @@
+{
+  "dataset_config": {
+    "input_dataset_name": "multiclinsum",
+    "output_dataset_name": "multiclinsum_rationale"
+  },
+  "llm_config": {
+    "provider": "open_router",
+    "provider_file": "../predict/providers/open_router.py",
+    "class_name": "OpenRouter",
+    "model_name": "qwen/qwen2.5-72b-instruct",
+    "api_key_env": "OPENROUTER_API_KEY"
+  },
+  "processing_config": {
+    "attempts": 100,
+    "infer_mode": "single",
+    "return_mode": "record"
+  }
+}

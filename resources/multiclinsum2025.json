@@ -1,0 +1,8 @@
+{
+  "input_files": [
+    "multiclinsum_gs_en.json",
+    "multiclinsum_gs_es.json",
+    "multiclinsum_gs_fr.json",
+    "multiclinsum_gs_pt.json"
+  ]
+}
